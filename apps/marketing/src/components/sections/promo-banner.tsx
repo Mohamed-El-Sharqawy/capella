@@ -11,9 +11,9 @@ export async function PromoBanner({ locale }: PromoBannerProps) {
   const t = await getTranslations("home.promoBanner");
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 md:py-32">
+    <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
       <AnimateOnScroll direction="up">
-        <div className="relative w-full aspect-[21/9] min-h-[300px] overflow-hidden rounded-sm group">
+        <div className="relative w-full aspect-21/9 min-h-[300px] overflow-hidden rounded-sm group">
           <Image
             src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1400&h=600&fit=crop"
             alt="Promo Banner"

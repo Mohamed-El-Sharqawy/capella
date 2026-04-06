@@ -9,6 +9,7 @@ export function Footer({ locale }: FooterProps) {
   const isArabic = locale === "ar";
 
   const shopLinks = [
+    { href: "/about", label: isArabic ? "عن كابيلا" : "About Us" },
     { href: "/collections/all-products", label: isArabic ? "تسوق الكل" : "Shop All" },
     { href: "/collections/women", label: isArabic ? "نساء" : "Women" },
     { href: "/collections/men", label: isArabic ? "رجال" : "Men" },
@@ -25,7 +26,7 @@ export function Footer({ locale }: FooterProps) {
   ];
 
   return (
-    <footer className="bg-black text-white py-20">
+    <footer className="bg-black text-white py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
           {/* Brand & Newsletter */}
@@ -68,7 +69,7 @@ export function Footer({ locale }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[11px] md:text-xs uppercase tracking-[0.1em] hover:text-gray-400 transition"
+                    className="text-[11px] md:text-xs uppercase tracking-widest hover:text-gray-400 transition"
                   >
                     {link.label}
                   </Link>
@@ -87,7 +88,7 @@ export function Footer({ locale }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[11px] md:text-xs uppercase tracking-[0.1em] hover:text-gray-400 transition"
+                    className="text-[11px] md:text-xs uppercase tracking-widest hover:text-gray-400 transition"
                   >
                     {link.label}
                   </Link>

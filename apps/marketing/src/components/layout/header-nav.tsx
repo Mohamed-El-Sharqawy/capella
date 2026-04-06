@@ -38,6 +38,14 @@ export function HeaderNav() {
 
   return (
     <nav className="flex items-center gap-4 lg:gap-6">
+      {/* About */}
+      <Link
+        href="/about"
+        className="text-[11px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
+      >
+        {isArabic ? "من نحن" : "About"}
+      </Link>
+
       {/* Shop All */}
       <Link
         href="/collections/all-products"

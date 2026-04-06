@@ -16,14 +16,14 @@ export function ShoppableVideos({ videos, locale }: ShoppableVideosProps) {
   if (videos.length === 0) return null;
 
   return (
-    <section className="py-20 md:py-32">
+    <section className="py-16 md:py-24">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.25em]">
             {locale === "ar" ? "تسوق عبر الفيديو" : "Shoppable Videos"}
           </h2>
-          <div className="w-16 h-[1px] bg-black/20 mx-auto" />
-          <p className="text-xs md:text-sm uppercase tracking-[0.1em] text-muted-foreground">
+          <div className="w-16 h-px bg-black/20 mx-auto" />
+          <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground">
             {locale === "ar" ? "شاهد. تحرك. تسوق." : "See it. Move in it. Shop it."}
           </p>
         </div>
@@ -128,7 +128,7 @@ function ShoppableVideoCard({
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-medium uppercase tracking-[0.1em] truncate group-hover/link:opacity-60 transition-opacity">{productName}</p>
+              <p className="text-[11px] font-medium uppercase tracking-widest truncate group-hover/link:opacity-60 transition-opacity">{productName}</p>
               <div className="flex items-center gap-2 mt-1">
                 {compareAtPrice && compareAtPrice > price && (
                   <span className="text-[10px] text-muted-foreground line-through tracking-wider">

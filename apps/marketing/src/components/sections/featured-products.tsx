@@ -17,12 +17,12 @@ export async function FeaturedProducts({
   const products = initialProducts ?? (await getFeaturedProducts());
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-20 md:py-32">
+    <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
       <AnimateOnScroll direction="up">
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.25em]">{t("title")}</h2>
-          <div className="w-16 h-[1px] bg-black/20 mx-auto" />
-          <p className="text-xs md:text-sm uppercase tracking-[0.1em] text-muted-foreground">{t("subtitle")}</p>
+          <div className="w-16 h-px bg-black/20 mx-auto" />
+          <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground">{t("subtitle")}</p>
         </div>
       </AnimateOnScroll>
 

@@ -173,8 +173,8 @@ export function ProductCardWithVariants({
                     fill
                     className={`object-cover select-none transition-all duration-700 ease-out rounded-xl ${
                       isImageHovered && hoverImage
-                        ? "opacity-0 blur-sm scale-105"
-                        : "opacity-100 blur-0 scale-100"
+                        ? "opacity-0 scale-105"
+                        : "opacity-100 scale-100"
                     }`}
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
@@ -185,8 +185,8 @@ export function ProductCardWithVariants({
                       fill
                       className={`object-cover select-none transition-all duration-1000 ease-out pointer-events-none ${
                         isImageHovered
-                          ? "opacity-100 blur-0 scale-110"
-                          : "opacity-0 blur-md scale-100"
+                          ? "opacity-100 scale-110"
+                          : "opacity-0 scale-100"
                       }`}
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />

@@ -600,5 +600,22 @@
       "passwordMismatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 6 characters"
     }
+  },
+  "about": {
+    "title": "About Capella",
+    "story": {
+      "title": "Our Story",
+      "subtitle": "Crafting Elegance Since 1990",
+      "content": "Inspired by the beauty of cosmos, stars and the mysteries of outer space. We believe that just like stars, every individual shines with their own unique light. With CAPELLA explore the unknown, embrace the extraordinary and shine beyond."
+    },
+    "philosophy": {
+      "title": "Our Philosophy",
+      "quality": "Uncompromising Quality",
+      "qualityDesc": "We source the finest materials and employ master artisans to ensure every piece meets the highest standards.",
+      "craftsmanship": "Artisanal Craftsmanship",
+      "craftsmanshipDesc": "Each design is a labor of love, combining age-old techniques with modern innovation.",
+      "innovation": "Modern Innovation",
+      "innovationDesc": "We continuously push boundaries in design, creating unique geometric patterns that define modern luxury."
+    }
   }
 }

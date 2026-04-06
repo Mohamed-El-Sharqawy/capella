@@ -23,7 +23,7 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
   if (collections.length === 0) return null;
 
   return (
-    <section className="bg-white pb-1 md:pb-2">
+    <section className="bg-white py-16 md:py-24">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-2">
         {collections.slice(0, 3).map((collection, index) => (
           <AnimateOnScroll
