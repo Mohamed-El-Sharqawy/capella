@@ -23,6 +23,7 @@ description: "Task list template for feature implementation"
 - **Single project**: `src/`, `tests/` at repository root
 - **Web app**: `backend/src/`, `frontend/src/`
 - **Mobile**: `api/src/`, `ios/src/` or `android/src/`
+- **Monorepo (Capella)**: `apps/backend/src/`, `apps/marketing/src/`, `apps/cms/src/`, `packages/shared-types/`, `packages/shared-utils/`
 - Paths shown below assume single project - adjust based on plan.md structure
 
 <!-- 

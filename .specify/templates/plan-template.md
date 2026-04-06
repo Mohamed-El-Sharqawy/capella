@@ -31,7 +31,11 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **I. Architectural Purity**: No direct inter-app imports; shared logic in `packages/`
+- [ ] **II. Sub-System Consistency**: Backend modules follow `src/modules/[feature]`; frontend parity maintained; shared UI components extracted
+- [ ] **III. Jewellery Brand Protocols**: AED currency only; AR/EN translations provided; Stripe standard only (no Connect)
+- [ ] **IV. Media & Search**: Cloudinary for all media assets; search analytics tracked in backend
+- [ ] **V. Structural Cleanliness**: Cross-app types/utils extracted to packages; no duplicated business logic
 
 ## Project Structure
 
@@ -89,6 +93,34 @@ api/
 
 ios/ or android/
 └── [platform-specific structure: feature modules, UI flows, platform tests]
+
+# [REMOVE IF UNUSED] Option 4: Monorepo (apps/ + packages/ — Capella default)
+apps/
+├── backend/
+│   ├── src/
+│   │   ├── modules/
+│   │   │   └── [feature]/
+│   │   │       ├── routes.ts
+│   │   │       ├── service.ts
+│   │   │       └── ...
+│   │   └── ...
+│   └── prisma/
+├── marketing/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── ...
+│   └── ...
+└── cms/
+    ├── src/
+    │   ├── components/
+    │   ├── pages/
+    │   └── ...
+    └── ...
+
+packages/
+├── shared-types/       # Interfaces, enums, Zod schemas
+└── shared-utils/       # Utility functions, constants, validators
 ```
 
 **Structure Decision**: [Document the selected structure and reference the real
