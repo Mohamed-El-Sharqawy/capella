@@ -174,15 +174,22 @@ export function AnalyticsPage() {
   const { data: searchData, isLoading: isLoadingSearch } = useQuery({
     queryKey: ["analytics", "search", timeRange],
     queryFn: async () => {
-      const params = new URLSearchParams({ range: timeRange });
+      // Map timeRange to days for the backend endpoint
+      const daysMap: Record<string, string> = {
+        "24h": "1",
+        "7d": "7",
+        "30d": "30",
+        "90d": "90",
+      };
+      const params = new URLSearchParams({ days: daysMap[timeRange] || "7", limit: "10" });
       const res = await api.get<{
         success: boolean;
         data: {
-          topQueries: { query: string; count: number }[];
+          topQueries: { query: string; count: number; avgResults?: number }[];
           zeroResultQueries: { query: string; count: number }[];
-          trendingProducts: { productId: string; nameEn: string; nameAr: string; slug: string; count: number }[];
+          trendingProducts: { id: string; nameEn: string; nameAr: string; slug: string; searchCount: number }[];
         };
-      }>(`/api/analytics/search?${params}`);
+      }>(`/api/search/analytics/queries?${params}`);
       return res.data;
     },
   });
@@ -389,12 +396,12 @@ export function AnalyticsPage() {
               ) : (
                 <div className="space-y-2">
                   {searchData?.trendingProducts.slice(0, 10).map((item) => (
-                    <div key={item.productId} className="flex items-center justify-between p-2 rounded bg-muted/50">
+                    <div key={item.id} className="flex items-center justify-between p-2 rounded bg-muted/50">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{item.nameEn}</p>
                         <p className="text-xs text-muted-foreground truncate" dir="rtl">{item.nameAr}</p>
                       </div>
-                      <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded ml-2">{item.count}</span>
+                      <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded ml-2">{item.searchCount}</span>
                     </div>
                   ))}
                   {(!searchData?.trendingProducts || searchData.trendingProducts.length === 0) && <p className="text-center text-sm text-muted-foreground py-4">No trending products</p>}
