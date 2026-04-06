@@ -16,6 +16,11 @@ export const ProductModel = {
     collectionId: t.Optional(t.String()),
     isActive: t.Optional(t.Boolean()),
     isFeatured: t.Optional(t.Boolean()),
+    badge: t.Optional(t.Union([t.Literal("NEW"), t.Literal("BESTSELLER"), t.Literal("LIMITED_EDITION"), t.Null()])),
+    isTrending: t.Optional(t.Boolean()),
+    materialId: t.Optional(t.Union([t.String(), t.Null()])),
+    stoneId: t.Optional(t.Union([t.String(), t.Null()])),
+    clarityId: t.Optional(t.Union([t.String(), t.Null()])),
     variants: t.Optional(
       t.Array(
         t.Object({
@@ -44,9 +49,14 @@ export const ProductModel = {
     metaDescriptionEn: t.Optional(t.String()),
     metaDescriptionAr: t.Optional(t.String()),
     gender: t.Optional(t.Union([t.Literal("MEN"), t.Literal("WOMEN"), t.Literal("UNISEX")])),
-    collectionId: t.Optional(t.String()),
+    collectionId: t.Optional(t.Union([t.String(), t.Null()])),
     isActive: t.Optional(t.Boolean()),
     isFeatured: t.Optional(t.Boolean()),
+    badge: t.Optional(t.Union([t.Literal("NEW"), t.Literal("BESTSELLER"), t.Literal("LIMITED_EDITION"), t.Null()])),
+    isTrending: t.Optional(t.Boolean()),
+    materialId: t.Optional(t.Union([t.String(), t.Null()])),
+    stoneId: t.Optional(t.Union([t.String(), t.Null()])),
+    clarityId: t.Optional(t.Union([t.String(), t.Null()])),
     defaultVariantId: t.Optional(t.Union([t.String(), t.Null()])),
     hoverVariantId: t.Optional(t.Union([t.String(), t.Null()])),
   }),

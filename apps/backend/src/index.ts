@@ -14,6 +14,9 @@ import { wishlist } from "./modules/wishlist";
 import { image } from "./modules/image";
 import { color } from "./modules/color";
 import { size } from "./modules/size";
+import { material } from "./modules/material";
+import { stone } from "./modules/stone";
+import { clarity } from "./modules/clarity";
 import { couponRoutes } from "./modules/coupon";
 import { shoppableVideoController } from "./modules/shoppable-video";
 import { instagramPostController } from "./modules/instagram-post";
@@ -21,6 +24,7 @@ import { reviewController } from "./modules/review";
 import { banner } from "./modules/banner";
 import { searchController } from "./modules/search";
 import { analyticsController } from "./modules/analytics";
+import { payment } from "./modules/payment";
 
 const port = process.env.PORT || 3001;
 
@@ -67,6 +71,9 @@ const app = new Elysia()
       .use(image)
       .use(color)
       .use(size)
+      .use(material)
+      .use(stone)
+      .use(clarity)
       .use(couponRoutes)
       .use(shoppableVideoController)
       .use(instagramPostController)
@@ -74,6 +81,7 @@ const app = new Elysia()
       .use(banner)
       .use(searchController)
       .use(analyticsController)
+      .use(payment)
   )
   .listen(port);
 

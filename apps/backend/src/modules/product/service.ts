@@ -24,6 +24,9 @@ const PRODUCT_INCLUDE = {
   hoverVariant: VARIANT_WITH_IMAGES,
   collection: true,
   images: true, // Product-level images
+  material: true,
+  stone: true,
+  clarity: true,
 } as const;
 
 // Helper to flatten variant images for frontend
