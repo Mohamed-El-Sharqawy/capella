@@ -1,0 +1,55 @@
+enum UserRole {
+  ADMIN
+  CUSTOMER
+  EDITOR
+  GUEST
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String?  // Optional for guest users
+  firstName String
+  lastName  String
+  phone     String?
+  role      UserRole @default(CUSTOMER)
+  avatar    String?
+
+  orders          Order[]
+  cart            Cart?
+  favourites      Favourite[]
+  wishlist        Wishlist[]
+  addresses       Address[]
+  reviews         Review[]
+  analyticsEvents AnalyticsEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  label     String? // e.g. "Home", "Work"
+  firstName String
+  lastName  String
+  street    String
+  city      String
+  state     String
+  zipCode   String
+  country   String
+  phone     String?
+  isDefault Boolean @default(false)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("addresses")
+}

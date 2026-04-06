@@ -1,0 +1,51 @@
+model Collection {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  nameEn             String
+  nameAr             String
+  descriptionEn      String? @db.Text
+  descriptionAr      String? @db.Text
+
+  metaTitleEn       String?
+  metaTitleAr       String?
+  metaDescriptionEn String? @db.Text
+  metaDescriptionAr String? @db.Text
+
+  image    CollectionImage?
+  products Product[]
+  isActive Boolean      @default(true)
+  inHeader Boolean      @default(false)
+  isFeaturedOnHome Boolean @default(false) // Show in homepage hero section
+  homeFeaturedPosition Int @default(0) // Position in homepage hero (0 = left, 1 = right)
+  position Int          @default(0)
+
+  // Parent-child relationship for nested collections
+  parentId String?
+  parent   Collection?  @relation("CollectionHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children Collection[] @relation("CollectionHierarchy")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([isActive])
+  @@index([inHeader])
+  @@index([parentId])
+  @@map("collections")
+}
+
+model CollectionImage {
+  id           String     @id @default(cuid())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String     @unique
+
+  url      String
+  publicId String // Cloudinary public ID
+  altEn    String?
+  altAr    String?
+
+  createdAt DateTime @default(now())
+
+  @@map("collection_images")
+}

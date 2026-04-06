@@ -1,0 +1,64 @@
+// Analytics Events - Optimized for high-volume writes and efficient reads
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  type      String   // cart.add, product.view, etc.
+  userId    String?  // Optional - for guest users
+  sessionId String?  // For tracking anonymous sessions
+  
+  // Event data stored as JSON for flexibility
+  data      Json     @default("{}")
+  
+  // Denormalized fields for fast filtering/aggregation
+  productId    String?
+  collectionId String?
+  orderId      String?
+  
+  // Request metadata
+  ip        String?
+  userAgent String?
+  referer   String?
+  
+  // Timestamps
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  // Indexes for common queries
+  @@index([type])
+  @@index([userId])
+  @@index([productId])
+  @@index([collectionId])
+  @@index([createdAt])
+  @@index([type, createdAt])
+  @@index([userId, createdAt])
+  @@index([productId, createdAt])
+  
+  @@map("analytics_events")
+}
+
+// Aggregated stats for dashboard performance (updated periodically)
+model AnalyticsDailyStat {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  type      String   // Event type
+  
+  // Counts
+  count     Int      @default(0)
+  uniqueUsers Int    @default(0)
+  
+  // For product/collection specific stats
+  productId    String?
+  collectionId String?
+  
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([date, type, productId, collectionId])
+  @@index([date])
+  @@index([type])
+  @@index([productId])
+  
+  @@map("analytics_daily_stats")
+}

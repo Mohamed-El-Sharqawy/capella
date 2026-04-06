@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev:all",
+      "dependsOn": ["dev:backend", "dev:cms", "dev:marketing"],
+      "problemMatcher": []
+    },
+    {
+      "label": "dev:backend",
+      "type": "shell",
+      "command": "pnpm --filter @ecommerce/backend dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "dev:cms",
+      "type": "shell",
+      "command": "pnpm --filter @ecommerce/cms dev",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "dev:marketing",
+      "type": "shell",
+      "command": "pnpm --filter @ecommerce/marketing dev",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,581 @@
+{
+  "common": {
+    "shopNow": "Shop Now",
+    "viewAll": "View All",
+    "addToCart": "Add to Cart",
+    "addToWishlist": "Add to Wishlist",
+    "outOfStock": "Out of Stock",
+    "sale": "Sale",
+    "new": "New",
+    "featured": "Featured"
+  },
+  "header": {
+    "shopAll": "Shop All",
+    "women": "Women",
+    "men": "Men",
+    "shopByCollection": "Shop by Collection",
+    "returnPolicy": "Return Policy",
+    "contactUs": "Contact us",
+    "search": "Search",
+    "account": "Account",
+    "cart": "Cart"
+  },
+  "home": {
+    "heroMen": "Men",
+    "heroWomen": "Women",
+    "endOfSeasonSale": "END OF SEASON SALE",
+    "pricesStartingFrom": "PRICES STARTING FROM 350EGP",
+    "featured": {
+      "title": "Featured",
+      "subtitle": "Street-approved Favorites For Everyday Movement."
+    },
+    "promoBanner": {
+      "title": "THE BAGGY FIT DENIM",
+      "description": "Made from denim that maintains its shape with everyday comfort.",
+      "cta": "Shop Now"
+    }
+  },
+  "product": {
+    "price": "Price",
+    "compareAt": "Compare at",
+    "color": "Color",
+    "size": "Size",
+    "quantity": "Quantity",
+    "description": "Description",
+    "sizeGuide": "Size Guide",
+    "home": "Home",
+    "reviews": "reviews",
+    "review": "review",
+    "off": "OFF",
+    "favourite": "Favourite",
+    "wishlist": "Wishlist",
+    "addToCart": "Add to cart",
+    "buyNow": "BUY IT NOW",
+    "customerReviews": "Customer Reviews",
+    "writeReview": "Write a review",
+    "noReviews": "No reviews yet. Be the first to write a review!",
+    "verified": "Verified",
+    "featuredProducts": "Featured Products",
+    "frequentlyBought": "Frequently Bought Together",
+    "frequentlyBoughtDesc": "Add these items together and save time",
+    "noImage": "No Image",
+    "thisItem": "This item",
+    "items": "items",
+    "addAllToCart": "Add All to Cart",
+    "totalForItems": "Total for {count} items",
+    "addToCartCount": "Add {count} to Cart",
+    "clickToAddRemove": "Click on a product to add or remove it",
+    "checkout": "Checkout"
+  },
+  "collection": {
+    "allProducts": "All Products",
+    "men": "Men",
+    "women": "Women",
+    "filter": "FILTER",
+    "productCategories": "Product categories",
+    "availability": "Availability",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
+    "price": "Price",
+    "allLoaded": "All products loaded",
+    "noProducts": "No products found",
+    "collections": "Collections",
+    "products": "Products",
+    "shopByCollection": "Shop by Collection",
+    "searchPlaceholder": "Search collections or products...",
+    "searching": "Searching...",
+    "noResults": "No results found for",
+    "clearSearch": "Clear search",
+    "sort": {
+      "featured": "Featured",
+      "bestSelling": "Best selling",
+      "alphaAsc": "Alphabetically, A-Z",
+      "alphaDesc": "Alphabetically, Z-A",
+      "priceAsc": "Price, low to high",
+      "priceDesc": "Price, high to low",
+      "dateAsc": "Date, old to new",
+      "dateDesc": "Date, new to old"
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "backToCart": "Back to cart",
+    "orderConfirmed": "Order Confirmed!",
+    "orderConfirmedDesc": "Thank you for your order. We'll contact you soon to confirm the details.",
+    "orderId": "Order ID:",
+    "continueShopping": "Continue Shopping",
+    "viewMyOrders": "View My Orders",
+    "loading": "Loading...",
+    "emptyCart": "Your cart is empty",
+    "startShopping": "Start Shopping",
+    "contactInfo": "Contact Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "shippingAddress": "Shipping Address",
+    "savedAddresses": "Saved Addresses",
+    "newAddress": "New Address",
+    "address": "Address",
+    "city": "City",
+    "area": "Area",
+    "orderNotes": "Order Notes",
+    "orderNotesPlaceholder": "Any special instructions for your order?",
+    "saveAddress": "Save this address for future orders",
+    "paymentMethod": "Payment Method",
+    "cod": "Cash on Delivery",
+    "codDesc": "Pay when you receive your order",
+    "card": "Credit/Debit Card",
+    "cardDesc": "Pay securely with your card",
+    "wallet": "Mobile Wallet",
+    "walletDesc": "Vodafone Cash, Fawry, etc.",
+    "installments": "Installments",
+    "installmentsDesc": "Pay in easy installments",
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "placeOrder": "Place Order",
+    "processing": "Processing...",
+    "secureCheckout": "Secure Checkout",
+    "orderFailed": "Failed to place order",
+    "tryAgain": "Please try again.",
+    "addressPlaceholder": "Building number, Street name",
+    "cityPlaceholder": "e.g. Cairo, Giza, Alexandria",
+    "areaPlaceholder": "District / Neighborhood",
+    "deliveryNotes": "Delivery Notes",
+    "deliveryNotesPlaceholder": "Any special delivery instructions...",
+    "comingSoon": "Coming Soon",
+    "qty": "Qty:",
+    "infoSecure": "Your information is secure",
+    "haveCoupon": "Have a coupon code?",
+    "show": "Show",
+    "hide": "Hide",
+    "enterCouponCode": "Enter coupon code",
+    "apply": "Apply",
+    "validating": "Validating...",
+    "couponApplied": "Coupon Applied!",
+    "discount": "Discount",
+    "signInBenefits": "Sign in for more benefits!",
+    "trackOrders": "Track your orders easily",
+    "exclusiveOffers": "Get exclusive coupons & offers",
+    "saveAddresses": "Save addresses for faster checkout",
+    "signInNow": "Sign in now"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "emptyDesc": "Looks like you haven't added anything to your cart yet",
+    "startShopping": "Start Shopping",
+    "youMayLike": "You may also like",
+    "product": "Product",
+    "price": "Price",
+    "quantity": "Quantity",
+    "total": "Total",
+    "remove": "Remove",
+    "orderNote": "Order Note",
+    "orderNotePlaceholder": "How can we help you?",
+    "subtotal": "Subtotal",
+    "checkout": "Checkout",
+    "safeCheckout": "Safe & Secure Checkout",
+    "noImage": "No image",
+    "suggestedTitle": "You may also like"
+  },
+  "footer": {
+    "newsletter": {
+      "title": "Stay in the Loop",
+      "subtitle": "Subscribe to get exclusive offers, new arrivals, and style tips.",
+      "placeholder": "Enter your email",
+      "button": "Subscribe"
+    },
+    "copyright": "© 2026 NZN Studio. All rights reserved."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+    "contactInfo": "Contact Information",
+    "followUs": "Follow us on",
+    "ourLocation": "Our Location",
+    "mapTitle": "Our location on map",
+    "getDirections": "Get Directions",
+    "sendMessage": "Send us a Message",
+    "messageSent": "Message Sent!",
+    "sendAnother": "Send Another Message",
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "phone": "Phone",
+      "phonePlaceholder": "Enter your phone number",
+      "subject": "Subject",
+      "subjectPlaceholder": "Select a subject",
+      "subjects": {
+        "general": "General Inquiry",
+        "order": "Order Status",
+        "return": "Returns & Exchanges",
+        "product": "Product Information",
+        "other": "Other"
+      },
+      "message": "Message",
+      "messagePlaceholder": "Write your message here...",
+      "submit": "Send Message",
+      "sending": "Sending..."
+    },
+    "success": "Thank you for reaching out. We'll get back to you as soon as possible.",
+    "error": "An error occurred while sending your message. Please try again.",
+    "info": {
+      "phone": "Phone",
+      "phoneValue": "+20 123 456 7890",
+      "email": "Email",
+      "emailValue": "support@nznstudio.com",
+      "address": "Address",
+      "addressValue": "Cairo, Egypt",
+      "hours": "Working Hours",
+      "hoursValue": "Sat - Thu: 10 AM - 10 PM"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "delivery": {
+        "q": "What is the delivery time?",
+        "a": "Delivery within Cairo and Giza takes 1-3 business days, other governorates take 3-5 business days."
+      },
+      "returns": {
+        "q": "Can I return a product?",
+        "a": "Yes, you can return the product within 14 days of receipt, provided it's in its original condition."
+      },
+      "payment": {
+        "q": "What payment methods are available?",
+        "a": "We accept cash on delivery, credit cards, Vodafone Cash, and Fawry."
+      },
+      "tracking": {
+        "q": "How can I track my order?",
+        "a": "After your order is shipped, you'll receive an SMS with a tracking link."
+      }
+    }
+  },
+  "shippingPolicy": {
+    "title": "Shipping Policy",
+    "areas": {
+      "title": "Shipping Areas",
+      "description": "We ship to all areas within Egypt. For international orders, please contact customer service."
+    },
+    "delivery": {
+      "title": "Delivery Time",
+      "cairo": "Cairo & Giza: 1-3 business days",
+      "alexandria": "Alexandria: 2-4 business days",
+      "other": "Other governorates: 3-7 business days"
+    },
+    "costs": {
+      "title": "Shipping Costs",
+      "cairo": "Cairo & Giza: 50 EGP",
+      "alexandria": "Alexandria: 60 EGP",
+      "other": "Other governorates: 70-100 EGP",
+      "free": "Free shipping on orders over 1500 EGP"
+    },
+    "tracking": {
+      "title": "Order Tracking",
+      "description": "Once your order is shipped, you will receive an SMS or email with a tracking number. You can use this number to track your order."
+    },
+    "cod": {
+      "title": "Cash on Delivery",
+      "description": "We accept cash on delivery for all orders within Egypt. Please have the exact amount ready when the courier arrives."
+    },
+    "notes": {
+      "title": "Important Notes",
+      "address": "Please ensure your shipping address and phone number are correct",
+      "delays": "Shipments may be delayed during holidays and peak seasons",
+      "contact": "You will be contacted before delivery"
+    },
+    "contactUs": {
+      "title": "Contact Us",
+      "description": "If you have any questions about shipping, please contact us through our contact page."
+    }
+  },
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "intro": {
+      "title": "Introduction",
+      "description": "We value your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and protect your information."
+    },
+    "collect": {
+      "title": "Information We Collect",
+      "contact": "Contact information (name, email, phone number)",
+      "address": "Shipping and billing addresses",
+      "payment": "Payment information",
+      "history": "Order history and purchases",
+      "preferences": "Browsing and shopping preferences"
+    },
+    "use": {
+      "title": "How We Use Your Information",
+      "process": "Process and fulfill your orders",
+      "communicate": "Communicate with you about your orders",
+      "improve": "Improve our services and products",
+      "marketing": "Send marketing updates (with your consent)",
+      "security": "Prevent fraud and ensure security"
+    },
+    "protection": {
+      "title": "Data Protection",
+      "description": "We use advanced security measures to protect your personal data from unauthorized access, disclosure, alteration, or destruction."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "description": "We use cookies to enhance your browsing experience. You can manage your cookie preferences through your browser settings."
+    },
+    "rights": {
+      "title": "Your Rights",
+      "access": "Access your personal data",
+      "correct": "Correct inaccurate data",
+      "delete": "Request deletion of your data",
+      "optout": "Opt-out of marketing communications"
+    },
+    "contactUs": {
+      "title": "Contact Us",
+      "description": "If you have any questions about our privacy policy, please contact us through our contact page."
+    }
+  },
+  "termsOfService": {
+    "title": "Terms of Service",
+    "intro": {
+      "title": "Introduction",
+      "description": "By using our website and services, you agree to be bound by these terms and conditions. Please read them carefully before using the site."
+    },
+    "usage": {
+      "title": "Use of Website",
+      "age": "You must be 18 years or older to use this website",
+      "account": "You are responsible for maintaining the confidentiality of your account",
+      "accurate": "You must provide accurate and complete information"
+    },
+    "orders": {
+      "title": "Orders and Purchases",
+      "prices": "All prices are in Egyptian Pounds and subject to change",
+      "refuse": "We reserve the right to refuse or cancel any order",
+      "stock": "Product availability is subject to stock"
+    },
+    "ip": {
+      "title": "Intellectual Property",
+      "description": "All content on this website, including text, images, logos, and designs, is our property and protected by copyright laws."
+    },
+    "liability": {
+      "title": "Limitation of Liability",
+      "description": "We shall not be liable for any direct or indirect damages arising from the use of our website or products, except as required by law."
+    },
+    "prohibited": {
+      "title": "Prohibited Conduct",
+      "illegal": "Using the website for illegal purposes",
+      "unauthorized": "Attempting unauthorized access to our systems",
+      "harmful": "Posting harmful or offensive content",
+      "violate": "Violating the rights of others"
+    },
+    "modifications": {
+      "title": "Modifications",
+      "description": "We reserve the right to modify these terms at any time. Changes will be posted on this page and your continued use of the website constitutes acceptance of the modified terms."
+    },
+    "law": {
+      "title": "Governing Law",
+      "description": "These terms are governed by and construed in accordance with the laws of the Arab Republic of Egypt."
+    },
+    "contactUs": {
+      "title": "Contact Us",
+      "description": "If you have any questions about our terms of service, please contact us through our contact page."
+    }
+  },
+  "refundPolicy": {
+    "title": "Refund Policy",
+    "overview": {
+      "title": "Overview",
+      "description": "We strive to ensure your complete satisfaction with your purchases. If you are not satisfied, we offer refund options according to the following terms."
+    },
+    "eligibility": {
+      "title": "Refund Eligibility",
+      "time": "Refund must be requested within 14 days of receipt",
+      "condition": "Products must be in original condition",
+      "proof": "Proof of purchase must be included"
+    },
+    "process": {
+      "title": "Refund Process",
+      "submit": "Submit refund request through customer service",
+      "wait": "Wait for refund request approval",
+      "return": "Return the product (if required)",
+      "receive": "Receive refund amount"
+    },
+    "timeline": {
+      "title": "Refund Timeline",
+      "description": "Once the refund request is approved and the returned product is received, the refund will be processed within 5-10 business days. It may take additional time for the amount to appear in your account depending on your bank."
+    },
+    "methods": {
+      "title": "Refund Methods",
+      "original": "Return to original payment method",
+      "credit": "Store credit (optional)"
+    },
+    "exceptions": {
+      "title": "Exceptions",
+      "description": "Some products are non-refundable, including final sale items and customized products. Please review our return policy for full details."
+    },
+    "contactUs": {
+      "title": "Contact Us",
+      "description": "If you have any questions about our refund policy, please contact us through our contact page."
+    }
+  },
+  "returnPolicy": {
+    "title": "Return Policy",
+    "overview": {
+      "title": "Overview",
+      "description": "We want you to be completely satisfied with your purchase. If you are not satisfied with a product, you may return it according to the terms outlined below."
+    },
+    "period": {
+      "title": "Return Period",
+      "description": "You may return products within 14 days of receipt. Products must be in their original condition with all tags and packaging intact."
+    },
+    "conditions": {
+      "title": "Return Conditions",
+      "unused": "Products must be unused and in original condition",
+      "tags": "All tags and labels must be attached",
+      "receipt": "Original purchase receipt must be included",
+      "packaging": "Products must be returned in original packaging"
+    },
+    "nonReturnable": {
+      "title": "Non-Returnable Items",
+      "underwear": "Underwear and swimwear",
+      "custom": "Customized or made-to-order products",
+      "sale": "Final sale items"
+    },
+    "howTo": {
+      "title": "How to Return",
+      "contact": "Contact customer service to request a return",
+      "authorization": "Obtain a return authorization number",
+      "pack": "Pack the product securely",
+      "ship": "Ship the product to the designated address"
+    },
+    "contactUs": {
+      "title": "Contact Us",
+      "description": "If you have any questions about our return policy, please contact us through our contact page."
+    }
+  },
+  "account": {
+    "greeting": "Hello",
+    "profile": "Profile",
+    "orders": "My Orders",
+    "favourites": "Favourites",
+    "wishlist": "Wishlist",
+    "cart": "Cart",
+    "addresses": "Addresses",
+    "signOut": "Sign Out",
+    "loading": "Loading...",
+    "profileTab": {
+      "title": "Profile",
+      "email": "Email",
+      "phone": "Phone",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "createdAt": "Member since"
+    },
+    "ordersTab": {
+      "title": "My Orders",
+      "noOrders": "No orders yet",
+      "startShopping": "Start Shopping",
+      "orderId": "Order ID",
+      "date": "Date",
+      "status": "Status",
+      "payment": "Payment",
+      "total": "Total",
+      "items": "Items",
+      "shippingAddress": "Shipping Address",
+      "page": "Page",
+      "of": "of"
+    },
+    "favouritesTab": {
+      "title": "Favourites",
+      "noFavourites": "No favourites yet",
+      "startShopping": "Start Shopping",
+      "inStock": "In Stock",
+      "outOfStock": "Out of Stock",
+      "remove": "Remove"
+    },
+    "wishlistTab": {
+      "title": "Wishlist",
+      "noWishlist": "No wishlist items yet",
+      "startShopping": "Start Shopping",
+      "note": "Note",
+      "inStock": "In Stock",
+      "outOfStock": "Out of Stock",
+      "remove": "Remove"
+    },
+    "cartTab": {
+      "title": "Cart",
+      "emptyCart": "Your cart is empty",
+      "startShopping": "Start Shopping",
+      "product": "Product",
+      "price": "Price",
+      "quantity": "Quantity",
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "checkout": "Checkout",
+      "remove": "Remove"
+    },
+    "addressesTab": {
+      "title": "Addresses",
+      "noAddresses": "No saved addresses yet",
+      "default": "Default",
+      "phone": "Phone"
+    }
+  },
+  "cartDrawer": {
+    "title": "Shopping cart",
+    "empty": "Your cart is empty",
+    "emptyDesc": "Add some products to get started",
+    "shopNow": "Shop Now",
+    "viewCart": "View Cart",
+    "checkout": "Checkout",
+    "youMayLike": "You may also like",
+    "noImage": "No image"
+  },
+  "auth": {
+    "signInRequired": "Sign In Required",
+    "signInToUse": "Please sign in to use {feature}. Create an account to save your favourites and wishlist items.",
+    "signIn": "Sign In",
+    "maybeLater": "Maybe Later",
+    "signin": {
+      "title": "Sign In",
+      "subtitle": "Enter your credentials to access your account",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "continueAsGuest": "Continue as guest",
+      "or": "or",
+      "error": "Sign in failed"
+    },
+    "signup": {
+      "title": "Create Account",
+      "subtitle": "Create your account for a better shopping experience",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "First name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Last name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "phone": "Phone Number",
+      "phonePlaceholder": "+20 1XX XXX XXXX",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "passwordHint": "At least 6 characters",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "submit": "Create Account",
+      "submitting": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "signInLink": "Sign in",
+      "continueAsGuest": "Continue as guest",
+      "or": "or",
+      "error": "Sign up failed",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters"
+    }
+  }
+}

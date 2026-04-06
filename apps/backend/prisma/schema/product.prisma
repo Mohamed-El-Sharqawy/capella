@@ -1,0 +1,141 @@
+enum Gender {
+  MEN
+  WOMEN
+  UNISEX
+}
+
+model Product {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  nameEn             String
+  nameAr             String
+  descriptionEn      String   @db.Text
+  descriptionAr      String   @db.Text
+  shortDescriptionEn String?  @db.Text
+  shortDescriptionAr String?  @db.Text
+
+  metaTitleEn       String?
+  metaTitleAr       String?
+  metaDescriptionEn String?  @db.Text
+  metaDescriptionAr String?  @db.Text
+
+  gender     Gender
+  isActive   Boolean @default(true)
+  isFeatured Boolean @default(false)
+
+  collection   Collection? @relation(fields: [collectionId], references: [id])
+  collectionId String?
+
+  // Display variants for listing cards
+  defaultVariant   ProductVariant? @relation("ProductDefaultVariant", fields: [defaultVariantId], references: [id])
+  defaultVariantId String?
+  hoverVariant     ProductVariant? @relation("ProductHoverVariant", fields: [hoverVariantId], references: [id])
+  hoverVariantId   String?
+
+  // Size guide image (Cloudinary)
+  sizeGuideUrl      String?
+  sizeGuidePublicId String?
+
+  variants        ProductVariant[] @relation("ProductVariants")
+  images          ProductImage[]
+  favourites      Favourite[]
+  wishlist        Wishlist[]
+  shoppableVideos ShoppableVideo[]
+  reviews         Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([collectionId])
+  @@index([gender])
+  @@index([isActive, isFeatured])
+  @@index([createdAt])
+  @@map("products")
+}
+
+model ProductVariant {
+  id    String @id @default(cuid())
+  slug  String @unique
+
+  product   Product @relation("ProductVariants", fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  // Back-references for display variant relations
+  productsAsDefault Product[] @relation("ProductDefaultVariant")
+  productsAsHover   Product[] @relation("ProductHoverVariant")
+
+  nameEn         String // e.g. "Red / M", "Blue / L"
+  nameAr         String
+  sku            String?  @unique
+  price          Float
+  compareAtPrice Float?
+
+  color   Color?  @relation(fields: [colorId], references: [id])
+  colorId String?
+  size    Size?   @relation(fields: [sizeId], references: [id])
+  sizeId  String?
+
+  stock          Int     @default(0)
+  isActive       Boolean @default(true)
+
+  metaTitleEn       String?
+  metaTitleAr       String?
+  metaDescriptionEn String?  @db.Text
+  metaDescriptionAr String?  @db.Text
+
+  images     ProductVariantImage[]
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([sku])
+  @@index([slug])
+  @@index([isActive])
+  @@index([colorId])
+  @@index([sizeId])
+  @@map("product_variants")
+}
+
+// Product-level images that can be shared across variants
+model ProductImage {
+  id        String  @id @default(cuid())
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  url      String
+  publicId String // Cloudinary public ID for deletion
+  altEn    String?
+  altAr    String?
+
+  // Junction table for many-to-many with variants
+  variantImages ProductVariantImage[]
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@map("product_images")
+}
+
+// Junction table: links images to variants with position per variant
+model ProductVariantImage {
+  id String @id @default(cuid())
+
+  image   ProductImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  imageId String
+
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  variantId String
+
+  position Int @default(0) // Position of this image within this specific variant
+
+  @@unique([imageId, variantId]) // Each image can only be linked once per variant
+  @@index([variantId])
+  @@index([imageId])
+  @@index([position])
+  @@map("product_variant_images")
+}

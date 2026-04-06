@@ -1,0 +1,21 @@
+{
+  "name": "ecommerce-platform",
+  "private": true,
+  "scripts": {
+    "dev:backend": "pnpm --filter @ecommerce/backend dev",
+    "dev:marketing": "pnpm --filter @ecommerce/marketing dev",
+    "dev:cms": "pnpm --filter @ecommerce/cms dev",
+    "build:backend": "pnpm --filter @ecommerce/backend build",
+    "build:marketing": "pnpm --filter @ecommerce/marketing build",
+    "build:cms": "pnpm --filter @ecommerce/cms build",
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "db:generate": "pnpm --filter @ecommerce/backend db:generate",
+    "db:migrate": "pnpm --filter @ecommerce/backend db:migrate",
+    "db:studio": "pnpm --filter @ecommerce/backend db:studio"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
