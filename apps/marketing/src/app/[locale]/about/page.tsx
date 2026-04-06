@@ -16,7 +16,7 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
       {/* Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1573408302354-04666bc7684c?w=1600&h=900&fit=crop"
+          src="/about/about.png"
           alt="About Capella"
           fill
           className="object-cover"

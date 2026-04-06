@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Menu, X, ChevronRight } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Menu, X, ChevronRight, Search, User, Globe } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/contexts/auth-context";
 
 export function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const t = useTranslations("header");
   const locale = useLocale();
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
   const isArabic = locale === "ar";
 
   // Close menu when pathname changes
@@ -30,13 +32,13 @@ export function MobileMenu() {
     };
   }, [isOpen]);
 
-  const navItems = [
-    { label: isArabic ? "من نحن" : "About", href: "/about" },
-    { label: t("shopAll"), href: "/collections/all-products" },
-    { label: t("shopByCollection"), href: "/collections" },
-    { label: t("returnPolicy"), href: "/return-policy" },
-    { label: t("contactUs"), href: "/contact" },
-  ];
+  const navItems = useMemo(() => [
+    { label: isArabic ? "من نحن" : "About Us", href: "/about" },
+    { label: isArabic ? "عرض الكل" : "Shop All", href: "/collections/all-products" },
+    { label: isArabic ? "المجموعات" : "Collections", href: "/collections" },
+    { label: isArabic ? "سياسة الاستبدال" : "Return Policy", href: "/return-policy" },
+    { label: isArabic ? "تواصل معنا" : "Contact Us", href: "/contact" },
+  ], [isArabic]);
 
   return (
     <>
@@ -50,14 +52,14 @@ export function MobileMenu() {
 
       <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 z-60">
+          <div className="fixed inset-0 z-100">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             />
 
             {/* Sheet */}
@@ -70,7 +72,9 @@ export function MobileMenu() {
             >
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-50">
-                <span className="text-sm font-light uppercase tracking-[0.3em]">Menu</span>
+                <span className="text-xs font-medium uppercase tracking-[0.3em]">
+                  {isArabic ? "القائمة" : "Menu"}
+                </span>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="p-2 -mr-2 text-black hover:opacity-60 transition-opacity"
@@ -80,31 +84,55 @@ export function MobileMenu() {
                 </button>
               </div>
 
-              {/* Navigation */}
-              <nav className="flex-1 overflow-y-auto py-8">
-                <div className="flex flex-col">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="group flex items-center justify-between px-8 py-4 border-b border-gray-50/50 hover:bg-gray-50 transition-colors"
-                    >
-                      <span className="text-[13px] font-medium uppercase tracking-[0.2em] group-hover:pl-2 transition-all">
-                        {item.label}
-                      </span>
-                      <ChevronRight className={`h-4 w-4 text-gray-300 transition-transform group-hover:translate-x-1 ${isArabic ? "rotate-180" : ""}`} />
-                    </Link>
-                  ))}
+              {/* Enhanced Content */}
+              <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+                {/* Secondary Actions Row */}
+                <div className="grid grid-cols-2 border-b border-gray-50">
+                  <Link 
+                    href={isAuthenticated ? "/account" : "/auth/signin"}
+                    className="flex flex-col items-center justify-center py-8 gap-2 hover:bg-gray-50 transition-colors border-r border-gray-50"
+                  >
+                    <User className="h-5 w-5 stroke-1" />
+                    <span className="text-[10px] uppercase tracking-widest text-gray-500">
+                      {isArabic ? "حسابي" : "Account"}
+                    </span>
+                  </Link>
+                  <Link 
+                    href={isArabic ? "/en" : "/ar"}
+                    className="flex flex-col items-center justify-center py-8 gap-2 hover:bg-gray-50 transition-colors"
+                  >
+                    <Globe className="h-5 w-5 stroke-1" />
+                    <span className="text-[10px] uppercase tracking-widest text-gray-500">
+                      {isArabic ? "English" : "العربية"}
+                    </span>
+                  </Link>
                 </div>
-              </nav>
 
-              {/* Footer inside menu */}
+                {/* Primary Nav */}
+                <nav className="py-8">
+                  <div className="flex flex-col">
+                    {navItems.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="group flex items-center justify-between px-8 py-5 border-b border-gray-50/50 hover:bg-gray-50 transition-colors"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <span className="text-[13px] font-medium uppercase tracking-[0.2em] group-hover:pl-2 transition-all">
+                          {item.label}
+                        </span>
+                        <ChevronRight className={`h-4 w-4 text-gray-200 transition-transform group-hover:translate-x-1 ${isArabic ? "rotate-180" : ""}`} />
+                      </Link>
+                    ))}
+                  </div>
+                </nav>
+              </div>
+
+              {/* Footer */}
               <div className="p-8 border-t border-gray-50 bg-gray-50/30">
-                <div className="space-y-4">
-                   <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-relaxed">
-                    © 2026 capella luxury jewellery.
-                  </p>
-                </div>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-relaxed text-center">
+                  © 2026 capella luxury jewellery.
+                </p>
               </div>
             </motion.div>
           </div>
@@ -113,4 +141,5 @@ export function MobileMenu() {
     </>
   );
 }
+
 
