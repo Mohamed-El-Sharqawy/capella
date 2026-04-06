@@ -1,19 +1,16 @@
 import { CheckCircle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { useSearchParams } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function CheckoutSuccessPage({ params }: PageProps) {
+export default async function CheckoutSuccessPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "checkout" });
+  const { session_id } = await searchParams;
   const isArabic = locale === "ar";
-
-  const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session_id");
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center py-16">
@@ -32,10 +29,10 @@ export default async function CheckoutSuccessPage({ params }: PageProps) {
             : "Thank you for your order. You will receive a confirmation email shortly."}
         </p>
 
-        {sessionId && (
+        {session_id && (
           <p className="text-sm text-gray-500 mb-6">
             {isArabic ? "رقم الجلسة: " : "Session ID: "}
-            <span className="font-mono">{sessionId.slice(0, 20)}...</span>
+            <span className="font-mono">{session_id.slice(0, 20)}...</span>
           </p>
         )}
 

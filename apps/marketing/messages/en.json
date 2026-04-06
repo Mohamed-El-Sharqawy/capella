@@ -7,7 +7,12 @@
     "outOfStock": "Out of Stock",
     "sale": "Sale",
     "new": "New",
-    "featured": "Featured"
+    "featured": "Featured",
+    "badges": {
+      "new": "New",
+      "bestseller": "Bestseller",
+      "limitedEdition": "Limited Edition"
+    }
   },
   "header": {
     "shopAll": "Shop All",
@@ -97,6 +102,11 @@
       "dateDesc": "Date, new to old"
     }
   },
+  "search": {
+    "trending": "Trending Now",
+    "recentSearches": "Recent Searches",
+    "noResults": "No results found"
+  },
   "checkout": {
     "title": "Checkout",
     "backToCart": "Back to cart",
@@ -160,7 +170,20 @@
     "trackOrders": "Track your orders easily",
     "exclusiveOffers": "Get exclusive coupons & offers",
     "saveAddresses": "Save addresses for faster checkout",
-    "signInNow": "Sign in now"
+    "signInNow": "Sign in now",
+    "success": {
+      "title": "Order Confirmed!",
+      "message": "Thank you for your purchase. Your order has been successfully processed.",
+      "orderId": "Order ID",
+      "emailSent": "A confirmation email has been sent to your email address.",
+      "continueShopping": "Continue Shopping"
+    },
+    "cancel": {
+      "title": "Payment Cancelled",
+      "message": "Your payment was not completed. You can try again or choose a different payment method.",
+      "retry": "Try Again",
+      "backToCart": "Back to Cart"
+    }
   },
   "cart": {
     "title": "Shopping Cart",

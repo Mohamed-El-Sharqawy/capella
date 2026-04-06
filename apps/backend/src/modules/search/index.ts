@@ -1,4 +1,4 @@
-import { Elysia, t, status } from "elysia";
+import { Elysia, t } from "elysia";
 import { authPlugin } from "../../plugins/auth";
 import { SearchService } from "./service";
 import { SearchModel } from "./model";
