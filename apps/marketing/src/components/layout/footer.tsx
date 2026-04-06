@@ -32,8 +32,8 @@ export function Footer({ locale }: FooterProps) {
           <div className="space-y-4">
             <p className="text-sm text-gray-400">
               {isArabic
-                ? "في نهاية اليوم، التحكم ليس معطى. إنه مأخوذ. ومع 909... أنت دائماً مستعد لأخذه."
-                : "At the end of the day, control isn't given. It's taken. And with 909... you're always ready to take it back."}
+                ? "في نهاية اليوم، التحكم ليس معطى. إنه مأخوذ. ومع capella... أنت دائماً مستعد لأخذه."
+                : "At the end of the day, control isn't given. It's taken. And with capella... you're always ready to take it back."}
             </p>
             <Link
               href="/contact"
@@ -136,7 +136,7 @@ export function Footer({ locale }: FooterProps) {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-500">
-            © 2026 909. {isArabic ? "جميع الحقوق محفوظة." : "All rights reserved."}
+            © 2026 capella. {isArabic ? "جميع الحقوق محفوظة." : "All rights reserved."}
           </p>
           <div className="flex items-center gap-2">
             <img src="/footer-icons/visa.svg" alt="Visa" className="h-7" />

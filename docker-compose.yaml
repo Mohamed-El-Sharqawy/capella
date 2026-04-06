@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
-    container_name: 909-backend
+    container_name: capella-backend
     restart: unless-stopped
     expose:
       - "3001"
@@ -23,7 +23,7 @@ services:
       - coolify-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.909-backend.loadbalancer.server.port=3001"
+      - "traefik.http.services.capella-backend.loadbalancer.server.port=3001"
     healthcheck:
       test: ["CMD-SHELL", "bun --eval \"fetch('http://localhost:3001/health').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))\""]
       interval: 30s
@@ -38,7 +38,7 @@ services:
       args:
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
         - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-    container_name: 909-marketing
+    container_name: capella-marketing
     restart: unless-stopped
     expose:
       - "3000"
@@ -52,13 +52,13 @@ services:
       - app-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.909-marketing.loadbalancer.server.port=3000"
+      - "traefik.http.services.capella-marketing.loadbalancer.server.port=3000"
 
   cms:
     build:
       context: .
       dockerfile: apps/cms/Dockerfile
-    container_name: 909-cms
+    container_name: capella-cms
     restart: unless-stopped
     expose:
       - "80"
@@ -70,7 +70,7 @@ services:
       - app-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.909-cms.loadbalancer.server.port=80"
+      - "traefik.http.services.capella-cms.loadbalancer.server.port=80"
 
 networks:
   app-network:

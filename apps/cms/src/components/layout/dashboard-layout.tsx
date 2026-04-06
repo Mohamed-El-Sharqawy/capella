@@ -46,7 +46,7 @@ export function DashboardLayout() {
       <aside className="flex w-64 flex-col border-r bg-sidebar-background">
         <div className="flex h-16 items-center border-b px-6">
           <Link to="/" className="text-lg font-bold tracking-tight">
-            909 Dashboard
+            capella Dashboard
           </Link>
         </div>
 

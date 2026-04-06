@@ -13,7 +13,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <MobileMenu />
           <Link href="/" className="text-xl md:text-2xl font-bold tracking-tight">
-            909
+            capella
           </Link>
         </div>
 

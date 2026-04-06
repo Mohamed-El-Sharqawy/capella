@@ -92,7 +92,7 @@ export interface Banner {
   updatedAt: string;
 }
 
-// Instagram Post types (909 - FW25 Drops gallery)
+// Instagram Post types (capella - FW25 Drops gallery)
 export interface InstagramPost {
   id: string;
   imageUrl: string;

@@ -48,7 +48,7 @@ export function ContentPage() {
           </TabsTrigger>
           <TabsTrigger value="instagram" className="flex items-center gap-2">
             <ImageIcon className="h-4 w-4" />
-            909 - FW25 Drops
+            capella - FW25 Drops
           </TabsTrigger>
         </TabsList>
 
@@ -339,8 +339,8 @@ function InstagramPostsSection() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>909 — FW25 Drops</CardTitle>
-          <p className="text-sm text-muted-foreground mt-1">@909</p>
+          <CardTitle>capella — FW25 Drops</CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">@capella</p>
         </div>
         <Button onClick={() => setShowAddDialog(true)}>
           <Plus className="mr-2 h-4 w-4" />

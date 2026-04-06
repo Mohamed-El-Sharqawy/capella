@@ -9,7 +9,7 @@
 1. Go to Coolify Dashboard → **Resources** → **New**
 2. Select **Database** → **PostgreSQL**
 3. Configure:
-   - Name: `909-postgres`
+   - Name: `capella-postgres`
    - Version: `16` (recommended)
 4. Click **Deploy**
 5. Once deployed, copy the **Internal URL** (looks like: `postgresql://postgres:password@postgres-xxxxx:5432/postgres`)
@@ -84,14 +84,14 @@ After first deployment, the backend will automatically run migrations (`prisma m
 To seed the database manually:
 ```bash
 # SSH into your VPS
-docker exec -it 909-backend sh
+docker exec -it capella-backend sh
 bun run prisma/seed.ts
 ```
 
 ## File Structure
 
 ```
-909/
+capella/
 ├── docker-compose.yml          # Main compose file
 ├── .env.example                 # Environment template
 ├── .dockerignore                # Docker ignore rules
@@ -140,7 +140,7 @@ For Coolify's managed PostgreSQL, use the **Internal URL** provided by Coolify -
 
 ### 502 Bad Gateway
 - Check if the container is running: `docker ps`
-- Check container logs: `docker logs 909-backend`
+- Check container logs: `docker logs capella-backend`
 - Verify port mappings match Coolify's proxy settings
 
 ## Updating

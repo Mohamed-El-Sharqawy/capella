@@ -3,9 +3,9 @@ model ShoppableVideo {
   id String @id @default(cuid())
 
   // Video details
-  videoUrl      String // Cloudinary video URL
-  videoPublicId String // Cloudinary public ID for deletion
-  thumbnailUrl  String // Thumbnail image URL
+  videoUrl          String // Cloudinary video URL
+  videoPublicId     String // Cloudinary public ID for deletion
+  thumbnailUrl      String // Thumbnail image URL
   thumbnailPublicId String // Thumbnail public ID
 
   // Linked product
@@ -41,8 +41,8 @@ model Review {
 
   // Review content
   title   String
-  content String  @db.Text
-  rating  Int     @default(5) // 1-5 stars
+  content String @db.Text
+  rating  Int    @default(5) // 1-5 stars
 
   isApproved Boolean @default(false) // Admin approval
   isActive   Boolean @default(true)
@@ -62,16 +62,16 @@ model Banner {
   id String @id @default(cuid())
 
   // Localized content
-  titleEn String
-  titleAr String
-  subtitleEn String?
-  subtitleAr String?
+  titleEn      String
+  titleAr      String
+  subtitleEn   String?
+  subtitleAr   String?
   buttonTextEn String?
   buttonTextAr String?
 
   // Image (full-width hero)
-  imageUrl  String // Cloudinary image URL
-  publicId  String // Cloudinary public ID for deletion
+  imageUrl String // Cloudinary image URL
+  publicId String // Cloudinary public ID for deletion
 
   // Link destination (collection slug, product slug, or external URL)
   linkUrl String?
@@ -87,17 +87,17 @@ model Banner {
   @@map("banners")
 }
 
-// Instagram-style gallery posts (909 - FW25 Drops)
+// Instagram-style gallery posts (capella - FW25 Drops)
 model InstagramPost {
   id String @id @default(cuid())
 
-  imageUrl  String // Cloudinary image URL
-  publicId  String // Cloudinary public ID for deletion
-  
+  imageUrl String // Cloudinary image URL
+  publicId String // Cloudinary public ID for deletion
+
   // Optional link (can be external URL or internal product/collection)
-  linkUrl   String?
-  altEn     String?
-  altAr     String?
+  linkUrl String?
+  altEn   String?
+  altAr   String?
 
   position Int     @default(0) // Display order
   isActive Boolean @default(true)
