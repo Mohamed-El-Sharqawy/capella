@@ -5,6 +5,9 @@ import { ArrowLeft, Loader2, Plus, Trash2, Upload, X } from "lucide-react";
 import { useAllCollections } from "@/features/collections";
 import { useColors } from "@/features/colors";
 import { useSizes } from "@/features/sizes";
+import { useMaterials } from "@/features/materials";
+import { useStones } from "@/features/stones";
+import { useClarities } from "@/features/clarities";
 import {
   useProduct,
   useUpdateProduct,
@@ -22,7 +25,7 @@ import {
   useUnlinkImageFromVariant,
 } from "@/features/products";
 import type { UpdateProductBody, CreateVariantBody, UpdateVariantBody } from "@/features/products";
-import { Gender } from "@ecommerce/shared-types";
+import { Gender, ProductBadge } from "@ecommerce/shared-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -85,10 +88,16 @@ export function EditProductPage() {
   const { data: collectionsRes } = useAllCollections();
   const { data: colorsRes } = useColors();
   const { data: sizesRes } = useSizes();
+  const { data: materialsRes } = useMaterials();
+  const { data: stonesRes } = useStones();
+  const { data: claritiesRes } = useClarities();
 
   const collections = collectionsRes?.data ?? [];
   const colors = colorsRes?.data ?? [];
   const sizes = sizesRes?.data ?? [];
+  const materials = materialsRes?.data ?? [];
+  const stones = stonesRes?.data ?? [];
+  const clarities = claritiesRes?.data ?? [];
 
   const [isInitialized, setIsInitialized] = useState(false);
   const [showVariantGenerator, setShowVariantGenerator] = useState(false);
@@ -111,6 +120,11 @@ export function EditProductPage() {
   const [collectionId, setCollectionId] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [isFeatured, setIsFeatured] = useState(false);
+  const [isTrending, setIsTrending] = useState(false);
+  const [badge, setBadge] = useState<ProductBadge | "">("");
+  const [materialId, setMaterialId] = useState("");
+  const [stoneId, setStoneId] = useState("");
+  const [clarityId, setClarityId] = useState("");
   const [variants, setVariants] = useState<VariantForm[]>([]);
 
   useEffect(() => {
@@ -129,6 +143,11 @@ export function EditProductPage() {
       setCollectionId(product.collectionId ?? "");
       setIsActive(product.isActive);
       setIsFeatured(product.isFeatured);
+      setIsTrending(product.isTrending ?? false);
+      setBadge((product as any).badge ?? "");
+      setMaterialId((product as any).materialId ?? "");
+      setStoneId((product as any).stoneId ?? "");
+      setClarityId((product as any).clarityId ?? "");
       setVariants(
         product.variants.map((v) => ({
           id: v.id,
@@ -325,6 +344,11 @@ export function EditProductPage() {
         collectionId: collectionId || undefined,
         isActive,
         isFeatured,
+        isTrending,
+        badge: badge || undefined,
+        materialId: materialId || undefined,
+        stoneId: stoneId || undefined,
+        clarityId: clarityId || undefined,
       };
 
       await updateProductMutation.mutateAsync({ id: product.id, body: productBody });
@@ -550,6 +574,90 @@ export function EditProductPage() {
                   <div className="flex items-center gap-2">
                     <Switch id="isFeatured" checked={isFeatured} onCheckedChange={setIsFeatured} />
                     <Label htmlFor="isFeatured">Featured</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch id="isTrending" checked={isTrending} onCheckedChange={setIsTrending} />
+                    <Label htmlFor="isTrending">Trending</Label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Badge</Label>
+                    <Select
+                      value={badge || "none"}
+                      onValueChange={(v) => setBadge(v === "none" ? "" : v as ProductBadge)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select badge" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Badge</SelectItem>
+                        <SelectItem value="NEW">New</SelectItem>
+                        <SelectItem value="BESTSELLER">Bestseller</SelectItem>
+                        <SelectItem value="LIMITED_EDITION">Limited Edition</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Material</Label>
+                    <Select
+                      value={materialId || "none"}
+                      onValueChange={(v) => setMaterialId(v === "none" ? "" : v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select material" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Material</SelectItem>
+                        {materials.map((m) => (
+                          <SelectItem key={m.id} value={m.id}>
+                            {m.nameEn}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Stone</Label>
+                    <Select
+                      value={stoneId || "none"}
+                      onValueChange={(v) => setStoneId(v === "none" ? "" : v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select stone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Stone</SelectItem>
+                        {stones.map((s) => (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.nameEn}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Clarity</Label>
+                    <Select
+                      value={clarityId || "none"}
+                      onValueChange={(v) => setClarityId(v === "none" ? "" : v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select clarity" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Clarity</SelectItem>
+                        {clarities.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.nameEn}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
