@@ -3,7 +3,7 @@ import { HeaderNav } from "./header-nav";
 import { MobileMenu } from "./mobile-menu";
 import { CartIcon } from "./cart-icon";
 import { UserIcon } from "./user-icon";
-import { GlobalSearch } from "./global-search";
+import { SearchOverlay } from "./search-overlay";
 import { LanguageSwitcher } from "./language-switcher";
 
 export function Header() {
@@ -20,7 +20,7 @@ export function Header() {
         <HeaderNav />
 
         <div className="flex items-center gap-2 md:gap-4">
-          <GlobalSearch />
+          <SearchOverlay />
           <LanguageSwitcher />
           <UserIcon />
           <CartIcon />

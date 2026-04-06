@@ -31,6 +31,12 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
+  /* Luxury monochrome palette */
+  --color-luxury-bg: hsl(0, 0%, 96%);
+  --color-luxury-white: hsl(0, 0%, 100%);
+  --color-luxury-black: hsl(0, 0%, 0%);
+  /* Serif font family for headings */
+  --font-serif: "Playfair Display", Georgia, serif;
 }
 
 @layer base {

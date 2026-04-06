@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -13,7 +13,12 @@ import { CartDrawer } from "@/components/cart/cart-drawer";
 import { FacebookPixel } from "@/components/analytics";
 import { Providers } from "./providers";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -79,7 +84,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <head>
         <FacebookPixel />
       </head>
-      <body className={`${inter.className}`}>
+      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <InfiniteMarquee
