@@ -23,78 +23,34 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
   if (collections.length === 0) return null;
 
   return (
-    <section className="py-12 md:py-16">
-      {/* Section Title */}
-      <div className="text-center mb-8">
-        <h2 className="text-xl md:text-2xl font-medium tracking-wide">
-          {isArabic ? "مجموعة جديدة" : "New Collection"}
-        </h2>
-        <div className="w-12 h-0.5 bg-gray-400 mx-auto mt-3" />
-      </div>
-
-      {/* Collections Grid */}
-      <div className="max-w-5xl mx-auto px-4">
-        {/* Top Row - 2 larger cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          {collections.slice(0, 2).map((collection, index) => (
-            <AnimateOnScroll
-              key={collection.id}
-              direction="up"
-              delay={index * 0.1}
+    <section className="bg-white pb-1 md:pb-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-2">
+        {collections.slice(0, 3).map((collection, index) => (
+          <AnimateOnScroll
+            key={collection.id}
+            direction="up"
+            delay={index * 0.1}
+          >
+            <Link
+              href={`/collections/${collection.slug}`}
+              className="group relative block aspect-3/4 overflow-hidden"
             >
-              <Link
-                href={`/collections/${collection.slug}`}
-                className="group relative block overflow-hidden aspect-4/3 rounded-lg"
-              >
-                <Image
-                  src={collection.image?.url || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=450&fit=crop"}
-                  alt={isArabic ? collection.nameAr : collection.nameEn}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, 50vw"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <h3 className="text-white text-xl md:text-2xl font-light italic tracking-wide">
-                    {isArabic ? collection.nameAr : collection.nameEn}
-                  </h3>
-                </div>
-              </Link>
-            </AnimateOnScroll>
-          ))}
-        </div>
-
-        {/* Bottom Row - 3 smaller cards */}
-        {collections.length > 2 && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {collections.slice(2, 5).map((collection, index) => (
-              <AnimateOnScroll
-                key={collection.id}
-                direction="up"
-                delay={(index + 2) * 0.1}
-              >
-                <Link
-                  href={`/collections/${collection.slug}`}
-                  className="group relative block overflow-hidden aspect-4/5 rounded-lg"
-                >
-                  <Image
-                    src={collection.image?.url || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=500&fit=crop"}
-                    alt={isArabic ? collection.nameAr : collection.nameEn}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <h3 className="text-white text-lg md:text-xl font-light italic tracking-wide">
-                      {isArabic ? collection.nameAr : collection.nameEn}
-                    </h3>
-                  </div>
-                </Link>
-              </AnimateOnScroll>
-            ))}
-          </div>
-        )}
+              <Image
+                src={collection.image?.url || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=800&fit=crop"}
+                alt={isArabic ? collection.nameAr : collection.nameEn}
+                fill
+                className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+              {/* Overlay with text at bottom */}
+              <div className="absolute inset-x-0 bottom-0 py-10 md:py-16 flex flex-col items-center justify-end bg-linear-to-t from-black/50 via-transparent to-transparent text-white">
+                <h3 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] transition-transform duration-700 group-hover:-translate-y-2">
+                  {isArabic ? collection.nameAr : collection.nameEn}
+                </h3>
+              </div>
+            </Link>
+          </AnimateOnScroll>
+        ))}
       </div>
     </section>
   );

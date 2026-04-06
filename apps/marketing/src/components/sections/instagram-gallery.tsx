@@ -16,14 +16,9 @@ export function InstagramGallery({ posts, locale }: InstagramGalleryProps) {
   const displayPosts = posts.slice(0, 8);
 
   return (
-    <section className="py-12 px-4 md:px-8">
+    <section className="px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold tracking-tight">capella — FW25 Drops</h2>
-          <p className="text-muted-foreground">@capella</p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {displayPosts.map((post) => (
             <InstagramPostCard key={post.id} post={post} locale={locale} />
           ))}
@@ -46,12 +41,12 @@ function InstagramPostCard({
     <div className="relative aspect-square overflow-hidden rounded-sm group cursor-pointer">
       <Image
         src={post.imageUrl}
-        alt={altText || "capella FW25"}
+        alt={altText || "capella luxury"}
         fill
-        className="object-cover transition-all duration-500 group-hover:scale-105"
+        className="object-cover transition-all duration-1000 group-hover:scale-110"
       />
       {/* Hover overlay */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500" />
     </div>
   );
 

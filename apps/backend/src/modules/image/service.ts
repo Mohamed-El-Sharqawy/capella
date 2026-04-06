@@ -267,41 +267,6 @@ export abstract class ImageService {
     return true;
   }
 
-  // Size Guide Image (stored on Product)
-  static async setSizeGuide(productId: string, file: File) {
-    const product = await prisma.product.findUnique({ where: { id: productId } });
-    if (!product) return null;
-
-    // Delete old size guide from Cloudinary if exists
-    if (product.sizeGuidePublicId) {
-      await CloudinaryService.delete(product.sizeGuidePublicId);
-    }
-
-    const upload = await CloudinaryService.upload(file, "size-guides");
-
-    return prisma.product.update({
-      where: { id: productId },
-      data: {
-        sizeGuideUrl: upload.url,
-        sizeGuidePublicId: upload.publicId,
-      },
-      select: { id: true, sizeGuideUrl: true },
-    });
-  }
-
-  static async deleteSizeGuide(productId: string) {
-    const product = await prisma.product.findUnique({ where: { id: productId } });
-    if (!product || !product.sizeGuidePublicId) return null;
-
-    await CloudinaryService.delete(product.sizeGuidePublicId);
-
-    await prisma.product.update({
-      where: { id: productId },
-      data: { sizeGuideUrl: null, sizeGuidePublicId: null },
-    });
-    return true;
-  }
-
   // Collection Image (1:1)
   static async setCollectionImage(collectionId: string, file: File, altEn?: string, altAr?: string) {
     const collection = await prisma.collection.findUnique({

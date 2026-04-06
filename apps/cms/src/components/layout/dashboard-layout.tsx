@@ -6,13 +6,13 @@ import {
   ShoppingCart,
   Users,
   LogOut,
-  Palette,
-  Ruler,
   Ticket,
   Video,
   Image,
   MessageSquare,
   BarChart3,
+  Gem,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,8 +21,9 @@ const navItems = [
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
   { label: "Products", href: "/products", icon: Package },
   { label: "Collections", href: "/collections", icon: FolderTree },
-  { label: "Colors", href: "/colors", icon: Palette },
-  { label: "Sizes", href: "/sizes", icon: Ruler },
+  { label: "Materials", href: "/materials", icon: Gem },
+  { label: "Stones", href: "/stones", icon: Sparkles },
+  { label: "Clarities", href: "/clarities", icon: Sparkles },
   { label: "Orders", href: "/orders", icon: ShoppingCart },
   { label: "Reviews", href: "/reviews", icon: MessageSquare },
   { label: "Coupons", href: "/coupons", icon: Ticket },

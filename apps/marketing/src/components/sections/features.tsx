@@ -32,16 +32,20 @@ export function Features({ locale }: FeaturesProps) {
   ];
 
   return (
-    <section className="py-12 border-t">
+    <section className="bg-transparent">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="flex flex-col items-center text-center">
-              <feature.icon className="h-6 w-6 mb-3" strokeWidth={1.5} />
-              <h3 className="font-semibold text-sm">{feature.title}</h3>
-              <p className="text-xs text-muted-foreground mt-1">
-                {feature.description}
-              </p>
+            <div key={index} className="flex flex-col items-center text-center space-y-4">
+              <div className="w-12 h-12 flex items-center justify-center rounded-full border border-black/5 bg-white shadow-sm">
+                <feature.icon className="h-5 w-5 text-black" strokeWidth={1} />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-[11px] md:text-sm font-medium uppercase tracking-[0.2em]">{feature.title}</h3>
+                <p className="text-[10px] md:text-xs uppercase tracking-widest text-muted-foreground font-light italic">
+                  {feature.description}
+                </p>
+              </div>
             </div>
           ))}
         </div>

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { getTranslations } from "next-intl/server";
 import {
-  InfiniteMarquee,
   AnimateOnScroll,
 } from "@/components/ui";
 import { FeaturedProducts } from "@/components/sections/featured-products";
@@ -11,8 +10,8 @@ import { ShoppableVideos } from "@/components/sections/shoppable-videos";
 import { InstagramGallery } from "@/components/sections/instagram-gallery";
 import { HeroBanner } from "@/components/sections/hero-banner";
 import { HeroCollections } from "@/components/sections/hero-collections";
-import { CustomersFeedback, Features } from "@/components/sections";
-import { getFeaturedProducts, getShoppableVideos, getInstagramPosts, getReviews, getBanners, getFeaturedHomeCollections } from "@/lib/api";
+import { Features } from "@/components/sections";
+import { getFeaturedProducts, getShoppableVideos, getInstagramPosts, getBanners, getFeaturedHomeCollections } from "@/lib/api";
 import { generatePageMetadata, STATIC_PAGE_METADATA } from "@/lib/metadata";
 
 interface PageProps {
@@ -35,61 +34,63 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function HomePage({ params }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-  
 
-  const [t, featuredProducts, shoppableVideos, instagramPosts, reviews, banners, heroCollections] = await Promise.all([
-    getTranslations("home"),
+
+  const [featuredProducts, shoppableVideos, instagramPosts, banners, heroCollections] = await Promise.all([
     getFeaturedProducts(),
     getShoppableVideos(),
     getInstagramPosts(),
-    getReviews(),
     getBanners(),
     getFeaturedHomeCollections(),
   ]);
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden bg-white">
       {/* Hero Banner Carousel */}
       {banners.length > 0 && (
         <HeroBanner banners={banners} locale={locale} />
       )}
 
-      <AnimateOnScroll direction="up">
-        <InfiniteMarquee
-          text={t("pricesStartingFrom")}
-          className="border-y border-border py-3 bg-black"
-          textClassName="text-sm font-semibold uppercase tracking-wider text-white"
-          separator="—"
-          speed="normal"
-          isArabic={locale === "ar"}
-        />
-      </AnimateOnScroll>
-
+      {/* Primary Collections Grid */}
       <HeroCollections collections={heroCollections} locale={locale} />
 
+      {/* Featured Products Slider */}
       <AnimateOnScroll direction="up">
         <FeaturedProducts locale={locale} products={featuredProducts} />
       </AnimateOnScroll>
 
-      <AnimateOnScroll direction="left">
+      {/* Shoppable Content / Promotional Banner */}
+      <AnimateOnScroll direction="up">
         <PromoBanner locale={locale} />
       </AnimateOnScroll>
 
+      {/* Video Commerce */}
       <AnimateOnScroll direction="up">
         <ShoppableVideos videos={shoppableVideos} locale={locale} />
       </AnimateOnScroll>
 
-      <AnimateOnScroll direction="right">
-        <InstagramGallery posts={instagramPosts} locale={locale} />
-      </AnimateOnScroll>
+      {/* Lifestyle / Social Proof */}
+      <div className="py-24 md:py-40 bg-neutral-50/50">
+        <AnimateOnScroll direction="up">
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.25em]">
+              {locale === "ar" ? "تابعنا على انستغرام" : "Follow Us"}
+            </h2>
+            <div className="w-16 h-px bg-black/20 mx-auto" />
+            <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground font-light">@capella_luxury</p>
+          </div>
+        </AnimateOnScroll>
+        <AnimateOnScroll direction="up" delay={0.1}>
+          <InstagramGallery posts={instagramPosts} locale={locale} />
+        </AnimateOnScroll>
+      </div>
 
-      <AnimateOnScroll direction="up">
-        <CustomersFeedback reviews={reviews} locale={locale} />
-      </AnimateOnScroll>
-
-      <AnimateOnScroll direction="up">
-        <Features locale={locale} />
-      </AnimateOnScroll>
+      {/* Trust Elements */}
+      <div className="border-t border-gray-100 py-24 md:py-32">
+        <AnimateOnScroll direction="up">
+          <Features locale={locale} />
+        </AnimateOnScroll>
+      </div>
     </div>
   );
 }

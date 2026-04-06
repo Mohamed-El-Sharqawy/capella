@@ -77,8 +77,6 @@ model OrderItem {
   sku         String?
   quantity    Int
   price       Float
-  size        String?
-  color       String?
   imageUrl    String?
 
   @@index([orderId])

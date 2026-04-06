@@ -1,15 +1,17 @@
 import { useState, useRef } from "react";
-import { Loader2, Plus, Trash2, Video, Image as ImageIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, Video, Image as ImageIcon, Pencil } from "lucide-react";
 import {
   useShoppableVideos,
   useCreateShoppableVideo,
   useUpdateShoppableVideo,
+  useUpdateShoppableVideoWithFiles,
   useDeleteShoppableVideo,
   useInstagramPosts,
   useCreateInstagramPost,
   useUpdateInstagramPost,
   useDeleteInstagramPost,
 } from "@/features/content";
+import type { ShoppableVideo } from "@ecommerce/shared-types";
 import { useProducts } from "@/features/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,9 +71,12 @@ function ShoppableVideosSection() {
   const { data: productsRes } = useProducts({ limit: "100" });
   const createMutation = useCreateShoppableVideo();
   const updateMutation = useUpdateShoppableVideo();
+  const updateWithFilesMutation = useUpdateShoppableVideoWithFiles();
   const deleteMutation = useDeleteShoppableVideo();
 
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingVideo, setEditingVideo] = useState<ShoppableVideo | null>(null);
   const [selectedProductId, setSelectedProductId] = useState("");
   const videoInputRef = useRef<HTMLInputElement>(null);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
@@ -103,6 +108,37 @@ function ShoppableVideosSection() {
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to add video");
     }
+  };
+
+  const handleEdit = async () => {
+    if (!editingVideo) return;
+
+    try {
+      await updateWithFilesMutation.mutateAsync({
+        id: editingVideo.id,
+        data: {
+          productId: selectedProductId || undefined,
+          video: videoFile || undefined,
+          thumbnail: thumbnailFile || undefined,
+        },
+      });
+      toast.success("Video updated");
+      setShowEditDialog(false);
+      setEditingVideo(null);
+      setVideoFile(null);
+      setThumbnailFile(null);
+      setSelectedProductId("");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update video");
+    }
+  };
+
+  const openEditDialog = (video: ShoppableVideo) => {
+    setEditingVideo(video);
+    setSelectedProductId(video.productId);
+    setVideoFile(null);
+    setThumbnailFile(null);
+    setShowEditDialog(true);
   };
 
   const handleToggleActive = async (id: string, isActive: boolean) => {
@@ -187,13 +223,22 @@ function ShoppableVideosSection() {
                         {video.isActive ? "Visible" : "Hidden"}
                       </span>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDelete(video.id)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEditDialog(video)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDelete(video.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -262,6 +307,80 @@ function ShoppableVideosSection() {
               >
                 {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Add Video
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Shoppable Video</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Video File (leave empty to keep current)</Label>
+              <Input
+                type="file"
+                accept="video/*"
+                onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
+              />
+              {videoFile && (
+                <p className="text-sm text-muted-foreground">{videoFile.name}</p>
+              )}
+              {!videoFile && editingVideo && (
+                <p className="text-sm text-muted-foreground">Current video will be kept</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Thumbnail Image (leave empty to keep current)</Label>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)}
+              />
+              {thumbnailFile && (
+                <p className="text-sm text-muted-foreground">{thumbnailFile.name}</p>
+              )}
+              {!thumbnailFile && editingVideo && (
+                <div className="mt-2">
+                  <img
+                    src={editingVideo.thumbnailUrl}
+                    alt="Current thumbnail"
+                    className="w-20 h-24 object-cover rounded"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Linked Product</Label>
+              <Select value={selectedProductId} onValueChange={setSelectedProductId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {products.map((product) => (
+                    <SelectItem key={product.id} value={product.id}>
+                      {product.nameEn}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleEdit}
+                disabled={updateWithFilesMutation.isPending}
+              >
+                {updateWithFilesMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
               </Button>
             </div>
           </div>

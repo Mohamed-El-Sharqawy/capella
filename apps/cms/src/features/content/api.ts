@@ -4,6 +4,7 @@ import {
   getShoppableVideo,
   createShoppableVideo,
   updateShoppableVideo,
+  updateShoppableVideoWithFiles,
   deleteShoppableVideo,
   reorderShoppableVideos,
   getInstagramPosts,
@@ -64,6 +65,17 @@ export function useUpdateShoppableVideo() {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Parameters<typeof updateShoppableVideo>[1] }) =>
       updateShoppableVideo(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: shoppableVideoKeys.all });
+    },
+  });
+}
+
+export function useUpdateShoppableVideoWithFiles() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof updateShoppableVideoWithFiles>[1] }) =>
+      updateShoppableVideoWithFiles(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: shoppableVideoKeys.all });
     },

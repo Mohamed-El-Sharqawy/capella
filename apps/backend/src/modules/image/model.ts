@@ -30,9 +30,6 @@ export const ImageModel = {
   reorderImages: t.Object({
     imageIds: t.Array(t.String()),
   }),
-  uploadSizeGuide: t.Object({
-    file: t.File({ type: "image", maxSize: "5m" }),
-  }),
   uploadCollectionImage: t.Object({
     file: t.File({ type: "image", maxSize: "5m" }),
     altEn: t.Optional(t.String()),

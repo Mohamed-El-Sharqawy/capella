@@ -16,14 +16,19 @@ export function ShoppableVideos({ videos, locale }: ShoppableVideosProps) {
   if (videos.length === 0) return null;
 
   return (
-    <section className="py-12 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold tracking-tight">Shoppable Videos</h2>
-          <p className="text-muted-foreground">See it. Move in it. Shop it.</p>
+    <section className="py-20 md:py-32">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-16 space-y-4">
+          <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.25em]">
+            {locale === "ar" ? "تسوق عبر الفيديو" : "Shoppable Videos"}
+          </h2>
+          <div className="w-16 h-[1px] bg-black/20 mx-auto" />
+          <p className="text-xs md:text-sm uppercase tracking-[0.1em] text-muted-foreground">
+            {locale === "ar" ? "شاهد. تحرك. تسوق." : "See it. Move in it. Shop it."}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {videos.slice(0, 3).map((video) => (
             <ShoppableVideoCard key={video.id} video={video} locale={locale} />
           ))}
@@ -107,41 +112,40 @@ function ShoppableVideoCard({
 
       {/* Product info */}
       {product && (
-        <div className="flex items-center gap-3 mt-3 p-2 rounded-lg">
+        <div className="flex items-center gap-4 mt-6">
           <Link
             href={`/products/${product.slug}`}
-            className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-4 flex-1 min-w-0 hover:opacity-100 group/link transition-opacity"
           >
             {imageUrl && (
-              <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-muted shrink-0">
+              <div className="relative w-14 h-14 bg-neutral-50 rounded-sm overflow-hidden border border-gray-100 shrink-0">
                 <Image
                   src={imageUrl}
                   alt={productName || "Product"}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 group-hover/link:scale-110"
                 />
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm truncate">{productName}</p>
-              <div className="flex items-center gap-2">
+              <p className="text-[11px] font-medium uppercase tracking-[0.1em] truncate group-hover/link:opacity-60 transition-opacity">{productName}</p>
+              <div className="flex items-center gap-2 mt-1">
                 {compareAtPrice && compareAtPrice > price && (
-                  <span className="text-xs text-muted-foreground line-through">
-                    LE {compareAtPrice.toFixed(2)}
+                  <span className="text-[10px] text-muted-foreground line-through tracking-wider">
+                    AED {compareAtPrice.toLocaleString()}
                   </span>
                 )}
-                <span className="text-sm font-semibold text-primary">
-                  LE {price.toFixed(2)}
+                <span className="text-xs font-semibold tracking-widest text-black">
+                  AED {price.toLocaleString()}
                 </span>
               </div>
             </div>
           </Link>
           <button
             onClick={() => setShowQuickView(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black text-white text-xs font-medium hover:bg-black/80 transition-colors shrink-0"
+            className="h-10 w-10 flex items-center justify-center rounded-full border border-gray-200 hover:bg-black hover:text-white transition-all duration-300 group/btn"
           >
-            <Eye className="h-3.5 w-3.5" />
-            Quick View
+            <Eye className="h-4 w-4" />
           </button>
         </div>
       )}

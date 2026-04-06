@@ -90,12 +90,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             <InfiniteMarquee
               text={
                 locale === "ar"
-                  ? "تخفيضات نهاية الموسم"
-                  : "END OF SEASON SALE"
+                  ? "توصيل مجاني لجميع الطلبات داخل الإمارات"
+                  : "FREE SHIPPING ON ALL UAE ORDERS"
               }
-              className="bg-red-600 py-2"
-              textClassName="text-xs font-semibold text-white uppercase tracking-wider"
-              separator="—"
+              className="bg-black py-2 border-b border-white/10"
+              textClassName="text-[10px] md:text-xs font-medium text-white uppercase tracking-[0.2em]"
+              separator="•"
               speed="normal"
               isArabic={locale === "ar"}
             />

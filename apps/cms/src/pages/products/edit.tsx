@@ -3,8 +3,6 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, Plus, Trash2, Upload, X } from "lucide-react";
 import { useAllCollections } from "@/features/collections";
-import { useColors } from "@/features/colors";
-import { useSizes } from "@/features/sizes";
 import { useMaterials } from "@/features/materials";
 import { useStones } from "@/features/stones";
 import { useClarities } from "@/features/clarities";
@@ -16,8 +14,6 @@ import {
   useDeleteVariant,
   useUploadVariantImages,
   useDeleteVariantImage,
-  useUploadSizeGuide,
-  useDeleteSizeGuide,
   useProductImages,
   useUploadProductImages,
   useDeleteProductImage,
@@ -51,8 +47,6 @@ interface VariantForm {
   price: string;
   compareAtPrice: string;
   stock: string;
-  colorId: string;
-  sizeId: string;
   isActive: boolean;
   isNew?: boolean;
 }
@@ -71,8 +65,6 @@ export function EditProductPage() {
   const deleteVariantMutation = useDeleteVariant();
   const uploadImagesMutation = useUploadVariantImages();
   const deleteImageMutation = useDeleteVariantImage();
-  const uploadSizeGuideMutation = useUploadSizeGuide();
-  const deleteSizeGuideMutation = useDeleteSizeGuide();
   const uploadProductImagesMutation = useUploadProductImages();
   const deleteProductImageMutation = useDeleteProductImage();
   const linkImageMutation = useLinkImageToVariant();
@@ -81,31 +73,20 @@ export function EditProductPage() {
   const { data: productImages } = useProductImages(product?.id ?? "");
 
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const sizeGuideInputRef = useRef<HTMLInputElement>(null);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const [linkImageVariantId, setLinkImageVariantId] = useState<string | null>(null);
 
   const { data: collectionsRes } = useAllCollections();
-  const { data: colorsRes } = useColors();
-  const { data: sizesRes } = useSizes();
   const { data: materialsRes } = useMaterials();
   const { data: stonesRes } = useStones();
   const { data: claritiesRes } = useClarities();
 
   const collections = collectionsRes?.data ?? [];
-  const colors = colorsRes?.data ?? [];
-  const sizes = sizesRes?.data ?? [];
   const materials = materialsRes?.data ?? [];
   const stones = stonesRes?.data ?? [];
   const clarities = claritiesRes?.data ?? [];
 
   const [isInitialized, setIsInitialized] = useState(false);
-  const [showVariantGenerator, setShowVariantGenerator] = useState(false);
-  const [selectedColorIds, setSelectedColorIds] = useState<string[]>([]);
-  const [selectedSizeIds, setSelectedSizeIds] = useState<string[]>([]);
-  const [generatorPrice, setGeneratorPrice] = useState("");
-  const [generatorCompareAtPrice, setGeneratorCompareAtPrice] = useState("");
-  const [generatorStock, setGeneratorStock] = useState("50");
   const [nameEn, setNameEn] = useState("");
   const [nameAr, setNameAr] = useState("");
   const [descriptionEn, setDescriptionEn] = useState("");
@@ -157,8 +138,6 @@ export function EditProductPage() {
           price: String(v.price),
           compareAtPrice: v.compareAtPrice ? String(v.compareAtPrice) : "",
           stock: String(v.stock),
-          colorId: v.colorId ?? "",
-          sizeId: v.sizeId ?? "",
           isActive: v.isActive,
         }))
       );
@@ -177,79 +156,10 @@ export function EditProductPage() {
         price: "",
         compareAtPrice: "",
         stock: "0",
-        colorId: "",
-        sizeId: "",
         isActive: true,
         isNew: true,
       },
     ]);
-  };
-
-  const generateVariants = () => {
-    if (selectedColorIds.length === 0 || selectedSizeIds.length === 0) {
-      toast.error("Please select at least one color and one size");
-      return;
-    }
-    if (!generatorPrice) {
-      toast.error("Please enter a price");
-      return;
-    }
-
-    const newVariants: VariantForm[] = [];
-    const existingCombos = new Set(
-      variants.map((v) => `${v.colorId}-${v.sizeId}`)
-    );
-
-    for (const colorId of selectedColorIds) {
-      for (const sizeId of selectedSizeIds) {
-        const comboKey = `${colorId}-${sizeId}`;
-        if (existingCombos.has(comboKey)) continue;
-
-        const color = colors.find((c) => c.id === colorId);
-        const size = sizes.find((s) => s.id === sizeId);
-        if (!color || !size) continue;
-
-        newVariants.push({
-          nameEn: `${nameEn} - ${color.nameEn} / ${size.nameEn}`,
-          nameAr: `${nameAr} - ${color.nameAr} / ${size.nameAr}`,
-          sku: `${nameEn.slice(0, 3).toUpperCase()}-${color.nameEn.slice(0, 2).toUpperCase()}-${size.nameEn}-${Date.now().toString().slice(-4)}`,
-          price: generatorPrice,
-          compareAtPrice: generatorCompareAtPrice,
-          stock: generatorStock,
-          colorId,
-          sizeId,
-          isActive: true,
-          isNew: true,
-        });
-      }
-    }
-
-    if (newVariants.length === 0) {
-      toast.error("All selected combinations already exist");
-      return;
-    }
-
-    setVariants([...variants, ...newVariants]);
-    setShowVariantGenerator(false);
-    setSelectedColorIds([]);
-    setSelectedSizeIds([]);
-    toast.success(`Generated ${newVariants.length} variants`);
-  };
-
-  const toggleColorSelection = (colorId: string) => {
-    setSelectedColorIds((prev) =>
-      prev.includes(colorId)
-        ? prev.filter((id) => id !== colorId)
-        : [...prev, colorId]
-    );
-  };
-
-  const toggleSizeSelection = (sizeId: string) => {
-    setSelectedSizeIds((prev) =>
-      prev.includes(sizeId)
-        ? prev.filter((id) => id !== sizeId)
-        : [...prev, sizeId]
-    );
   };
 
   const removeVariant = async (index: number) => {
@@ -301,29 +211,6 @@ export function EditProductPage() {
     return variant?.images ?? [];
   };
 
-  const handleSizeGuideUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0 || !product) return;
-    try {
-      await uploadSizeGuideMutation.mutateAsync({
-        productId: product.id,
-        file: files[0],
-      });
-      toast.success("Size guide uploaded");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to upload size guide");
-    }
-  };
-
-  const handleDeleteSizeGuide = async () => {
-    if (!product || !confirm("Delete size guide?")) return;
-    try {
-      await deleteSizeGuideMutation.mutateAsync(product.id);
-      toast.success("Size guide deleted");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to delete size guide");
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!product) return;
@@ -362,8 +249,6 @@ export function EditProductPage() {
             price: parseFloat(variant.price) || 0,
             compareAtPrice: variant.compareAtPrice ? parseFloat(variant.compareAtPrice) : undefined,
             stock: parseInt(variant.stock) || 0,
-            colorId: variant.colorId || undefined,
-            sizeId: variant.sizeId || undefined,
             isActive: variant.isActive,
           };
           await createVariantMutation.mutateAsync({ productId: product.id, body });
@@ -375,8 +260,6 @@ export function EditProductPage() {
             price: parseFloat(variant.price) || 0,
             compareAtPrice: variant.compareAtPrice ? parseFloat(variant.compareAtPrice) : undefined,
             stock: parseInt(variant.stock) || 0,
-            colorId: variant.colorId || null,
-            sizeId: variant.sizeId || null,
             isActive: variant.isActive,
           };
           await updateVariantMutation.mutateAsync({ variantId: variant.id, body });
@@ -660,49 +543,6 @@ export function EditProductPage() {
                     </Select>
                   </div>
                 </div>
-
-                <div className="space-y-2 pt-4 border-t">
-                  <Label>Size Guide</Label>
-                  <p className="text-xs text-muted-foreground">Upload a size guide image for this product</p>
-                  {product.sizeGuideUrl ? (
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={product.sizeGuideUrl}
-                        alt="Size Guide"
-                        className="h-24 w-auto rounded-lg border cursor-pointer hover:opacity-80"
-                        onClick={() => setPreviewImageUrl(product.sizeGuideUrl ?? null)}
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleDeleteSizeGuide}
-                        disabled={deleteSizeGuideMutation.isPending}
-                      >
-                        {deleteSizeGuideMutation.isPending ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="mr-2 h-4 w-4" />
-                        )}
-                        Delete
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <label className="inline-flex items-center gap-2 px-4 py-2 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50">
-                        <Upload className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Upload Size Guide</span>
-                        <input
-                          ref={sizeGuideInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleSizeGuideUpload(e.target.files)}
-                        />
-                      </label>
-                    </div>
-                  )}
-                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -787,7 +627,7 @@ export function EditProductPage() {
                               Linked to {img.variantImages?.length ?? 0} variant(s)
                             </p>
                             <div className="flex flex-wrap gap-1">
-                              {product.variants.map((variant) => {
+                              {product.variants.map((variant, idx) => {
                                 const isLinked = img.variantImages?.some(
                                   (vi) => vi.variantId === variant.id
                                 );
@@ -820,7 +660,7 @@ export function EditProductPage() {
                                         : "bg-muted/50 border-border hover:border-primary"
                                     }`}
                                   >
-                                    {variant.color?.nameEn ?? ""} / {variant.size?.nameEn ?? ""}
+                                    {variant.nameEn ?? `Variant ${idx + 1}`}
                                   </button>
                                 );
                               })}
@@ -840,127 +680,6 @@ export function EditProductPage() {
           </TabsContent>
 
           <TabsContent value="variants" className="space-y-4">
-            {/* Variant Generator */}
-            {showVariantGenerator ? (
-              <Card className="border-primary">
-                <CardHeader>
-                  <CardTitle className="text-base">Generate Variants (Color × Size)</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Select Colors</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {colors.map((color) => (
-                        <button
-                          key={color.id}
-                          type="button"
-                          onClick={() => toggleColorSelection(color.id)}
-                          className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm transition ${
-                            selectedColorIds.includes(color.id)
-                              ? "border-primary bg-primary/10"
-                              : "border-border hover:border-primary"
-                          }`}
-                        >
-                          <div
-                            className="h-4 w-4 rounded-full border"
-                            style={{ backgroundColor: color.hex }}
-                          />
-                          {color.nameEn}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Select Sizes</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {sizes.map((size) => (
-                        <button
-                          key={size.id}
-                          type="button"
-                          onClick={() => toggleSizeSelection(size.id)}
-                          className={`px-3 py-1.5 rounded-full border text-sm transition ${
-                            selectedSizeIds.includes(size.id)
-                              ? "border-primary bg-primary/10"
-                              : "border-border hover:border-primary"
-                          }`}
-                        >
-                          {size.nameEn}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label>Price *</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={generatorPrice}
-                        onChange={(e) => setGeneratorPrice(e.target.value)}
-                        placeholder="e.g. 599"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Compare at Price</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={generatorCompareAtPrice}
-                        onChange={(e) => setGeneratorCompareAtPrice(e.target.value)}
-                        placeholder="e.g. 799"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Stock per Variant</Label>
-                      <Input
-                        type="number"
-                        min="0"
-                        value={generatorStock}
-                        onChange={(e) => setGeneratorStock(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="text-sm text-muted-foreground">
-                    Will generate {selectedColorIds.length * selectedSizeIds.length} variants
-                    ({selectedColorIds.length} colors × {selectedSizeIds.length} sizes)
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button type="button" onClick={generateVariants}>
-                      Generate Variants
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowVariantGenerator(false);
-                        setSelectedColorIds([]);
-                        setSelectedSizeIds([]);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowVariantGenerator(true)}
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Generate Variants (Color × Size)
-                </Button>
-              </div>
-            )}
-
             {variants.map((variant, index) => (
               <Card key={variant.id ?? `new-${index}`}>
                 <CardHeader className="flex flex-row items-center justify-between py-3">
@@ -1036,61 +755,13 @@ export function EditProductPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label>Color</Label>
-                      <Select
-                        value={variant.colorId || "none"}
-                        onValueChange={(v) => updateVariant(index, "colorId", v === "none" ? "" : v)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select color" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">No Color</SelectItem>
-                          {colors.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className="h-4 w-4 rounded-full border"
-                                  style={{ backgroundColor: c.hex }}
-                                />
-                                {c.nameEn}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Size</Label>
-                      <Select
-                        value={variant.sizeId || "none"}
-                        onValueChange={(v) => updateVariant(index, "sizeId", v === "none" ? "" : v)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select size" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">No Size</SelectItem>
-                          {sizes.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>
-                              {s.nameEn}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex items-end pb-2">
-                      <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                         <Switch
                           checked={variant.isActive}
                           onCheckedChange={(v) => updateVariant(index, "isActive", v)}
                         />
                         <Label>Active</Label>
                       </div>
-                    </div>
-                  </div>
 
                   {variant.id && !variant.isNew && (
                     <div className="space-y-2 pt-4 border-t">

@@ -49,10 +49,6 @@ model Product {
   hoverVariant     ProductVariant? @relation("ProductHoverVariant", fields: [hoverVariantId], references: [id])
   hoverVariantId   String?
 
-  // Size guide image (Cloudinary)
-  sizeGuideUrl      String?
-  sizeGuidePublicId String?
-
   variants        ProductVariant[] @relation("ProductVariants")
   images          ProductImage[]
   favourites      Favourite[]
@@ -93,11 +89,6 @@ model ProductVariant {
   price          Float
   compareAtPrice Float?
 
-  color   Color?  @relation(fields: [colorId], references: [id])
-  colorId String?
-  size    Size?   @relation(fields: [sizeId], references: [id])
-  sizeId  String?
-
   stock          Int     @default(0)
   isActive       Boolean @default(true)
 
@@ -117,8 +108,6 @@ model ProductVariant {
   @@index([sku])
   @@index([slug])
   @@index([isActive])
-  @@index([colorId])
-  @@index([sizeId])
   @@map("product_variants")
 }
 

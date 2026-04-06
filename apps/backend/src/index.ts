@@ -12,8 +12,6 @@ import { cart } from "./modules/cart";
 import { favourite } from "./modules/favourite";
 import { wishlist } from "./modules/wishlist";
 import { image } from "./modules/image";
-import { color } from "./modules/color";
-import { size } from "./modules/size";
 import { material } from "./modules/material";
 import { stone } from "./modules/stone";
 import { clarity } from "./modules/clarity";
@@ -69,8 +67,6 @@ const app = new Elysia()
       .use(favourite)
       .use(wishlist)
       .use(image)
-      .use(color)
-      .use(size)
       .use(material)
       .use(stone)
       .use(clarity)

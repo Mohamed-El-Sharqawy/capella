@@ -91,17 +91,6 @@ export const image = new Elysia({ prefix: "/images" })
     if (!result) return status(404, { success: false as const, error: "Image link not found" });
     return { success: true as const, message: "Image removed from variant" };
   }, { isEditor: true })
-  // Size guide image
-  .post("/size-guide/:productId", async ({ params, body }) => {
-    const result = await ImageService.setSizeGuide(params.productId, body.file as File);
-    if (!result) return status(404, { success: false as const, error: "Product not found" });
-    return status(201, { success: true as const, data: result });
-  }, { isEditor: true, body: ImageModel.uploadSizeGuide })
-  .delete("/size-guide/:productId", async ({ params }) => {
-    const result = await ImageService.deleteSizeGuide(params.productId);
-    if (!result) return status(404, { success: false as const, error: "Size guide not found" });
-    return { success: true as const, message: "Size guide deleted" };
-  }, { isEditor: true })
   // Collection image
   .post("/collections/:collectionId", async ({ params, body }) => {
     const img = await ImageService.setCollectionImage(

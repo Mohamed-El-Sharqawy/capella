@@ -2,9 +2,21 @@ import Stripe from "stripe";
 import { prisma } from "../../lib/prisma";
 import type { PaymentModel } from "./model";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-11-20.acacia",
-});
+// Lazy Stripe client - only initialize when needed
+let stripe: Stripe | null = null;
+
+function getStripe(): Stripe {
+  if (!stripe) {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key || key === "sk_test_placeholder") {
+      throw new Error("Stripe is not configured. Set STRIPE_SECRET_KEY in .env");
+    }
+    stripe = new Stripe(key, {
+      apiVersion: "2024-11-20.acacia",
+    });
+  }
+  return stripe;
+}
 
 const MARKETING_URL = process.env.MARKETING_URL || "http://localhost:3000";
 
@@ -100,7 +112,7 @@ export abstract class PaymentService {
           }
           
           // Create Stripe coupon for the discount
-          const stripeCoupon = await stripe.coupons.create({
+          const stripeCoupon = await getStripe().coupons.create({
             amount_off: Math.round(discountAmount * 100),
             currency: "aed",
             duration: "once",
@@ -146,8 +158,6 @@ export abstract class PaymentService {
               sku: variant.sku,
               quantity: item.quantity,
               price: variant.price,
-              size: variant.sizeId,
-              color: variant.colorId,
             };
           }),
         },
@@ -155,7 +165,7 @@ export abstract class PaymentService {
     });
 
     // 3. Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
@@ -193,7 +203,7 @@ export abstract class PaymentService {
 
     let event: Stripe.Event;
     try {
-      event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+      event = getStripe().webhooks.constructEvent(payload, signature, webhookSecret);
     } catch (err) {
       throw new Error(`Webhook signature verification failed: ${(err as Error).message}`);
     }
@@ -257,7 +267,7 @@ export abstract class PaymentService {
         console.error(`Insufficient stock for variant ${item.variantId}, refunding`);
         
         if (session.payment_intent) {
-          await stripe.refunds.create({
+          await getStripe().refunds.create({
             payment_intent: session.payment_intent as string,
             reason: "requested_by_customer",
           });

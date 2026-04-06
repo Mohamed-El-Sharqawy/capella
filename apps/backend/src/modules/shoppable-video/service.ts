@@ -8,8 +8,6 @@ const SHOPPABLE_VIDEO_INCLUDE = {
         where: { isActive: true },
         orderBy: { createdAt: "asc" as const },
         include: {
-          color: true,
-          size: true,
           images: {
             orderBy: { position: "asc" as const },
             include: { image: true },

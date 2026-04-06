@@ -15,8 +15,6 @@ const WISHLIST_INCLUDE = {
             take: 1,
             include: { image: true },
           },
-          color: true,
-          size: true,
         },
       },
     },

@@ -37,11 +37,11 @@ export function HeaderNav() {
   });
 
   return (
-    <nav className="hidden md:flex items-center gap-6">
+    <nav className="flex items-center gap-4 lg:gap-6">
       {/* Shop All */}
       <Link
         href="/collections/all-products"
-        className="text-sm font-medium hover:opacity-70 transition-opacity"
+        className="text-[11px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
       >
         {t("shopAll")}
       </Link>
@@ -54,10 +54,10 @@ export function HeaderNav() {
       >
         <Link
           href="/collections"
-          className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+          className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
         >
           {t("shopByCollection")}
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="h-3 w-3" />
         </Link>
 
         {/* Dropdown with collections */}
@@ -105,13 +105,13 @@ export function HeaderNav() {
       {/* Static items */}
       <Link
         href="/return-policy"
-        className="text-sm font-medium hover:opacity-70 transition-opacity"
+        className="text-[11px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
       >
         {t("returnPolicy")}
       </Link>
       <Link
         href="/contact"
-        className="text-sm font-medium hover:opacity-70 transition-opacity"
+        className="text-[11px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
       >
         {t("contactUs")}
       </Link>

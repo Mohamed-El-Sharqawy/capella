@@ -70,7 +70,7 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
   const buttonText = isArabic ? currentBanner.buttonTextAr : currentBanner.buttonTextEn;
 
   return (
-    <section className="relative w-full h-svh overflow-hidden bg-black">
+    <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden bg-black">
       {/* Banner Images */}
       {activeBanners.map((banner, index) => (
         <div
@@ -88,28 +88,24 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
             className="object-cover"
             sizes="100vw"
           />
-          {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/30" />
+          {/* Subtle overlay */}
+          <div className="absolute inset-0 bg-black/10" />
         </div>
       ))}
 
       {/* Content Overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4">
-        {subtitle && (
-          <p className="text-sm md:text-base uppercase tracking-widest mb-2 opacity-90">
-            {subtitle}
-          </p>
-        )}
-        <h1 className="text-2xl md:text-4xl lg:text-5xl font-light uppercase tracking-wider mb-6">
-          {title}
-        </h1>
-        {buttonText && currentBanner.linkUrl && (
+      <div className="absolute inset-0 flex flex-col items-center justify-end pb-16 md:pb-24 text-white text-center px-4">
+        {buttonText && currentBanner.linkUrl ? (
           <Link
             href={currentBanner.linkUrl}
-            className="px-8 py-3 bg-white text-black text-sm font-medium uppercase tracking-wider hover:bg-white/90 transition"
+            className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] hover:opacity-60 transition-opacity"
           >
             {buttonText}
           </Link>
+        ) : (
+          <p className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em]">
+            {isArabic ? "اكتشف" : "Discover"}
+          </p>
         )}
       </div>
 
