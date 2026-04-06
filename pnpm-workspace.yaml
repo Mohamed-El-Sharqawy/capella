@@ -3,8 +3,10 @@ packages:
   - packages/*
 
 onlyBuiltDependencies:
+  - '@parcel/watcher'
   - '@prisma/client'
   - '@prisma/engines'
+  - '@swc/core'
   - esbuild
   - prisma
   - sharp
