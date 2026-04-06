@@ -88,11 +88,12 @@ images appear. Close and reopen to verify recent searches persist.
 
 ### User Story 3 - Secure Stripe Checkout (Priority: P1)
 
-A customer adds items to cart and proceeds to checkout. The checkout
-process integrates with Stripe for payment processing, with all prices
-displayed in AED. After payment, the customer sees a clear order
-confirmation page with order details. If payment fails, the customer
-receives a clear error message and can retry without losing cart data.
+A customer adds items to cart and proceeds to checkout. The customer is
+redirected to a Stripe-hosted Checkout page for payment, with all prices
+displayed in AED. After payment, the customer is redirected back to an
+order confirmation page with order details. If payment fails, the customer
+returns to an error page with a clear message and can retry without losing
+cart data.
 
 **Why this priority**: Payment is the revenue moment. Without a working
 checkout flow, the platform cannot generate sales.
@@ -150,7 +151,8 @@ on the collection page.
    on the storefront and search overlay.
 3. **Given** an admin manages product attributes, **When** they add
    jewellery-specific attributes, **Then** they can define Material,
-   Stone, and Clarity values for each product variant.
+   Stone, and Clarity at the product level (shared across all variants),
+   while Color and Size remain variant-level attributes.
 4. **Given** an admin edits a collection, **When** they upload a hero
    banner image and add text, **Then** the collection page displays the
    banner prominently at the top.
@@ -198,14 +200,22 @@ search and click activity.
 
 - What happens when a Stripe webhook is received out of order or
   duplicated?
+  → Webhook processing is idempotent, keyed on the Stripe session ID.
+  Already-processed events are skipped, preventing duplicate order
+  status updates.
 - How does the system handle a product with both a badge and trending
   flag — do they visually conflict on the product card?
 - What happens when search returns zero results — does the overlay show
   suggestions or trending products as fallback?
 - What happens when a product variant has jewellery attributes but
   another variant of the same product does not?
+  → Jewellery attributes are product-level, so all variants inherit
+  the same Material/Stone/Clarity. This scenario cannot occur.
 - How does the system handle checkout when a product goes out of stock
   between adding to cart and completing payment?
+  → Stock is validated at checkout session creation and again at webhook
+  confirmation. If unavailable at either point, the checkout is rejected
+  or the payment is refunded, and the customer is notified.
 - What happens when the Cloudinary-hosted collection banner image fails
   to load?
 - How does the search overlay behave when the customer switches between
@@ -221,13 +231,22 @@ search and click activity.
   surfaces them in the search overlay and homepage sections.
 - **FR-003**: System MUST expand the attribute system to support
   jewellery-specific attributes: Material, Stone, and Clarity, each
-  with bilingual (EN/AR) names.
+  with bilingual (EN/AR) names. These attributes MUST be defined at the
+  product level (shared across all variants), while Color and Size
+  remain variant-level.
 - **FR-004**: System MUST integrate with Stripe standard business
   accounts for payment processing, locked to AED currency.
 - **FR-005**: System MUST provide a checkout endpoint that creates a
-  Stripe checkout session with all cart items priced in AED.
+  Stripe-hosted Checkout session (redirect mode) with all cart items
+  priced in AED. Stock MUST be validated before session creation; if any
+  item is unavailable, the checkout MUST be rejected with a clear
+  message.
 - **FR-006**: System MUST provide a webhook endpoint that processes
-  Stripe payment events and updates order status accordingly.
+  Stripe payment events and updates order status accordingly. Stock
+  MUST be re-validated at webhook processing; if an item became
+  unavailable, the payment MUST be refunded and the customer notified.
+  Webhook processing MUST be idempotent, keyed on the Stripe session
+  ID, to safely handle duplicate or out-of-order events.
 - **FR-007**: System MUST verify Stripe webhook signatures before
   processing any payment event.
 - **FR-008**: System MUST display an order confirmation page after
@@ -243,7 +262,8 @@ search and click activity.
   customer types, searching across product names, descriptions, SKUs,
   and metadata.
 - **FR-013**: System MUST track search analytics including query terms,
-  result counts, and click-through rates.
+  result counts, and click-through rates. Raw search events MUST be
+  retained for 90 days; daily aggregations MUST be retained indefinitely.
 - **FR-014**: System MUST provide a trending products endpoint ranked
   by search frequency and click activity.
 - **FR-015**: System MUST implement a luxury design system with serif
@@ -264,19 +284,21 @@ search and click activity.
 
 - **Product Badge**: An enum (NEW, BESTSELLER, LIMITED EDITION) that
   labels a product for visual emphasis on cards and listings.
-- **Jewellery Attribute**: A typed attribute (Material, Stone, Clarity)
-  with bilingual values assignable to product variants. Material covers
-  precious metals, Stone covers gemstone types, and Clarity covers
-  grading scales.
+- **Jewellery Attribute**: Typed attributes (Material, Stone, Clarity)
+  with bilingual values assigned at the product level, shared across all
+  variants. Material covers precious metals, Stone covers gemstone types,
+  and Clarity covers grading scales. Color and Size remain variant-level
+  attributes.
 - **Collection Banner**: A hero section with image, heading, and
   description (bilingual) attached to a collection for a visually
   distinct landing experience.
 - **Search Analytics Event**: A record of a search query, including the
   term entered, number of results returned, and any product clicked from
   the results.
-- **Payment Session**: A Stripe checkout session linked to an order,
-  tracking the payment lifecycle from creation through completion or
-  failure.
+- **Payment Session**: A Stripe-hosted Checkout session (redirect mode)
+  linked to an order, tracking the payment lifecycle from creation
+  through completion or failure. Customer card data never touches the
+  platform — Stripe handles all payment UI.
 
 ## Success Criteria *(mandatory)*
 
@@ -321,7 +343,18 @@ search and click activity.
   icon on product cards.
 - The existing analytics event tracking will be extended for search
   analytics rather than replaced.
-- Search analytics data retention follows the existing analytics
-  aggregation pattern (daily stats).
+- Search analytics data retention: raw events retained for 90 days,
+  daily aggregations retained indefinitely, following the existing
+  analytics aggregation pattern.
 - Collection banners are optional — collections without banners will
   render with the current default layout.
+
+## Clarifications
+
+### Session 2026-04-06
+
+- Q: Stripe Checkout integration mode — redirect vs embedded? → A: Redirect to Stripe-hosted Checkout page (Option A).
+- Q: Stock validation during checkout — when is stock checked? → A: Validate at session creation and again at webhook confirmation; reject/refund if out of stock (Option A).
+- Q: Jewellery attribute scope — product-level vs variant-level? → A: Material/Stone/Clarity at product level; Color/Size at variant level (Option A).
+- Q: Search analytics retention period? → A: 90 days raw events, aggregated daily forever (Option A).
+- Q: Stripe webhook idempotency strategy? → A: Idempotency keyed on Stripe session ID — skip already-processed events (Option A).
