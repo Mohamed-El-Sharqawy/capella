@@ -7,3 +7,5 @@ export * from "./favourite";
 export * from "./coupon";
 export * from "./common";
 export * from "./content";
+export * from "./payment";
+export * from "./search";
