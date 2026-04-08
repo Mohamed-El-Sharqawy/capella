@@ -39,12 +39,12 @@ export function HeaderNav() {
   return (
     <nav className="flex items-center gap-4 lg:gap-6">
       {/* About */}
-      <Link
+      {/* <Link
         href="/about"
         className="text-[11px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
       >
         {isArabic ? "من نحن" : "About"}
-      </Link>
+      </Link> */}
 
       {/* Shop All */}
       <Link
@@ -111,12 +111,12 @@ export function HeaderNav() {
       </div>
 
       {/* Static items */}
-      <Link
+      {/* <Link
         href="/return-policy"
         className="text-[11px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
       >
         {t("returnPolicy")}
-      </Link>
+      </Link> */}
       <Link
         href="/contact"
         className="text-[11px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"

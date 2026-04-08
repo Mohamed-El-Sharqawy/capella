@@ -30,10 +30,10 @@ export function Header({ locale }: { locale: string }) {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <SearchOverlay />
           </div>
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <LanguageSwitcher />
           </div>
           <UserIcon />
