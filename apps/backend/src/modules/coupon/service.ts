@@ -104,7 +104,11 @@ export abstract class CouponService {
 
     if (userId && coupon.usageLimitPerUser) {
       const userUsageCount = await prisma.order.count({
-        where: { couponId: coupon.id, userId },
+        where: {
+          couponId: coupon.id,
+          userId,
+          status: { notIn: ["CANCELLED", "REFUNDED"] }
+        },
       });
       if (userUsageCount >= coupon.usageLimitPerUser) {
         return { valid: false, error: "You have reached the usage limit for this coupon" };

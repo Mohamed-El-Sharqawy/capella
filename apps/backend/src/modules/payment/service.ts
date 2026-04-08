@@ -319,6 +319,12 @@ export abstract class PaymentService {
       },
     });
 
+    // Increment coupon usage if order has one
+    if (order.couponId) {
+      const { CouponService } = await import("../coupon/service");
+      await CouponService.incrementUsage(order.couponId);
+    }
+
     console.log(`Order ${orderId} marked as CONFIRMED (paid)`);
   }
 
