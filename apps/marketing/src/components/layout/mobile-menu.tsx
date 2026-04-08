@@ -6,6 +6,10 @@ import { Menu, X, ChevronRight, ChevronLeft, User, Globe } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { SearchOverlay } from "./search-overlay";
+import { LanguageSwitcher } from "./language-switcher";
+import { UserIcon } from "./user-icon";
 
 type NavLevel = "main" | "jewellery" | "collections";
 
@@ -140,16 +144,53 @@ export function MobileMenu() {
               </Link>
             </div>
 
-            {/* Footer Area */}
-            <div className="p-6 border-t border-black/10 space-y-8">
-              <Link href="/auth/signin" className="flex items-center gap-4 text-[13px] uppercase tracking-[0.2em] font-medium hover:opacity-60 transition-opacity">
-                <User className="h-5 w-5 stroke-1" />
-                {t("account")}
-              </Link>
-              <Link href={isArabic ? "/en" : "/ar"} className="flex items-center gap-4 text-[13px] uppercase tracking-[0.2em] font-medium hover:opacity-60 transition-opacity">
-                <Globe className="h-5 w-5 stroke-1" />
-                {isArabic ? "English" : "العربية"}
-              </Link>
+            {/* Footer Area - Luxury Actions */}
+            <div className="mt-auto p-8 border-t border-black/5 bg-white/40 backdrop-blur-md">
+              <div className="flex items-center justify-between px-4">
+                <div className="flex flex-col items-center gap-3 group">
+                  <div className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:border-black/20 group-hover:bg-gray-50 transition-all duration-500 text-black/80">
+                    <SearchOverlay />
+                  </div>
+                  <span className="text-[10px] uppercase tracking-[0.25em] text-gray-400 font-light group-hover:text-black transition-colors duration-300">
+                    {isArabic ? "بحث" : "Search"}
+                  </span>
+                </div>
+
+                <div className="w-px h-12 bg-black/5" />
+
+                <div className="flex flex-col items-center gap-3 group px-4">
+                  <LanguageSwitcher
+                    trigger={
+                      <div className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:border-black/20 group-hover:bg-gray-50 transition-all duration-500 text-black/80">
+                        <Image
+                          src={isArabic ? "https://flagcdn.com/w40/ae.png" : "https://flagcdn.com/w40/us.png"}
+                          alt="Language"
+                          width={22}
+                          height={16}
+                          className="rounded-0 outline outline-black/5"
+                        />
+                      </div>
+                    }
+                  />
+                  <span className="text-[10px] uppercase tracking-[0.25em] text-gray-400 font-light group-hover:text-black transition-colors duration-300">
+                    {isArabic ? "العربية" : "EN"}
+                  </span>
+                </div>
+
+                <div className="w-px h-12 bg-black/5" />
+
+                <div className="flex flex-col items-center gap-3 group">
+                  <Link
+                    href="/auth/signin"
+                    className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:border-black/20 group-hover:bg-gray-50 transition-all duration-500 text-black/80"
+                  >
+                    <User className="h-5 w-5 stroke-1" />
+                  </Link>
+                  <span className="text-[10px] uppercase tracking-[0.25em] text-gray-400 font-light group-hover:text-black transition-colors duration-300">
+                    {isArabic ? "حسابي" : "Account"}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -159,7 +200,7 @@ export function MobileMenu() {
   return (
     <>
       <button
-        className="p-2 -ml-2 text-black hover:opacity-60 transition-opacity"
+        className={`p-2 ${isArabic ? "-mr-2" : "-ml-2"} text-black hover:opacity-60 transition-opacity`}
         onClick={() => setIsOpen(true)}
         aria-label="Open menu"
       >
@@ -184,20 +225,21 @@ export function MobileMenu() {
 
               {/* Sheet */}
               <motion.div
+                dir={isArabic ? "rtl" : "ltr"}
                 initial={{ x: isArabic ? "100%" : "-100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: isArabic ? "100%" : "-100%" }}
                 transition={{ type: "tween", duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
-                className="relative h-full w-[90%] max-w-sm bg-[#F2F2F2] shadow-2xl flex flex-col overflow-hidden"
+                className="relative h-full w-[90%] max-w-sm bg-[#F2F2F2] shadow-2xl flex flex-col overflow-hidden text-start"
               >
                 {/* Close Button Header */}
-                <div 
+                <div
                   style={{ top: 32 }}
-                  className="absolute left-0 right-0 p-6 z-10"
+                  className={`absolute ${isArabic ? "right-0" : "left-0"} p-6 z-10`}
                 >
                   <button
                     onClick={() => setIsOpen(false)}
-                    className="p-2 -ml-2 text-black hover:opacity-60 transition-opacity"
+                    className={`p-2 ${isArabic ? "-mr-2" : "-ml-2"} text-black hover:opacity-60 transition-opacity`}
                     aria-label="Close menu"
                   >
                     <X className="h-7 w-7 stroke-1" />
