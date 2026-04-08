@@ -30,6 +30,7 @@ export const PaymentModel = {
     // Address ID (for authenticated users with saved address)
     addressId: t.Optional(t.String()),
     note: t.Optional(t.String()),
+    locale: t.Optional(t.String()),
   }),
   webhookHeaders: t.Object({
     "stripe-signature": t.String(),

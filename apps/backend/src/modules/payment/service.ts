@@ -32,7 +32,8 @@ export abstract class PaymentService {
     body: PaymentModel["checkoutBody"],
     userId?: string
   ) {
-    const { items, customerEmail, successUrl, cancelUrl, couponCode, ...shippingData } = body;
+    const { items, customerEmail, successUrl, cancelUrl, couponCode, locale, ...shippingData } = body;
+    const lang = locale || "en";
 
     // 1. Validate stock and get variant details
     const variantIds = items.map((item) => item.variantId);
@@ -169,8 +170,8 @@ export abstract class PaymentService {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
-      success_url: successUrl || `${MARKETING_URL}/en/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${MARKETING_URL}/en/checkout/cancel`,
+      success_url: successUrl || `${MARKETING_URL}/${lang}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: cancelUrl || `${MARKETING_URL}/${lang}/checkout?method=STRIPE${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
       customer_email: customerEmail || shippingData.guestEmail,
       discounts: couponId ? [{ coupon: couponId }] : undefined,
       shipping_options: [

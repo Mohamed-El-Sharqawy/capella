@@ -94,8 +94,7 @@ export function useCheckoutSubmit({
       const payload = formState.paymentMethod === "STRIPE" ? {
         ...orderData,
         customerEmail: isAuthenticated ? undefined : formState.email,
-        successUrl: `${window.location.origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${window.location.origin}/${locale}/checkout`,
+        locale,
       } : orderData;
 
       const data = await apiPost<{ data: { id?: string; orderNumber?: string; url?: string } }>(
@@ -104,20 +103,25 @@ export function useCheckoutSubmit({
         { token: token || undefined }
       );
 
+      // Save address for future use if user is authenticated and checkbox is checked
+      if (isAuthenticated && saveAddress && !selectedAddressId) {
+        try {
+          await onSaveAddress();
+        } catch (addrError) {
+          console.error("Failed to save address:", addrError);
+          // We don't block checkout if address saving fails, but we log it
+        }
+      }
+
       // If Stripe, redirect to the provided URL
       if (formState.paymentMethod === "STRIPE" && data.data?.url) {
         window.location.href = data.data.url;
         return;
       }
 
-      // Only clear cart when purchasing from cart (not buy-now)
+      // Codes below only run for non-Stripe (COD) orders
       if (!isBuyNow) {
         clearCart();
-      }
-
-      // Save address for future use if user is authenticated and checkbox is checked
-      if (isAuthenticated && saveAddress && !selectedAddressId) {
-        await onSaveAddress();
       }
 
       // Trigger order success callback (e.g., to refetch orders)

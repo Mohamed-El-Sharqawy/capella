@@ -7,3 +7,4 @@ export { GuestBenefitsPrompt } from "./guest-benefits-prompt";
 export { PaymentMethodSection } from "./payment-method-section";
 export { OrderSummarySection } from "./order-summary-section";
 export { CouponSection } from "./coupon-section";
+export { OrderConfirmationModal } from "./order-confirmation-modal";

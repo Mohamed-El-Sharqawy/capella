@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/contexts/cart-context";
@@ -24,8 +24,9 @@ import {
   GuestBenefitsPrompt,
   PaymentMethodSection,
   OrderSummarySection,
+  OrderConfirmationModal,
 } from "./components";
-import { CHECKOUT_ROUTES } from "./constants";
+import { CHECKOUT_ROUTES, SHIPPING_COST } from "./constants";
 import type { CheckoutPageClientProps } from "./types";
 
 function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
@@ -33,6 +34,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   const { items: cartItems, total: cartTotal, isLoading: cartLoading } = useCart();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { fetchOrders } = useOrders();
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   // Buy now mode
   const { isBuyNow, buyNowItem, isBuyNowLoading } = useBuyNow();
@@ -64,7 +66,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
     error: couponError,
     applyCoupon,
     removeCoupon,
-  } = useCoupon();
+  } = useCoupon(total);
 
   // Submit handler
   const { isSubmitting, orderId, orderSuccess, handleSubmit } = useCheckoutSubmit({
@@ -88,6 +90,17 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
     onOrderSuccess: fetchOrders,
     locale,
   });
+
+  const onPreSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsConfirmModalOpen(true);
+  };
+
+  const onFinalSubmit = () => {
+    setIsConfirmModalOpen(false);
+    // Call handleSubmit with a mock event
+    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+  };
 
   // Track checkout view on mount
   useEffect(() => {
@@ -133,7 +146,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
 
       <h1 className="text-2xl font-semibold mb-8">{t("title")}</h1>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={onPreSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left: Form */}
           <div className="lg:col-span-2 space-y-8">
@@ -179,6 +192,18 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
           </div>
         </div>
       </form>
+
+      <OrderConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={onFinalSubmit}
+        items={items}
+        total={total}
+        formState={formState}
+        discountAmount={discountAmount}
+        shippingCost={SHIPPING_COST}
+        locale={locale}
+      />
     </div>
   );
 }
