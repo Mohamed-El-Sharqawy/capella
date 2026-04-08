@@ -99,7 +99,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
               speed="normal"
               isArabic={locale === "ar"}
             />
-            <Header />
+            <Header locale={locale} />
             <main>{children}</main>
             <Footer locale={locale} />
             <CartDrawer locale={locale} />

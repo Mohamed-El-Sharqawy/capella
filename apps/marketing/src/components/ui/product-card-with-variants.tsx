@@ -127,7 +127,7 @@ export function ProductCardWithVariants({
     });
     addItem(newCartItem);
     trackQuickAddToCart(product.id, variantToAdd.id, name, variantToAdd.price, 1);
-    
+
     // Show success state briefly
     setTimeout(() => {
       setIsAdding(false);
@@ -171,11 +171,10 @@ export function ProductCardWithVariants({
                     src={primaryImage}
                     alt={name}
                     fill
-                    className={`object-cover select-none transition-all duration-700 ease-out rounded-xl ${
-                      isImageHovered && hoverImage
-                        ? "opacity-0 scale-105"
-                        : "opacity-100 scale-100"
-                    }`}
+                    className={`object-cover select-none transition-all duration-700 ease-out rounded-xl ${isImageHovered && hoverImage
+                      ? "opacity-0 scale-105"
+                      : "opacity-100 scale-100"
+                      }`}
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                   {hoverImage && (
@@ -183,11 +182,10 @@ export function ProductCardWithVariants({
                       src={hoverImage}
                       alt={name}
                       fill
-                      className={`object-cover select-none transition-all duration-1000 ease-out pointer-events-none ${
-                        isImageHovered
-                          ? "opacity-100 scale-110"
-                          : "opacity-0 scale-100"
-                      }`}
+                      className={`object-cover select-none transition-all duration-1000 ease-out pointer-events-none ${isImageHovered
+                        ? "opacity-100 scale-110"
+                        : "opacity-0 scale-100"
+                        }`}
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
                   )}
@@ -218,9 +216,8 @@ export function ProductCardWithVariants({
                       trackFavouriteToggle(product.id, "add");
                     }
                   }}
-                  className={`p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition hover:scale-110 ${
-                    isFavourite ? "text-red-500" : "text-gray-600 hover:text-red-500"
-                  }`}
+                  className={`p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition hover:scale-110 ${isFavourite ? "text-red-500" : "text-gray-600 hover:text-red-500"
+                    }`}
                   aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
                 >
                   <Heart className={`h-4 w-4 ${isFavourite ? "fill-current" : ""}`} />
@@ -237,9 +234,8 @@ export function ProductCardWithVariants({
                       trackWishlistToggle(product.id, "add");
                     }
                   }}
-                  className={`p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition hover:scale-110 ${
-                    isInWishlist ? "text-blue-500" : "text-gray-600 hover:text-blue-500"
-                  }`}
+                  className={`p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm transition hover:scale-110 ${isInWishlist ? "text-blue-500" : "text-gray-600 hover:text-blue-500"
+                    }`}
                   aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
                 >
                   <Bookmark className={`h-4 w-4 ${isInWishlist ? "fill-current" : ""}`} />
@@ -250,11 +246,10 @@ export function ProductCardWithVariants({
 
           {/* Hover Overlay with Quick Actions - Hidden on mobile, visible on tablets and up */}
           <div
-            className={`hidden md:block absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm transition-all duration-300 ${
-              isCardHovered
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4 pointer-events-none"
-            }`}
+            className={`hidden md:block absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm transition-all duration-300 ${isCardHovered
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4 pointer-events-none"
+              }`}
           >
             {/* Quick Action Buttons */}
             <div className="flex border-b">
@@ -319,11 +314,10 @@ export function ProductCardWithVariants({
                   <button
                     key={size.id}
                     onClick={() => handleSizeSelect(size.id)}
-                    className={`min-w-[36px] px-2 py-1.5 text-xs font-medium border rounded transition ${
-                      selectedSizeId === size.id
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "border-border hover:border-primary"
-                    }`}
+                    className={`min-w-[36px] px-2 py-1.5 text-xs font-medium border rounded transition ${selectedSizeId === size.id
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border hover:border-primary"
+                      }`}
                   >
                     {isArabic ? size.nameAr : size.nameEn}
                   </button>
@@ -342,11 +336,11 @@ export function ProductCardWithVariants({
           <div className="flex items-center gap-2">
             {compareAtPrice && compareAtPrice > price && (
               <span className="text-sm text-muted-foreground line-through">
-                LE {compareAtPrice.toLocaleString()}
+                AED {compareAtPrice.toLocaleString()}
               </span>
             )}
             <span className="text-sm font-semibold text-red-600">
-              LE {price.toLocaleString()}
+              AED {price.toLocaleString()}
             </span>
           </div>
 
@@ -355,11 +349,10 @@ export function ProductCardWithVariants({
               {uniqueColors.map((color) => (
                 <button
                   key={color.id}
-                  className={`h-4 w-4 rounded-full border transition-transform hover:scale-125 ${
-                    selectedVariant?.color?.id === color.id
-                      ? "border-primary ring-1 ring-primary ring-offset-1"
-                      : "border-border"
-                  }`}
+                  className={`h-4 w-4 rounded-full border transition-transform hover:scale-125 ${selectedVariant?.color?.id === color.id
+                    ? "border-primary ring-1 ring-primary ring-offset-1"
+                    : "border-border"
+                    }`}
                   style={{ backgroundColor: color.hex }}
                   onMouseEnter={() => handleColorHover(color.id)}
                   aria-label={isArabic ? color.nameAr : color.nameEn}

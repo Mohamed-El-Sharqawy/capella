@@ -196,7 +196,7 @@ export abstract class CollectionService {
       where: { isFeaturedOnHome: true, isActive: true },
       include: { image: true },
       orderBy: { homeFeaturedPosition: "asc" },
-      take: 5, // Up to 5 collections: 2 on top row, 3 on bottom row
+      take: 3, // 3 collections in a single row
     });
   }
 }

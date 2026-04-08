@@ -34,7 +34,7 @@ interface SearchResults {
 export function GlobalSearch() {
   const locale = useLocale();
   const isArabic = locale === "ar";
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -209,7 +209,7 @@ export function GlobalSearch() {
                             </p>
                             {product.price && (
                               <p className="text-sm text-gray-500">
-                                LE {product.price.toLocaleString()}
+                                AED {product.price.toLocaleString()}
                               </p>
                             )}
                           </div>

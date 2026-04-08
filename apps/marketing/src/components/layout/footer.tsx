@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { Facebook, Instagram, Twitter } from "lucide-react";
+import Image from "next/image";
 
 interface FooterProps {
   locale: string;
@@ -32,7 +33,7 @@ export function Footer({ locale }: FooterProps) {
           {/* Brand & Newsletter */}
           <div className="md:col-span-2 space-y-8">
             <Link href="/" className="text-2xl font-light uppercase tracking-[0.3em]">
-              capella
+              <Image src="/logo_capella.webp" alt="Logo" width={200} height={200} />
             </Link>
             <div className="max-w-md space-y-4">
               <h3 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-gray-400">

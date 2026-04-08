@@ -102,15 +102,15 @@ export abstract class PaymentService {
         const now = new Date();
         if (!coupon.expiresAt || coupon.expiresAt > now) {
           if (coupon.minOrderAmount && total < coupon.minOrderAmount) {
-            throw new Error(`Minimum purchase amount is ${coupon.minOrderAmount} AED`);
+            throw new Error(`Minimum purchase amount is ${coupon.minOrderAmount} AED `);
           }
-          
+
           if (coupon.discountType === "PERCENTAGE") {
             discountAmount = (total * coupon.discountValue) / 100;
           } else {
             discountAmount = coupon.discountValue;
           }
-          
+
           // Create Stripe coupon for the discount
           const stripeCoupon = await getStripe().coupons.create({
             amount_off: Math.round(discountAmount * 100),
@@ -265,7 +265,7 @@ export abstract class PaymentService {
       if (!variant || variant.stock < item.quantity) {
         // Out of stock - refund and mark as REFUNDED
         console.error(`Insufficient stock for variant ${item.variantId}, refunding`);
-        
+
         if (session.payment_intent) {
           await getStripe().refunds.create({
             payment_intent: session.payment_intent as string,

@@ -69,15 +69,59 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
   const subtitle = isArabic ? currentBanner.subtitleAr : currentBanner.subtitleEn;
   const buttonText = isArabic ? currentBanner.buttonTextAr : currentBanner.buttonTextEn;
 
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const minSwipeDistance = 50;
+
+  const handleStart = (clientX: number) => {
+    setTouchStart(clientX);
+    setTouchEnd(null);
+  };
+
+  const handleMove = (clientX: number) => {
+    if (touchStart !== null) {
+      setTouchEnd(clientX);
+    }
+  };
+
+  const handleEnd = () => {
+    if (touchStart === null || touchEnd === null) {
+      setTouchStart(null);
+      setTouchEnd(null);
+      return;
+    }
+
+    const distance = touchStart - touchEnd;
+    if (Math.abs(distance) > minSwipeDistance) {
+      if (distance > 0) {
+        goToNext();
+      } else {
+        goToPrev();
+      }
+      resetAutoPlayTimer();
+    }
+
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
   return (
-    <section className="relative w-full h-[70vh] md:h-[85vh] overflow-hidden bg-black">
+    <section
+      className="relative w-full h-[60vh] md:h-[75vh] overflow-hidden bg-black touch-pan-y select-none cursor-grab active:cursor-grabbing"
+      onTouchStart={(e) => handleStart(e.targetTouches[0].clientX)}
+      onTouchMove={(e) => handleMove(e.targetTouches[0].clientX)}
+      onTouchEnd={handleEnd}
+      onMouseDown={(e) => handleStart(e.clientX)}
+      onMouseMove={(e) => handleMove(e.clientX)}
+      onMouseUp={handleEnd}
+      onMouseLeave={handleEnd}
+    >
       {/* Banner Images */}
       {activeBanners.map((banner, index) => (
         <div
           key={banner.id}
-          className={`absolute inset-0 transition-opacity duration-700 ${
-            index === currentIndex ? "opacity-100" : "opacity-0"
-          }`}
+          className={`absolute inset-0 transition-opacity duration-700 ${index === currentIndex ? "opacity-100" : "opacity-0"
+            }`}
         >
           <Image
             src={banner.imageUrl}
@@ -87,6 +131,7 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
             priority={index === 0}
             className="object-cover"
             sizes="100vw"
+            draggable={false}
           />
           {/* Subtle overlay */}
           <div className="absolute inset-0 bg-black/10" />
@@ -142,9 +187,8 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full border-2 border-white transition ${
-                index === currentIndex ? "bg-white" : "bg-transparent"
-              }`}
+              className={`w-3 h-3 rounded-full border-2 border-white transition ${index === currentIndex ? "bg-white" : "bg-transparent"
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

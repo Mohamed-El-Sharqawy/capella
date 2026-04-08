@@ -48,11 +48,10 @@ function ReviewCard({ review, locale }: { review: Review; locale: string }) {
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            className={`h-4 w-4 ${
-              i < review.rating
-                ? "fill-orange-400 text-orange-400"
-                : "fill-gray-200 text-gray-200"
-            }`}
+            className={`h-4 w-4 ${i < review.rating
+              ? "fill-orange-400 text-orange-400"
+              : "fill-gray-200 text-gray-200"
+              }`}
           />
         ))}
       </div>
@@ -94,11 +93,11 @@ function ReviewCard({ review, locale }: { review: Review; locale: string }) {
             <div className="flex items-center gap-2">
               {compareAtPrice && compareAtPrice > price && (
                 <span className="text-xs text-muted-foreground line-through">
-                  LE {compareAtPrice.toLocaleString()}
+                  AED {compareAtPrice.toLocaleString()}
                 </span>
               )}
               <span className="text-sm font-semibold">
-                LE {price.toLocaleString()}
+                AED {price.toLocaleString()}
               </span>
             </div>
           </div>

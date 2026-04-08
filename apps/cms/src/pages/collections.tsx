@@ -49,6 +49,7 @@ export function CollectionsPage() {
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
   const [selectedBannerFile, setSelectedBannerFile] = useState<File | null>(null);
   const [bannerPreviewUrl, setBannerPreviewUrl] = useState<string | null>(null);
+  const [selectedHomePosition, setSelectedHomePosition] = useState<number>(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -189,11 +190,13 @@ export function CollectionsPage() {
     setEditingCollection(collection);
     setPreviewUrl(collection.image?.url ?? null);
     setBannerPreviewUrl((collection as any).banner?.url ?? null);
+    setSelectedHomePosition((collection as any).homeFeaturedPosition ?? 1);
     setIsDialogOpen(true);
   };
 
   const openCreate = () => {
     setEditingCollection(null);
+    setSelectedHomePosition(1);
     clearFile();
     clearBannerFile();
     setIsDialogOpen(true);
@@ -556,27 +559,29 @@ export function CollectionsPage() {
 
               <div className="grid gap-2">
                 <Label htmlFor="homeFeaturedPosition">Homepage Position</Label>
-                <Select name="homeFeaturedPosition" defaultValue={String((editingCollection as any)?.homeFeaturedPosition ?? 1)}>
+                <Select 
+                  name="homeFeaturedPosition" 
+                  defaultValue={String(selectedHomePosition)}
+                  onValueChange={(v) => setSelectedHomePosition(Number(v))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select position" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Position 1 (Top Left)</SelectItem>
-                    <SelectItem value="2">Position 2 (Top Right)</SelectItem>
-                    <SelectItem value="3">Position 3 (Bottom Left)</SelectItem>
-                    <SelectItem value="4">Position 4 (Bottom Center)</SelectItem>
-                    <SelectItem value="5">Position 5 (Bottom Right)</SelectItem>
+                    <SelectItem value="1">Position 1 (Left)</SelectItem>
+                    <SelectItem value="2">Position 2 (Middle)</SelectItem>
+                    <SelectItem value="3">Position 3 (Right)</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Up to 5 collections: 2 on top row, 3 on bottom row
+                  Shows in the 3-image grid on the homepage
                 </p>
               </div>
 
               <div className="grid gap-2">
                 <Label>Image</Label>
                 <p className="text-xs text-muted-foreground">
-                  Recommended: 337 × 505 px
+                  Recommended: 800 × 1200 px (Portrait 2:3 or 3:4)
                 </p>
                 {previewUrl ? (
                   <div className="relative rounded-lg overflow-hidden border" style={{ width: 337, height: 505 }}>

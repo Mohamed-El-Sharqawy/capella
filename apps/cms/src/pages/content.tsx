@@ -205,10 +205,10 @@ function ShoppableVideosSection() {
                   </p>
                   {video.product?.variants?.[0] && (
                     <p className="text-sm text-muted-foreground">
-                      LE {video.product.variants[0].price.toFixed(2)}
+                      AED {video.product.variants[0].price.toFixed(2)}
                       {video.product.variants[0].compareAtPrice && (
                         <span className="line-through ml-2">
-                          LE {video.product.variants[0].compareAtPrice.toFixed(2)}
+                          AED {video.product.variants[0].compareAtPrice.toFixed(2)}
                         </span>
                       )}
                     </p>

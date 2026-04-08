@@ -13,7 +13,7 @@ export function OrderSummary({ total }: OrderSummaryProps) {
     <div className="bg-gray-50 rounded-lg p-6 sticky top-4">
       <div className="flex items-center justify-between mb-4">
         <span className="text-muted-foreground">{t("subtotal")}</span>
-        <span className="text-xl font-bold">LE {total.toLocaleString()} EGP</span>
+        <span className="text-xl font-bold">AED {total.toLocaleString()} EGP</span>
       </div>
 
       <Link

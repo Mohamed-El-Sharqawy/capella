@@ -151,7 +151,7 @@ export function FrequentlyBoughtTogether({
                       {productName}
                     </p>
 
-                    <p className="text-xs font-semibold mt-0.5">LE {productPrice.toLocaleString()}</p>
+                    <p className="text-xs font-semibold mt-0.5">AED {productPrice.toLocaleString()}</p>
                   </div>
 
                   {index < allProducts.length - 1 && (
@@ -171,7 +171,7 @@ export function FrequentlyBoughtTogether({
               <p className="text-xs text-muted-foreground">
                 {selectedCount} {t("items")}
               </p>
-              <p className="text-lg font-bold">LE {totalPrice.toLocaleString()}</p>
+              <p className="text-lg font-bold">AED {totalPrice.toLocaleString()}</p>
             </div>
 
             <button
@@ -233,7 +233,7 @@ export function FrequentlyBoughtTogether({
                     {productName}
                   </p>
 
-                  <p className="text-sm font-semibold mt-1">LE {productPrice.toLocaleString()}</p>
+                  <p className="text-sm font-semibold mt-1">AED {productPrice.toLocaleString()}</p>
                 </div>
 
                 {index < allProducts.length - 1 && (
@@ -251,7 +251,7 @@ export function FrequentlyBoughtTogether({
             <p className="text-sm text-muted-foreground mb-1">
               {t("totalForItems", { count: selectedCount })}
             </p>
-            <p className="text-2xl font-bold">LE {totalPrice.toLocaleString()}</p>
+            <p className="text-2xl font-bold">AED {totalPrice.toLocaleString()}</p>
           </div>
 
           <button

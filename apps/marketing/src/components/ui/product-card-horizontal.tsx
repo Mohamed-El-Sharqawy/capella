@@ -111,11 +111,11 @@ export function ProductCardHorizontal({
           <div className="flex items-center gap-2 mt-1">
             {compareAtPrice && compareAtPrice > price && (
               <span className="text-sm text-muted-foreground line-through">
-                LE {compareAtPrice.toLocaleString()}
+                AED {compareAtPrice.toLocaleString()}
               </span>
             )}
             <span className="text-sm font-semibold text-red-600">
-              LE {price.toLocaleString()}
+              AED {price.toLocaleString()}
             </span>
           </div>
 
@@ -133,11 +133,10 @@ export function ProductCardHorizontal({
                 <button
                   key={color.id}
                   onClick={() => handleColorClick(color.id)}
-                  className={`h-6 w-6 rounded-full border-2 transition-transform hover:scale-110 ${
-                    selectedVariant?.color?.id === color.id
-                      ? "border-black ring-1 ring-black ring-offset-1"
-                      : "border-gray-300"
-                  }`}
+                  className={`h-6 w-6 rounded-full border-2 transition-transform hover:scale-110 ${selectedVariant?.color?.id === color.id
+                    ? "border-black ring-1 ring-black ring-offset-1"
+                    : "border-gray-300"
+                    }`}
                   style={{ backgroundColor: color.hex }}
                   aria-label={isArabic ? color.nameAr : color.nameEn}
                 />
@@ -152,11 +151,10 @@ export function ProductCardHorizontal({
                 <button
                   key={size.id}
                   onClick={() => handleSizeSelect(size.id)}
-                  className={`min-w-[36px] px-2 py-1.5 text-xs font-medium border rounded transition ${
-                    selectedSizeId === size.id
-                      ? "bg-black text-white border-black"
-                      : "border-gray-300 hover:border-black"
-                  }`}
+                  className={`min-w-[36px] px-2 py-1.5 text-xs font-medium border rounded transition ${selectedSizeId === size.id
+                    ? "bg-black text-white border-black"
+                    : "border-gray-300 hover:border-black"
+                    }`}
                 >
                   {isArabic ? size.nameAr : size.nameEn}
                 </button>

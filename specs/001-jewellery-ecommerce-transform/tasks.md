@@ -103,7 +103,7 @@ Follow the existing `apps/backend/src/modules/color/` pattern (index.ts, service
 - [ ] T043 Update `apps/marketing/src/components/ui/product-card.tsx` to display `badge` prop (NEW/BESTSELLER/LIMITED_EDITION) as a small label
 - [ ] T044 Add hover zoom animation to product image using CSS `transform: scale(1.05)` on `group-hover`
 - [ ] T045 Add heart/wishlist icon overlay that toggles favourite state (reuse existing `useFavourites` hook)
-- [ ] T046 Fix currency display from "LE" to "AED" in `apps/marketing/src/components/ui/product-card.tsx`
+- [ ] T046 Fix currency display from "LE" to "AED " in `apps/marketing/src/components/ui/product-card.tsx`
 
 ---
 

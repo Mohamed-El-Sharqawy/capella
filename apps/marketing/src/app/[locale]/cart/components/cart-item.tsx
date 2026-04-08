@@ -57,11 +57,11 @@ export function CartItem({ item, locale, onRemove, onUpdateQuantity }: CartItemD
         <div className="flex flex-col items-center gap-1">
           {item.compareAtPrice && item.compareAtPrice > item.price && (
             <span className="text-xs text-muted-foreground line-through">
-              LE {item.compareAtPrice.toLocaleString()}
+              AED {item.compareAtPrice.toLocaleString()}
             </span>
           )}
           <span className="font-medium text-red-600">
-            LE {item.price.toLocaleString()}
+            AED {item.price.toLocaleString()}
           </span>
         </div>
       </div>
@@ -87,7 +87,7 @@ export function CartItem({ item, locale, onRemove, onUpdateQuantity }: CartItemD
 
       {/* Total */}
       <div className="col-span-4 md:col-span-2 text-right font-medium">
-        LE {(item.price * item.quantity).toLocaleString()}
+        AED {(item.price * item.quantity).toLocaleString()}
       </div>
     </div>
   );

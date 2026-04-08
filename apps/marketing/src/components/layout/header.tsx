@@ -7,7 +7,9 @@ import { SearchOverlay } from "./search-overlay";
 import { LanguageSwitcher } from "./language-switcher";
 import Image from "next/image";
 
-export function Header() {
+export function Header({ locale }: { locale: string }) {
+  const isArabic = locale === "ar";
+
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="mx-auto h-16 md:h-20 max-w-8xl px-4 flex items-center justify-between">
@@ -35,7 +37,7 @@ export function Header() {
             <LanguageSwitcher />
           </div>
           <UserIcon />
-          <CartIcon />
+          <CartIcon isArabic={isArabic} />
         </div>
       </div>
     </header>

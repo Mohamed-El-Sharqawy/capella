@@ -39,7 +39,7 @@ export function RelatedProducts({ products, locale }: RelatedProductsProps) {
                     {Math.round(
                       ((p.variants[0].compareAtPrice - p.variants[0].price) /
                         p.variants[0].compareAtPrice) *
-                        100
+                      100
                     )}
                     %
                   </span>
@@ -50,11 +50,11 @@ export function RelatedProducts({ products, locale }: RelatedProductsProps) {
               {p.variants?.[0]?.compareAtPrice &&
                 p.variants[0].compareAtPrice > p.variants[0].price && (
                   <span className="text-xs text-muted-foreground line-through">
-                    LE {p.variants[0].compareAtPrice.toLocaleString()}
+                    AED {p.variants[0].compareAtPrice.toLocaleString()}
                   </span>
                 )}
               <span className="text-sm font-semibold text-red-600">
-                LE {p.variants?.[0]?.price?.toLocaleString()}
+                AED {p.variants?.[0]?.price?.toLocaleString()}
               </span>
             </div>
             {/* Color swatches */}

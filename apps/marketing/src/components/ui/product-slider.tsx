@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@ecommerce/shared-types";
 import { ProductCardWithVariants } from "./product-card-with-variants";
@@ -15,9 +15,23 @@ export function ProductSlider({ products, locale }: ProductSliderProps) {
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
 
   const isRtl = locale === "ar";
-  const itemsPerPage = 4;
+  
+  // Update items per page based on window width
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth < 640) setItemsPerPage(2);
+      else if (window.innerWidth < 768) setItemsPerPage(3);
+      else setItemsPerPage(4);
+    };
+
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
+
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const minSwipeDistance = 50;
 
@@ -25,7 +39,7 @@ export function ProductSlider({ products, locale }: ProductSliderProps) {
     (page: number) => {
       if (scrollRef.current) {
         const containerWidth = scrollRef.current.clientWidth;
-        const gap = 24; // md:gap-6 = 24px
+        const gap = window.innerWidth >= 768 ? 24 : 16;
         const pageWidth = containerWidth + gap;
         const scrollPosition = pageWidth * page;
 
@@ -36,7 +50,7 @@ export function ProductSlider({ products, locale }: ProductSliderProps) {
         setCurrentPage(page);
       }
     },
-    [isRtl]
+    [isRtl, itemsPerPage]
   );
 
   const handlePrev = () => {
@@ -81,8 +95,6 @@ export function ProductSlider({ products, locale }: ProductSliderProps) {
 
   // Mouse swipe handlers
   const handleMouseDown = (e: React.MouseEvent) => {
-    // Only track if clicking on the container, not on product cards
-    if ((e.target as HTMLElement).closest('a, button')) return;
     setTouchStartX(e.clientX);
     setTouchEndX(e.clientX);
   };
@@ -92,24 +104,29 @@ export function ProductSlider({ products, locale }: ProductSliderProps) {
     setTouchEndX(e.clientX);
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent) => {
     if (touchStartX === 0) return;
     
     const swipeDistance = touchStartX - touchEndX;
     const isSwipeLeft = swipeDistance > minSwipeDistance;
     const isSwipeRight = swipeDistance < -minSwipeDistance;
 
-    if (isRtl) {
-      if (isSwipeRight && currentPage < totalPages - 1) {
-        handleNext();
-      } else if (isSwipeLeft && currentPage > 0) {
-        handlePrev();
-      }
-    } else {
-      if (isSwipeLeft && currentPage < totalPages - 1) {
-        handleNext();
-      } else if (isSwipeRight && currentPage > 0) {
-        handlePrev();
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+      // It was a swipe, prevent link clicks if possible
+      // Actually, we'd need to stopPropagation on the click event too, 
+      // but for now let's just trigger the slide.
+      if (isRtl) {
+        if (isSwipeRight && currentPage < totalPages - 1) {
+          handleNext();
+        } else if (isSwipeLeft && currentPage > 0) {
+          handlePrev();
+        }
+      } else {
+        if (isSwipeLeft && currentPage < totalPages - 1) {
+          handleNext();
+        } else if (isSwipeRight && currentPage > 0) {
+          handlePrev();
+        }
       }
     }
 
@@ -153,7 +170,7 @@ export function ProductSlider({ products, locale }: ProductSliderProps) {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
-        className="flex gap-4 md:gap-6 overflow-hidden pb-4"
+        className="flex gap-4 md:gap-6 overflow-hidden pb-4 select-none cursor-grab active:cursor-grabbing"
       >
         {products.map((product) => (
           <div

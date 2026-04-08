@@ -1,10 +1,16 @@
-"use client";
-
-import { Star, Minus, Plus, Heart, Bookmark, Check, ShoppingCart } from "lucide-react";
+import {
+  Truck,
+  RotateCcw,
+  ShieldCheck,
+  Gift,
+  Share2,
+  Phone
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import type { ProductVariant } from "@ecommerce/shared-types";
+import type { Product, ProductVariant } from "@ecommerce/shared-types";
+import { Accordion, AccordionItem, Checkbox } from "@/components/ui";
 import type { UniqueColor, UniqueSize, SizeAvailability } from "../types";
+import { useState } from "react";
 
 interface CartItemInfo {
   variantId: string;
@@ -12,6 +18,7 @@ interface CartItemInfo {
 }
 
 interface ProductInfoProps {
+  product: Product;
   name: string;
   price: number;
   compareAtPrice?: number | null;
@@ -44,11 +51,11 @@ interface ProductInfoProps {
 }
 
 export function ProductInfo({
+  product,
   name,
   price,
   compareAtPrice,
   discountPercent,
-  reviewCount,
   locale,
   uniqueColors,
   uniqueSizes,
@@ -58,217 +65,141 @@ export function ProductInfo({
   getSizeAvailability,
   hasSizeGuide,
   onOpenSizeGuide,
-  quantity,
-  onIncrement,
-  onDecrement,
   onAddToCart,
   onBuyNow,
   isFavourite,
   isInWishlist,
   onToggleFavourite,
   onToggleWishlist,
-  cartItem,
-  onUpdateCartQuantity,
 }: ProductInfoProps) {
   const t = useTranslations("product");
   const isArabic = locale === "ar";
-  const isInCart = !!cartItem;
+  const [addGiftMessage, setAddGiftMessage] = useState(false);
+
+  const composition = [
+    product.material?.[isArabic ? 'nameAr' : 'nameEn'],
+    product.stone?.[isArabic ? 'nameAr' : 'nameEn'],
+    product.clarity?.[isArabic ? 'nameAr' : 'nameEn']
+  ].filter(Boolean).join(', ');
+
+  const benefits = [
+    { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني خلال 1-2 أيام في الإمارات" : "Complimentary 1-2 days shipping in UAE" },
+    { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني في جميع أنحاء العالم" : "Complimentary worldwide shipping" },
+    { icon: <RotateCcw className="h-4 w-4" />, text: isArabic ? "إرجاع سهل خلال 7 أيام" : "No questions asked 7 days easy returns" },
+    { icon: <ShieldCheck className="h-4 w-4" />, text: isArabic ? "بطاقة أصالة المجوهرات" : "Jewellery authenticity card" },
+    { icon: <Gift className="h-4 w-4" />, text: isArabic ? "تغليف هدايا سامرا الفاخر" : "Signature Samra gift wrapping" },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold mb-2">{name}</h1>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star key={star} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            ))}
-          </div>
-          <span className="text-sm text-muted-foreground">
-            {reviewCount} {t("reviews")}
-          </span>
-        </div>
-
-        {/* Price */}
-        <div className="flex items-center gap-3">
-          <span className="text-2xl font-bold text-red-600">LE {price.toLocaleString()}</span>
-          {compareAtPrice && compareAtPrice > price && (
-            <>
-              <span className="text-lg text-muted-foreground line-through">
-                LE {compareAtPrice.toLocaleString()}
-              </span>
-              <span className="bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded">
-                {discountPercent}% {t("off")}
-              </span>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Color Selection */}
-      {uniqueColors.length > 0 && (
-        <div>
-          <p className="text-sm mb-2">
-            <span className="font-medium">{t("color")}:</span>{" "}
-            <span>{isArabic ? selectedVariant?.color?.nameAr : selectedVariant?.color?.nameEn}</span>
+    <div className="space-y-8 flex flex-col">
+      {/* Title & Price */}
+      <div className="space-y-3">
+        <h1 className="text-xl md:text-2xl font-medium tracking-tight text-gray-900">{name}</h1>
+        {composition && (
+          <p className="text-[11px] md:text-sm text-gray-500 font-light tracking-wide italic">
+            {composition}
           </p>
-          <div className="flex gap-2">
-            {uniqueColors.map((color) => (
-              <button
-                key={color.id}
-                onClick={() => onColorSelect(color.id)}
-                className={`w-8 h-8 rounded-full border-2 transition ${
-                  selectedVariant?.color?.id === color.id
-                    ? "border-black ring-2 ring-offset-2 ring-black"
-                    : "border-gray-300 hover:border-gray-500"
-                }`}
-                style={{ backgroundColor: color.hex }}
-                title={isArabic ? color.nameAr : color.nameEn}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Size Selection */}
-      {uniqueSizes.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm">
-              <span className="font-medium">{t("size")}:</span>{" "}
-              <span>{isArabic ? selectedVariant?.size?.nameAr : selectedVariant?.size?.nameEn}</span>
-            </p>
-            <button
-              onClick={onOpenSizeGuide}
-              className={`text-sm underline ${!hasSizeGuide ? "opacity-50 cursor-not-allowed" : ""}`}
-              disabled={!hasSizeGuide}
-            >
-              {t("sizeGuide")}
-            </button>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {uniqueSizes.map((size) => {
-              const { available, inStock } = getSizeAvailability(size.id);
-              const isSelected = selectedVariant?.size?.id === size.id;
-              const isDisabled = !available;
-              const isOutOfStock = available && !inStock;
-
-              return (
-                <button
-                  key={size.id}
-                  onClick={() => !isDisabled && onSizeSelect(size.id)}
-                  disabled={isDisabled}
-                  className={`relative min-w-[48px] px-4 py-2 border rounded text-sm font-medium transition ${
-                    isSelected
-                      ? "border-black bg-black text-white"
-                      : isDisabled
-                      ? "border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50"
-                      : isOutOfStock
-                      ? "border-gray-300 text-gray-400 line-through"
-                      : "border-gray-300 hover:border-black"
-                  }`}
-                >
-                  {isArabic ? size.nameAr : size.nameEn}
-                  {isOutOfStock && !isSelected && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Quantity */}
-      <div>
-        <p className="text-sm font-medium mb-2">{t("quantity")}</p>
-        <div className="flex items-center border rounded w-fit">
-          <button
-            onClick={onDecrement}
-            className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition"
-          >
-            <Minus className="h-4 w-4" />
-          </button>
-          <span className="w-12 text-center font-medium">{quantity}</span>
-          <button
-            onClick={onIncrement}
-            className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition"
-          >
-            <Plus className="h-4 w-4" />
-          </button>
+        )}
+        <div className="pt-2">
+          <span className="text-lg md:text-xl font-medium">AED {price.toLocaleString()}</span>
         </div>
       </div>
 
-      {/* Favourite & Wishlist */}
-      <div className="flex gap-3 mb-4">
+      {/* Gift Toggle */}
+      <div className="py-4 border-t border-gray-100">
+        <Checkbox
+          id="gift-message"
+          label={isArabic ? "أضف رسالة هدية" : "ADD A GIFT MESSAGE"}
+          checked={addGiftMessage}
+          onChange={setAddGiftMessage}
+        />
+      </div>
+
+      {/* Main Actions */}
+      <div className="space-y-4 mb-0">
         <button
-          onClick={onToggleFavourite}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 border rounded transition ${
-            isFavourite
-              ? "border-red-500 text-red-500 bg-red-50"
-              : "border-gray-300 text-gray-600 hover:border-red-500 hover:text-red-500"
-          }`}
+          onClick={onAddToCart}
+          className="w-full bg-black text-white py-4 text-[11px] font-medium uppercase tracking-[0.3em] hover:bg-neutral-800 transition-colors shadow-sm"
         >
-          <Heart className={`h-5 w-5 ${isFavourite ? "fill-current" : ""}`} />
-          {t("favourite")}
+          {isArabic ? "أضف إلى الحقبة" : "ADD TO BAG"}
         </button>
+
+        {/* Benefits List */}
+        <div className="space-y-3 pt-6 border-t border-gray-100">
+          {benefits.map((benefit, idx) => (
+            <div key={idx} className="flex items-center gap-4 text-gray-600">
+              <span className="text-gray-400">{benefit.icon}</span>
+              <span className="text-[10px] md:text-xs font-light tracking-wider">{benefit.text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Variant Selection (simplified for Samra look) */}
+      <div className="space-y-6">
+        {uniqueColors.length > 0 && (
+          <div>
+            <p className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] mb-3">{isArabic ? "اللون" : "Color"}</p>
+            <div className="flex gap-3">
+              {uniqueColors.map((color) => (
+                <button
+                  key={color.id}
+                  onClick={() => onColorSelect(color.id)}
+                  className={`w-6 h-6 rounded-full border transition-all ${selectedVariant?.color?.id === color.id
+                    ? "border-black ring-1 ring-offset-1 ring-black"
+                    : "border-gray-200"
+                    }`}
+                  style={{ backgroundColor: color.hex }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Accordions */}
+      <div className="pt-4 border-t border-gray-100">
+        <Accordion>
+          <AccordionItem title={isArabic ? "الوصف" : "Description"}>
+            <div className="space-y-4">
+              <p>{isArabic ? product.shortDescriptionAr : product.shortDescriptionEn}</p>
+              <ul className="list-disc pl-4 space-y-1">
+                {product.material && <li>{isArabic ? product.material.nameAr : product.material.nameEn}</li>}
+                {product.stone && <li>{isArabic ? product.stone.nameAr : product.stone.nameEn}</li>}
+              </ul>
+            </div>
+          </AccordionItem>
+          <AccordionItem title={isArabic ? "الشحن والإرجاع" : "Shipping & Returns"}>
+            <p>{isArabic ? "نحن نقدم شحنًا مجانيًا في جميع أنحاء العالم لجميع الطلبات. الإرجاع متاح في غضون 7 أيام." : "We offer complimentary worldwide shipping on all orders. Returns are available within 7 days for any unworn items."}</p>
+          </AccordionItem>
+          <AccordionItem title={isArabic ? "تغليف الطلبات وتقديم الهدايا" : "Order Wrapping & Gifting"}>
+            <p>{isArabic ? "يصل كل طلب من سامرا مغلفًا بذوق رفيع في صندوق هدايا مميز." : "Every Samra order arrives exquisitely wrapped in our signature gift box."}</p>
+          </AccordionItem>
+        </Accordion>
+      </div>
+
+      {/* Secondary Actions */}
+      <div className="space-y-3 pt-6">
+        {/* <button className="w-full py-3 border border-gray-900 text-[10px] font-medium uppercase tracking-widest hover:bg-gray-50 transition-colors">
+          {isArabic ? "حجز موعد" : "BOOK AN APPOINTMENT"}
+        </button> */}
         <button
           onClick={onToggleWishlist}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 border rounded transition ${
-            isInWishlist
-              ? "border-blue-500 text-blue-500 bg-blue-50"
-              : "border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-500"
-          }`}
+          className="w-full py-3 border border-gray-900 text-[10px] font-medium uppercase tracking-widest hover:bg-gray-50 transition-colors"
         >
-          <Bookmark className={`h-5 w-5 ${isInWishlist ? "fill-current" : ""}`} />
-          {t("wishlist")}
+          {isArabic ? (isInWishlist ? "حذف من قائمة الأمنيات" : "إضافة إلى قائمة الأمنيات") : (isInWishlist ? "REMOVE FROM WISHLIST" : "ADD TO WISHLIST")}
         </button>
       </div>
 
-      {/* Add to Cart & Buy Now */}
-      <div className="space-y-3">
-        {isInCart ? (
-          // Show quantity controls when item is in cart
-          <div className="flex items-center gap-3">
-            <div className="flex items-center border-2 border-black rounded flex-1">
-              <button
-                onClick={() => onUpdateCartQuantity(cartItem.variantId, cartItem.quantity - 1)}
-                className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition"
-              >
-                <Minus className="h-4 w-4" />
-              </button>
-              <span className="flex-1 text-center font-semibold text-lg">{cartItem.quantity}</span>
-              <button
-                onClick={() => onUpdateCartQuantity(cartItem.variantId, cartItem.quantity + 1)}
-                className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
-            <Link
-              href="/checkout"
-              className="flex items-center justify-center gap-2 px-6 h-12 bg-black text-white font-semibold rounded hover:bg-gray-800 transition"
-            >
-              <ShoppingCart className="h-4 w-4" />
-              {t("checkout")}
-            </Link>
-          </div>
-        ) : (
-          <button
-            onClick={onAddToCart}
-            className="w-full py-3 border-2 border-black text-black font-semibold rounded hover:bg-gray-100 transition"
-          >
-            {t("addToCart")} - LE {(price * quantity).toLocaleString()}
-          </button>
-        )}
-        <button
-          onClick={onBuyNow}
-          className="w-full py-3 bg-black text-white font-semibold rounded hover:bg-gray-800 transition"
-        >
-          {t("buyNow")}
-        </button>
+      {/* Info & SKU */}
+      <div className="flex justify-between items-center pt-6 border-t border-gray-100">
+        <div className="flex gap-4">
+          <a href="#" className="text-gray-400 hover:text-black transition-colors"><Phone className="h-4 w-4" /></a>
+          <a href="#" className="text-gray-400 hover:text-black transition-colors"><Share2 className="h-4 w-4" /></a>
+        </div>
+        <div className="text-[9px] text-gray-400 uppercase tracking-widest font-light">
+          SKU: {selectedVariant?.sku || "N/A"}
+        </div>
       </div>
     </div>
   );

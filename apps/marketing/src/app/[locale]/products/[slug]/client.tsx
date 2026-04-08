@@ -18,11 +18,11 @@ import {
   ProductInfo,
   ReviewsSection,
   RelatedProducts,
+  QualitySeals,
   FixedBottomBar,
-  FrequentlyBoughtTogether,
   ProductPageSkeleton,
 } from "./components";
-import { FREQUENTLY_BOUGHT_LIMIT } from "./constants";
+import { ProductSlider } from "@/components/ui";
 import type { ProductPageClientProps } from "./types";
 
 function ProductPageContent({ product, relatedProducts, locale }: ProductPageClientProps) {
@@ -90,7 +90,12 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
 
   return (
     <div className="min-h-screen">
-      <ProductBreadcrumb productName={name} />
+      <ProductBreadcrumb
+        productName={name}
+        collectionName={isArabic ? product.collection?.nameAr : product.collection?.nameEn}
+        collectionSlug={product.collection?.slug}
+        locale={locale}
+      />
 
       {/* Main Product Section */}
       <div ref={productInfoRef} className="container mx-auto px-4 pb-12">
@@ -106,6 +111,7 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
 
           {/* Right: Product Info */}
           <ProductInfo
+            product={product}
             name={name}
             price={price}
             compareAtPrice={compareAtPrice}
@@ -145,18 +151,16 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
         onWriteReview={() => setIsReviewModalOpen(true)}
       />
 
-      {/* Frequently Bought Together */}
-      {relatedProducts.length >= FREQUENTLY_BOUGHT_LIMIT && (
-        <FrequentlyBoughtTogether
-          currentProduct={product}
-          relatedProducts={relatedProducts.slice(0, FREQUENTLY_BOUGHT_LIMIT)}
-          locale={locale}
-          selectedVariant={selectedVariant}
-        />
-      )}
-
       {/* Related Products */}
-      <RelatedProducts products={relatedProducts} locale={locale} />
+      <div className="container mx-auto px-4 py-20 border-t border-gray-100">
+        <h2 className="text-xl md:text-2xl font-medium text-center mb-12 uppercase tracking-[0.2em]">
+          {isArabic ? "قد يعجبك أيضاً" : "You may also like"}
+        </h2>
+        <ProductSlider products={relatedProducts} locale={locale} />
+      </div>
+
+      {/* Quality Seals */}
+      <QualitySeals locale={locale} />
 
       {/* Fixed Bottom Bar */}
       <FixedBottomBar

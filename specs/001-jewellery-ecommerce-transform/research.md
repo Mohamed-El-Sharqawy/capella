@@ -14,7 +14,7 @@ session creation, customer redirected to Stripe-hosted payment page).
 - Minimal PCI compliance scope — card data never touches our servers.
 - Stripe handles payment UI, 3D Secure, and Apple/Google Pay natively.
 - Aligns with the constitution: Stripe standard business account only.
-- AED is a supported currency for Stripe Checkout.
+- AED  is a supported currency for Stripe Checkout.
 - Webhook-based confirmation with idempotency keyed on session ID.
 
 **Alternatives Considered**:

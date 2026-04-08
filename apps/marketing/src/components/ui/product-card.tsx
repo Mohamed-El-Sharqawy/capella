@@ -55,16 +55,15 @@ export function ProductCard({ product, locale }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-neutral-50 rounded-sm">
+      <div className="relative aspect-3/4 overflow-hidden bg-neutral-50 rounded-sm">
         {primaryImage ? (
           <>
             <Image
               src={primaryImage}
               alt={name}
               fill
-              className={`object-cover transition-all duration-700 ${
-                isHovered && hoverImage ? "opacity-0" : "opacity-100"
-              } ${isHovered ? "scale-110" : "scale-100"}`}
+              className={`object-cover transition-all duration-700 ${isHovered && hoverImage ? "opacity-0" : "opacity-100"
+                } ${isHovered ? "scale-110" : "scale-100"}`}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             />
             {hoverImage && (
@@ -72,9 +71,8 @@ export function ProductCard({ product, locale }: ProductCardProps) {
                 src={hoverImage}
                 alt={name}
                 fill
-                className={`object-cover transition-all duration-700 ${
-                  isHovered ? "opacity-100 scale-110" : "opacity-0 scale-100"
-                }`}
+                className={`object-cover transition-all duration-700 ${isHovered ? "opacity-100 scale-110" : "opacity-0 scale-100"
+                  }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             )}
@@ -99,9 +97,8 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >
           <Heart
-            className={`h-4 w-4 transition-colors ${
-              isWishlisted ? "fill-black text-black" : "text-black/40 hover:text-black"
-            }`}
+            className={`h-4 w-4 transition-colors ${isWishlisted ? "fill-black text-black" : "text-black/40 hover:text-black"
+              }`}
           />
         </button>
       </div>
@@ -113,11 +110,11 @@ export function ProductCard({ product, locale }: ProductCardProps) {
         <div className="flex flex-col items-center gap-0.5">
           {compareAtPrice && compareAtPrice > price && (
             <span className="text-[10px] text-muted-foreground line-through tracking-wider">
-              AED {compareAtPrice.toLocaleString()}
+              AED  {compareAtPrice.toLocaleString()}
             </span>
           )}
           <span className="text-xs font-semibold tracking-widest text-black">
-            AED {price.toLocaleString()}
+            AED  {price.toLocaleString()}
           </span>
         </div>
       </div>

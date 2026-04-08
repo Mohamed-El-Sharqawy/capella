@@ -1,26 +1,39 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Menu, X, ChevronRight, Search, User, Globe } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Menu, X, ChevronRight, ChevronLeft, User, Globe } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/contexts/auth-context";
+
+type NavLevel = "main" | "jewellery" | "collections";
 
 export function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const [level, setLevel] = useState<NavLevel>("main");
+  const [mounted, setMounted] = useState(false);
   const t = useTranslations("header");
   const locale = useLocale();
   const pathname = usePathname();
-  const { isAuthenticated } = useAuth();
   const isArabic = locale === "ar";
 
-  // Close menu when pathname changes
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Reset level when closing or changing route
+  useEffect(() => {
+    if (!isOpen) {
+      setTimeout(() => setLevel("main"), 300);
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
 
-  // Lock body scroll when menu is open
+  // Lock body scroll
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -32,13 +45,116 @@ export function MobileMenu() {
     };
   }, [isOpen]);
 
-  const navItems = useMemo(() => [
-    { label: isArabic ? "من نحن" : "About Us", href: "/about" },
-    { label: isArabic ? "عرض الكل" : "Shop All", href: "/collections/all-products" },
-    { label: isArabic ? "المجموعات" : "Collections", href: "/collections" },
-    { label: isArabic ? "سياسة الاستبدال" : "Return Policy", href: "/return-policy" },
-    { label: isArabic ? "تواصل معنا" : "Contact Us", href: "/contact" },
-  ], [isArabic]);
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? (isArabic ? "-100%" : "100%") : (isArabic ? "100%" : "-100%"),
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? (isArabic ? "-100%" : "100%") : (isArabic ? "100%" : "-100%"),
+      opacity: 0,
+    }),
+  };
+
+  const navContent = useMemo(() => {
+    switch (level) {
+      case "jewellery":
+        return (
+          <div className="flex flex-col h-full bg-[#F2F2F2]">
+            <button
+              onClick={() => setLevel("main")}
+              className="flex items-center gap-2 p-6 text-[11px] uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
+            >
+              <ChevronLeft className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} />
+              {isArabic ? "العودة" : "Back"}
+            </button>
+            <div className="px-6 py-4 space-y-8">
+              <Link href="/collections/all-products" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
+                {isArabic ? "عرض الكل" : "Shop All"}
+              </Link>
+              <Link href="/collections/necklaces" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
+                {isArabic ? "قلائد" : "Necklaces"}
+              </Link>
+              <Link href="/collections/bracelets" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
+                {isArabic ? "أساور" : "Bracelets"}
+              </Link>
+              <Link href="/collections/rings" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
+                {isArabic ? "خواتم" : "Rings"}
+              </Link>
+              <Link href="/collections/earrings" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
+                {isArabic ? "أقراط" : "Earrings"}
+              </Link>
+            </div>
+          </div>
+        );
+      case "collections":
+        return (
+          <div className="flex flex-col h-full bg-[#F2F2F2]">
+            <button
+              onClick={() => setLevel("main")}
+              className="flex items-center gap-2 p-6 text-[11px] uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
+            >
+              <ChevronLeft className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} />
+              {isArabic ? "العودة" : "Back"}
+            </button>
+            <div className="px-6 py-4 space-y-8">
+              <Link href="/collections/bridal" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
+                {isArabic ? "مجموعة العرس" : "Bridal Selection"}
+              </Link>
+              <Link href="/collections/high-jewellery" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
+                {isArabic ? "مجوهرات راقية" : "High Jewellery"}
+              </Link>
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <div className="flex flex-col h-full bg-[#F2F2F2]">
+            {/* Header placeholder for alignment */}
+            <div className="h-20" />
+
+            <div className="flex-1 px-6 py-4 space-y-10">
+              <button
+                onClick={() => setLevel("jewellery")}
+                className="w-full flex items-center justify-between text-3xl font-light tracking-wide hover:opacity-60 transition-all group"
+              >
+                <span>{isArabic ? "مجوهرات" : "Jewellery"}</span>
+                <ChevronRight className={`h-6 w-6 text-black/20 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
+              </button>
+              <button
+                onClick={() => setLevel("collections")}
+                className="w-full flex items-center justify-between text-3xl font-light tracking-wide hover:opacity-60 transition-all group"
+              >
+                <span>{isArabic ? "تصفح المجموعات" : "Collections"}</span>
+                <ChevronRight className={`h-6 w-6 text-black/20 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
+              </button>
+              <Link href="/about" className="block text-3xl font-light tracking-wide hover:opacity-60 transition-opacity">
+                {isArabic ? "قصتنا" : "House of Capella"}
+              </Link>
+              <Link href="/virtual-tailor" className="block text-3xl font-light tracking-wide hover:opacity-60 transition-opacity">
+                {t("virtualTailor")}
+              </Link>
+            </div>
+
+            {/* Footer Area */}
+            <div className="p-6 border-t border-black/10 space-y-8">
+              <Link href="/auth/signin" className="flex items-center gap-4 text-[13px] uppercase tracking-[0.2em] font-medium hover:opacity-60 transition-opacity">
+                <User className="h-5 w-5 stroke-1" />
+                {t("account")}
+              </Link>
+              <Link href={isArabic ? "/en" : "/ar"} className="flex items-center gap-4 text-[13px] uppercase tracking-[0.2em] font-medium hover:opacity-60 transition-opacity">
+                <Globe className="h-5 w-5 stroke-1" />
+                {isArabic ? "English" : "العربية"}
+              </Link>
+            </div>
+          </div>
+        );
+    }
+  }, [level, isArabic, t]);
 
   return (
     <>
@@ -50,96 +166,69 @@ export function MobileMenu() {
         <Menu className="h-6 w-6 stroke-1" />
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <div className="fixed inset-0 z-100">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            />
-
-            {/* Sheet */}
-            <motion.div
-              initial={{ x: isArabic ? "100%" : "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: isArabic ? "100%" : "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className={`absolute inset-y-0 ${isArabic ? "right-0" : "left-0"} w-[85%] max-w-sm bg-white shadow-2xl flex flex-col`}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {isOpen && (
+            <div
+              style={{ zIndex: 99999 }}
+              className={`fixed inset-0 flex ${isArabic ? "justify-end" : "justify-start"}`}
             >
-              {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-50">
-                <span className="text-xs font-medium uppercase tracking-[0.3em]">
-                  {isArabic ? "القائمة" : "Menu"}
-                </span>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="p-2 -mr-2 text-black hover:opacity-60 transition-opacity"
-                  aria-label="Close menu"
-                >
-                  <X className="h-6 w-6 stroke-1" />
-                </button>
-              </div>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsOpen(false)}
+                className="absolute inset-0 bg-white backdrop-blur-sm"
+              />
 
-              {/* Enhanced Content */}
-              <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
-                {/* Secondary Actions Row */}
-                <div className="grid grid-cols-2 border-b border-gray-50">
-                  <Link 
-                    href={isAuthenticated ? "/account" : "/auth/signin"}
-                    className="flex flex-col items-center justify-center py-8 gap-2 hover:bg-gray-50 transition-colors border-r border-gray-50"
+              {/* Sheet */}
+              <motion.div
+                initial={{ x: isArabic ? "100%" : "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: isArabic ? "100%" : "-100%" }}
+                transition={{ type: "tween", duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
+                className="relative h-full w-[90%] max-w-sm bg-[#F2F2F2] shadow-2xl flex flex-col overflow-hidden"
+              >
+                {/* Close Button Header */}
+                <div 
+                  style={{ top: 32 }}
+                  className="absolute left-0 right-0 p-6 z-10"
+                >
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="p-2 -ml-2 text-black hover:opacity-60 transition-opacity"
+                    aria-label="Close menu"
                   >
-                    <User className="h-5 w-5 stroke-1" />
-                    <span className="text-[10px] uppercase tracking-widest text-gray-500">
-                      {isArabic ? "حسابي" : "Account"}
-                    </span>
-                  </Link>
-                  <Link 
-                    href={isArabic ? "/en" : "/ar"}
-                    className="flex flex-col items-center justify-center py-8 gap-2 hover:bg-gray-50 transition-colors"
-                  >
-                    <Globe className="h-5 w-5 stroke-1" />
-                    <span className="text-[10px] uppercase tracking-widest text-gray-500">
-                      {isArabic ? "English" : "العربية"}
-                    </span>
-                  </Link>
+                    <X className="h-7 w-7 stroke-1" />
+                  </button>
                 </div>
 
-                {/* Primary Nav */}
-                <nav className="py-8">
-                  <div className="flex flex-col">
-                    {navItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="group flex items-center justify-between px-8 py-5 border-b border-gray-50/50 hover:bg-gray-50 transition-colors"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <span className="text-[13px] font-medium uppercase tracking-[0.2em] group-hover:pl-2 transition-all">
-                          {item.label}
-                        </span>
-                        <ChevronRight className={`h-4 w-4 text-gray-200 transition-transform group-hover:translate-x-1 ${isArabic ? "rotate-180" : ""}`} />
-                      </Link>
-                    ))}
-                  </div>
-                </nav>
-              </div>
-
-              {/* Footer */}
-              <div className="p-8 border-t border-gray-50 bg-gray-50/30">
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-relaxed text-center">
-                  © 2026 capella luxury jewellery.
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+                <div className="flex-1 overflow-y-auto mt-4">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={level}
+                      custom={level === "main" ? -1 : 1}
+                      variants={variants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        x: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 }
+                      }}
+                      className="min-h-full"
+                    >
+                      {navContent}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }
-
-

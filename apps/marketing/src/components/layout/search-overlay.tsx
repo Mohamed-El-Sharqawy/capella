@@ -53,7 +53,7 @@ const MAX_RECENT_SEARCHES = 5;
 export function SearchOverlay() {
   const locale = useLocale();
   const isArabic = locale === "ar";
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -74,7 +74,7 @@ export function SearchOverlay() {
 
   const saveRecentSearch = useCallback((searchQuery: string) => {
     if (!searchQuery.trim() || searchQuery.length < 2) return;
-    
+
     setRecentSearches((prev) => {
       const filtered = prev.filter((s) => s.query !== searchQuery);
       const updated = [
@@ -106,7 +106,7 @@ export function SearchOverlay() {
       return data.data ?? [];
     },
     enabled: isOpen,
-    staleTime: 1000 * 60 * 5, 
+    staleTime: 1000 * 60 * 5,
   });
 
   const { data: results = { products: [], collections: [] }, isLoading } = useQuery({
@@ -116,7 +116,7 @@ export function SearchOverlay() {
       return data;
     },
     enabled: debouncedQuery.length >= 2,
-    staleTime: 1000 * 60 * 2, 
+    staleTime: 1000 * 60 * 2,
   });
 
   const trackQueryMutation = useMutation({
@@ -250,7 +250,7 @@ export function SearchOverlay() {
                                 {isArabic ? product.nameAr : product.nameEn}
                               </p>
                               <p className="text-[10px] text-gray-400 uppercase tracking-widest">
-                                AED {product.price?.toLocaleString()}
+                                AED  {product.price?.toLocaleString()}
                               </p>
                             </div>
                           </Link>
@@ -288,8 +288,8 @@ export function SearchOverlay() {
                   </div>
                 ) : (
                   <div className="space-y-12">
-                     {/* Trending */}
-                     {trendingData && trendingData.length > 0 && (
+                    {/* Trending */}
+                    {trendingData && trendingData.length > 0 && (
                       <div className="space-y-6">
                         <h3 className="text-[10px] font-medium text-gray-400 uppercase tracking-widest leading-none">
                           {isArabic ? "الأكثر رواجاً" : "Trending Now"}

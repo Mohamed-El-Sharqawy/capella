@@ -3,7 +3,7 @@
 **Feature Branch**: `001-jewellery-ecommerce-transform`
 **Created**: 2026-04-06
 **Status**: Draft
-**Input**: User description: "Transform the Capella monorepo into a premium jewellery e-commerce platform, matching the aesthetics, UX, and functionality of Samra. Includes Stripe payments (AED), enhanced product data (badges, jewellery attributes), premium search overlay, and luxury design system."
+**Input**: User description: "Transform the Capella monorepo into a premium jewellery e-commerce platform, matching the aesthetics, UX, and functionality of Samra. Includes Stripe payments (AED ), enhanced product data (badges, jewellery attributes), premium search overlay, and luxury design system."
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -75,7 +75,7 @@ images appear. Close and reopen to verify recent searches persist.
    displayed and persisted across sessions.
 3. **Given** the customer types a search query, **When** at least 2
    characters are entered, **Then** predictive results appear with
-   product images, names (EN/AR), prices in AED, and matching terms
+   product images, names (EN/AR), prices in AED , and matching terms
    highlighted.
 4. **Given** the customer submits a search, **When** the query executes,
    **Then** the system searches across product names, descriptions,
@@ -90,7 +90,7 @@ images appear. Close and reopen to verify recent searches persist.
 
 A customer adds items to cart and proceeds to checkout. The customer is
 redirected to a Stripe-hosted Checkout page for payment, with all prices
-displayed in AED. After payment, the customer is redirected back to an
+displayed in AED . After payment, the customer is redirected back to an
 order confirmation page with order details. If payment fails, the customer
 returns to an error page with a clear message and can retry without losing
 cart data.
@@ -106,7 +106,7 @@ page displays correct details. Then test a failed payment scenario.
 
 1. **Given** a customer with items in cart, **When** they proceed to
    checkout, **Then** the system creates a Stripe checkout session with
-   all line items priced in AED.
+   all line items priced in AED .
 2. **Given** a completed Stripe payment, **When** the webhook confirms
    the session, **Then** the order status is updated to "PAID" and the
    customer is redirected to an order confirmation page.
@@ -235,10 +235,10 @@ search and click activity.
   product level (shared across all variants), while Color and Size
   remain variant-level.
 - **FR-004**: System MUST integrate with Stripe standard business
-  accounts for payment processing, locked to AED currency.
+  accounts for payment processing, locked to AED  currency.
 - **FR-005**: System MUST provide a checkout endpoint that creates a
   Stripe-hosted Checkout session (redirect mode) with all cart items
-  priced in AED. Stock MUST be validated before session creation; if any
+  priced in AED . Stock MUST be validated before session creation; if any
   item is unavailable, the checkout MUST be rejected with a clear
   message.
 - **FR-006**: System MUST provide a webhook endpoint that processes

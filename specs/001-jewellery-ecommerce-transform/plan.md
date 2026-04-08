@@ -8,7 +8,7 @@
 Transform the Capella monorepo into a premium jewellery e-commerce platform:
 extend the product data model with badges, trending flags, and
 jewellery-specific attributes (Material, Stone, Clarity); integrate
-Stripe-hosted Checkout for AED payments; rebuild the search overlay as a
+Stripe-hosted Checkout for AED  payments; rebuild the search overlay as a
 premium predictive experience with trending products and analytics; and
 apply a luxury design system across the Marketing storefront.
 
@@ -21,7 +21,7 @@ apply a luxury design system across the Marketing storefront.
 **Target Platform**: Web (desktop + mobile responsive)
 **Project Type**: Monorepo — 3 apps (Backend API, Marketing storefront, CMS dashboard) + 2 shared packages
 **Performance Goals**: Search overlay < 1s open, predictive results < 500ms, 60fps animations
-**Constraints**: AED currency locked, Stripe standard account only, AR/EN bilingual + RTL, Cloudinary-only media
+**Constraints**: AED  currency locked, Stripe standard account only, AR/EN bilingual + RTL, Cloudinary-only media
 **Scale/Scope**: 5 user stories, ~15 new/modified files per app, 3 new Prisma models
 
 ## Constitution Check
@@ -30,13 +30,13 @@ apply a luxury design system across the Marketing storefront.
 
 - [x] **I. Architectural Purity**: No direct inter-app imports; shared logic in `packages/`
 - [x] **II. Sub-System Consistency**: Backend modules follow `src/modules/[feature]`; frontend parity maintained; shared UI components extracted
-- [x] **III. Jewellery Brand Protocols**: AED currency only; AR/EN translations provided; Stripe standard only (no Connect)
+- [x] **III. Jewellery Brand Protocols**: AED  currency only; AR/EN translations provided; Stripe standard only (no Connect)
 - [x] **IV. Media & Search**: Cloudinary for all media assets; search analytics tracked in backend
 - [x] **V. Structural Cleanliness**: Cross-app types/utils extracted to packages; no duplicated business logic
 
 All gates pass. New types (`ProductBadge`, `JewelleryAttribute`, `SearchAnalyticsEvent`,
 `PaymentSession`) will be added to `packages/shared-types/`. New utilities (badge display
-logic, AED formatting) will be added to `packages/shared-utils/`.
+logic, AED  formatting) will be added to `packages/shared-utils/`.
 
 ## Project Structure
 

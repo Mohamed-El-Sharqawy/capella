@@ -10,6 +10,7 @@ interface Collection {
   nameEn: string;
   nameAr: string;
   image?: { url: string } | null;
+  homeFeaturedPosition?: number;
 }
 
 interface HeroCollectionsProps {
@@ -23,7 +24,7 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
   if (collections.length === 0) return null;
 
   return (
-    <section className="bg-white py-16 md:py-24">
+    <section className="bg-white py-1">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-2">
         {collections.slice(0, 3).map((collection, index) => (
           <AnimateOnScroll
@@ -33,7 +34,7 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
           >
             <Link
               href={`/collections/${collection.slug}`}
-              className="group relative block aspect-3/4 overflow-hidden"
+              className="group relative block aspect-4/3 md:aspect-square overflow-hidden bg-neutral-100"
             >
               <Image
                 src={collection.image?.url || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=800&fit=crop"}
@@ -43,8 +44,8 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
               {/* Overlay with text at bottom */}
-              <div className="absolute inset-x-0 bottom-0 py-10 md:py-16 flex flex-col items-center justify-end bg-linear-to-t from-black/50 via-transparent to-transparent text-white">
-                <h3 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] transition-transform duration-700 group-hover:-translate-y-2">
+              <div className="absolute inset-x-0 bottom-0 py-10 md:py-16 flex flex-col items-center justify-end bg-linear-to-t from-black/20 via-transparent to-transparent text-white">
+                <h3 className="text-[10px] md:text-xs font-light uppercase tracking-[0.4em] transition-transform duration-700 group-hover:-translate-y-2">
                   {isArabic ? collection.nameAr : collection.nameEn}
                 </h3>
               </div>

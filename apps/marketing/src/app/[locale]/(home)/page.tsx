@@ -3,13 +3,13 @@ import { setRequestLocale } from "next-intl/server";
 import {
   AnimateOnScroll,
 } from "@/components/ui";
-import { FeaturedProducts } from "@/components/sections/featured-products";
-import { PromoBanner } from "@/components/sections/promo-banner";
-import { ShoppableVideos } from "@/components/sections/shoppable-videos";
-import { InstagramGallery } from "@/components/sections/instagram-gallery";
-import { HeroBanner } from "@/components/sections/hero-banner";
-import { HeroCollections } from "@/components/sections/hero-collections";
-import { Features } from "@/components/sections";
+import { FeaturedProducts } from "@/app/[locale]/(home)/components/featured-products";
+import { PromoBanner } from "@/app/[locale]/(home)/components/promo-banner";
+import { ShoppableVideos } from "@/app/[locale]/(home)/components/shoppable-videos";
+import { InstagramGallery } from "@/app/[locale]/(home)/components/instagram-gallery";
+import { HeroBanner } from "@/app/[locale]/(home)/components/hero-banner";
+import { HeroCollections } from "@/app/[locale]/(home)/components/hero-collections";
+import { Features } from "@/app/[locale]/(home)/components";
 import { getFeaturedProducts, getShoppableVideos, getInstagramPosts, getBanners, getFeaturedHomeCollections } from "@/lib/api";
 import { generatePageMetadata, STATIC_PAGE_METADATA } from "@/lib/metadata";
 

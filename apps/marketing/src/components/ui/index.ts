@@ -5,3 +5,5 @@ export { ProductCard } from "./product-card";
 export { ProductCardWithVariants } from "./product-card-with-variants";
 export { ProductSlider } from "./product-slider";
 export { QuickViewModal } from "./quick-view-modal";
+export { Checkbox } from "./checkbox";
+export { Accordion, AccordionItem } from "./accordion";

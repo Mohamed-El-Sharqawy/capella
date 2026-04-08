@@ -88,7 +88,7 @@ export function OrdersTab({ locale, orders, isLoading, page, onPageChange }: Ord
                 <p className="text-sm text-muted-foreground">
                   {t("total")}
                 </p>
-                <p className="font-bold text-lg">LE {order.total?.toLocaleString()}</p>
+                <p className="font-bold text-lg">AED {order.total?.toLocaleString()}</p>
               </div>
             </div>
 
@@ -119,7 +119,7 @@ export function OrdersTab({ locale, orders, isLoading, page, onPageChange }: Ord
                         {" × "}{item.quantity}
                       </p>
                     </div>
-                    <p className="font-medium">LE {(item.price * item.quantity).toLocaleString()}</p>
+                    <p className="font-medium">AED {(item.price * item.quantity).toLocaleString()}</p>
                   </div>
                 ))}
               </div>

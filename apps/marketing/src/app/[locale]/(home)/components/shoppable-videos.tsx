@@ -60,7 +60,7 @@ function ShoppableVideoCard({
   const handleMouseEnter = () => {
     setIsHovered(true);
     if (videoRef.current) {
-      videoRef.current.play().catch(() => {});
+      videoRef.current.play().catch(() => { });
       setIsPlaying(true);
     }
   };
@@ -132,11 +132,11 @@ function ShoppableVideoCard({
               <div className="flex items-center gap-2 mt-1">
                 {compareAtPrice && compareAtPrice > price && (
                   <span className="text-[10px] text-muted-foreground line-through tracking-wider">
-                    AED {compareAtPrice.toLocaleString()}
+                    AED  {compareAtPrice.toLocaleString()}
                   </span>
                 )}
                 <span className="text-xs font-semibold tracking-widest text-black">
-                  AED {price.toLocaleString()}
+                  AED  {price.toLocaleString()}
                 </span>
               </div>
             </div>

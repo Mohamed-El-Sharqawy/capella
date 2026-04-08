@@ -35,9 +35,8 @@ export function FixedBottomBar({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50 transition-transform duration-300 ${
-        show ? "translate-y-0" : "translate-y-full"
-      }`}
+      className={`fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50 transition-transform duration-300 ${show ? "translate-y-0" : "translate-y-full"
+        }`}
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
         {/* Left: Product Image & Title */}
@@ -60,7 +59,7 @@ export function FixedBottomBar({
             {selectedVariant?.size &&
               ` / ${isArabic ? selectedVariant.size.nameAr : selectedVariant.size.nameEn}`}
             {" - "}
-            <span className="font-semibold text-foreground">LE {price.toLocaleString()}</span>
+            <span className="font-semibold text-foreground">AED {price.toLocaleString()}</span>
           </div>
 
           {/* Quantity */}

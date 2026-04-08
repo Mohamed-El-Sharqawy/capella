@@ -55,7 +55,7 @@ Create a Stripe Checkout session and redirect customer to payment.
 - Validates all items exist and are in stock (`stock > 0`)
 - Verifies coupon code if provided
 - Calculates order total
-- Creates Stripe Checkout session with AED line items
+- Creates Stripe Checkout session with AED  line items
 - Creates order in PENDING status with `stripeSessionId`
 - Returns Stripe redirect URL
 

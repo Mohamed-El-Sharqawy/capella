@@ -82,7 +82,7 @@ export function OrderSummarySection({
                 {t("qty")} {item.quantity}
               </p>
             </div>
-            <p className="text-sm font-medium">LE {(item.price * item.quantity).toLocaleString()}</p>
+            <p className="text-sm font-medium">AED {(item.price * item.quantity).toLocaleString()}</p>
           </div>
         ))}
       </div>
@@ -90,7 +90,7 @@ export function OrderSummarySection({
       <div className="border-t pt-4 space-y-2">
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{t("subtotal")}</span>
-          <span>LE {total.toLocaleString()}</span>
+          <span>AED {total.toLocaleString()}</span>
         </div>
         {appliedCoupon && roundedDiscount > 0 && (
           <div className="flex justify-between text-sm text-green-600">
@@ -100,16 +100,16 @@ export function OrderSummarySection({
                 {appliedCoupon.code}
               </span>
             </span>
-            <span>-LE {roundedDiscount.toLocaleString()}</span>
+            <span>-AED {roundedDiscount.toLocaleString()}</span>
           </div>
         )}
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{t("shipping")}</span>
-          <span>LE {SHIPPING_COST.toLocaleString()}</span>
+          <span>AED {SHIPPING_COST.toLocaleString()}</span>
         </div>
         <div className="flex justify-between font-semibold text-lg pt-2 border-t">
           <span>{t("total")}</span>
-          <span>LE {grandTotal.toLocaleString()} EGP</span>
+          <span>AED {grandTotal.toLocaleString()} EGP</span>
         </div>
       </div>
 
@@ -130,7 +130,7 @@ export function OrderSummarySection({
                       {" - "}
                       {couponProps.appliedCoupon.discountType === "PERCENTAGE"
                         ? `${couponProps.appliedCoupon.discountValue}% off`
-                        : `LE ${couponProps.appliedCoupon.discountValue} off`}
+                        : `AED ${couponProps.appliedCoupon.discountValue} off`}
                     </p>
                   </div>
                 </div>
