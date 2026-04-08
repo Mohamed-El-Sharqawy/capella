@@ -7,20 +7,45 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
+import { apiGet } from "@/lib/api-client";
 import { SearchOverlay } from "./search-overlay";
 import { LanguageSwitcher } from "./language-switcher";
-import { UserIcon } from "./user-icon";
 
-type NavLevel = "main" | "jewellery" | "collections";
+interface HeaderCollection {
+  id: string;
+  slug: string;
+  nameEn: string;
+  nameAr: string;
+  children?: { id: string; slug: string; nameEn: string; nameAr: string }[];
+}
+
+async function fetchHeaderCollections(): Promise<HeaderCollection[]> {
+  try {
+    const data = await apiGet<{ data: HeaderCollection[] }>("/api/collections/header");
+    return data?.data ?? [];
+  } catch {
+    return [];
+  }
+}
+
+type NavLevel = "main" | "collectionsSub" | "singleCollection";
 
 export function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [level, setLevel] = useState<NavLevel>("main");
+  const [activeCollection, setActiveCollection] = useState<HeaderCollection | null>(null);
   const [mounted, setMounted] = useState(false);
   const t = useTranslations("header");
   const locale = useLocale();
   const pathname = usePathname();
   const isArabic = locale === "ar";
+
+  const { data: headerCollections = [] } = useQuery({
+    queryKey: ["header-collections"],
+    queryFn: fetchHeaderCollections,
+    staleTime: 5 * 60 * 1000,
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -29,7 +54,10 @@ export function MobileMenu() {
   // Reset level when closing or changing route
   useEffect(() => {
     if (!isOpen) {
-      setTimeout(() => setLevel("main"), 300);
+      setTimeout(() => {
+        setLevel("main");
+        setActiveCollection(null);
+      }, 300);
     }
   }, [isOpen]);
 
@@ -66,7 +94,7 @@ export function MobileMenu() {
 
   const navContent = useMemo(() => {
     switch (level) {
-      case "jewellery":
+      case "collectionsSub":
         return (
           <div className="flex flex-col h-full bg-[#F2F2F2]">
             <button
@@ -77,91 +105,114 @@ export function MobileMenu() {
               {isArabic ? "العودة" : "Back"}
             </button>
             <div className="px-6 py-4 space-y-8">
-              <Link href="/collections/all-products" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
+              <Link href="/collections" className="block text-2xl font-light tracking-widest hover:opacity-60 transition-opacity">
                 {isArabic ? "عرض الكل" : "Shop All"}
               </Link>
-              <Link href="/collections/necklaces" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
-                {isArabic ? "قلائد" : "Necklaces"}
-              </Link>
-              <Link href="/collections/bracelets" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
-                {isArabic ? "أساور" : "Bracelets"}
-              </Link>
-              <Link href="/collections/rings" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
-                {isArabic ? "خواتم" : "Rings"}
-              </Link>
-              <Link href="/collections/earrings" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
-                {isArabic ? "أقراط" : "Earrings"}
-              </Link>
+              {headerCollections.map((collection) => (
+                <div key={collection.id} className="space-y-4">
+                  {collection.children && collection.children.length > 0 ? (
+                    <button
+                      onClick={() => {
+                        setActiveCollection(collection);
+                        setLevel("singleCollection");
+                      }}
+                      className="w-full flex items-center justify-between text-2xl font-light tracking-widest hover:opacity-60 transition-all group text-start"
+                    >
+                      <span>{isArabic ? collection.nameAr : collection.nameEn}</span>
+                      <ChevronRight className={`h-5 w-5 text-black/20 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
+                    </button>
+                  ) : (
+                    <Link
+                      href={`/collections/${collection.slug}`}
+                      className="block text-2xl font-light tracking-widest hover:opacity-60 transition-opacity"
+                    >
+                      {isArabic ? collection.nameAr : collection.nameEn}
+                    </Link>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         );
-      case "collections":
+
+      case "singleCollection":
         return (
           <div className="flex flex-col h-full bg-[#F2F2F2]">
             <button
-              onClick={() => setLevel("main")}
+              onClick={() => setLevel("collectionsSub")}
               className="flex items-center gap-2 p-6 text-[11px] uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
             >
               <ChevronLeft className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} />
               {isArabic ? "العودة" : "Back"}
             </button>
             <div className="px-6 py-4 space-y-8">
-              <Link href="/collections/bridal" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
-                {isArabic ? "مجموعة العرس" : "Bridal Selection"}
+              <Link
+                href={`/collections/${activeCollection?.slug}`}
+                className="block text-2xl border-b border-black/5 pb-4 font-light tracking-widest hover:opacity-60 transition-opacity"
+              >
+                {isArabic ? `عرض الكل في ${activeCollection?.nameAr}` : `Shop All ${activeCollection?.nameEn}`}
               </Link>
-              <Link href="/collections/high-jewellery" className="block text-2xl font-light tracking-wide hover:opacity-60 transition-opacity">
-                {isArabic ? "مجوهرات راقية" : "High Jewellery"}
-              </Link>
+              {activeCollection?.children?.map((child) => (
+                <Link
+                  key={child.id}
+                  href={`/collections/${child.slug}`}
+                  className="block text-2xl font-light tracking-widest hover:opacity-100 transition-opacity"
+                >
+                  {isArabic ? child.nameAr : child.nameEn}
+                </Link>
+              ))}
             </div>
           </div>
         );
+
       default:
         return (
           <div className="flex flex-col h-full bg-[#F2F2F2]">
-            {/* Header placeholder for alignment */}
-            <div className="h-20" />
-
-            <div className="flex-1 px-6 py-4 space-y-10">
+            {/* Header Area */}
+            <div className="h-20 flex items-center justify-end px-6">
               <button
-                onClick={() => setLevel("jewellery")}
-                className="w-full flex items-center justify-between text-3xl font-light tracking-wide hover:opacity-60 transition-all group"
+                onClick={() => setIsOpen(false)}
+                className={`p-2 ${isArabic ? "-mr-2" : "-ml-2"} text-black hover:opacity-60 transition-opacity`}
+                aria-label="Close menu"
               >
-                <span>{isArabic ? "مجوهرات" : "Jewellery"}</span>
-                <ChevronRight className={`h-6 w-6 text-black/20 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
+                <X className="h-7 w-7 stroke-1" />
               </button>
+            </div>
+
+            <div className="flex-1 px-8 py-10 space-y-12">
               <button
-                onClick={() => setLevel("collections")}
-                className="w-full flex items-center justify-between text-3xl font-light tracking-wide hover:opacity-60 transition-all group"
+                onClick={() => setLevel("collectionsSub")}
+                className="w-full flex items-center justify-between text-3xl font-light tracking-widest hover:opacity-100 transition-all opacity-80 group text-start"
               >
                 <span>{isArabic ? "تصفح المجموعات" : "Collections"}</span>
                 <ChevronRight className={`h-6 w-6 text-black/20 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
               </button>
-              <Link href="/about" className="block text-3xl font-light tracking-wide hover:opacity-60 transition-opacity">
+
+              <Link href="/about" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
                 {isArabic ? "قصتنا" : "House of Capella"}
-              </Link>
-              <Link href="/virtual-tailor" className="block text-3xl font-light tracking-wide hover:opacity-60 transition-opacity">
-                {t("virtualTailor")}
               </Link>
             </div>
 
-            {/* Footer Area - Luxury Actions */}
-            <div className="mt-auto p-8 border-t border-black/5 bg-white/40 backdrop-blur-md">
+            {/* Footer Area - Restored Action Icons */}
+            <div className="mt-auto p-8 pt-10 border-t border-black/5 bg-white/40 backdrop-blur-md">
               <div className="flex items-center justify-between px-4">
+                {/* Search */}
                 <div className="flex flex-col items-center gap-3 group">
-                  <div className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:border-black/20 group-hover:bg-gray-50 transition-all duration-500 text-black/80">
+                  <div className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:bg-black group-hover:text-white transition-all duration-500">
                     <SearchOverlay />
                   </div>
-                  <span className="text-[10px] uppercase tracking-[0.25em] text-gray-400 font-light group-hover:text-black transition-colors duration-300">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-light group-hover:text-black transition-colors">
                     {isArabic ? "بحث" : "Search"}
                   </span>
                 </div>
 
                 <div className="w-px h-12 bg-black/5" />
 
-                <div className="flex flex-col items-center gap-3 group px-4">
+                {/* Language */}
+                <div className="flex flex-col items-center gap-3 group">
                   <LanguageSwitcher
                     trigger={
-                      <div className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:border-black/20 group-hover:bg-gray-50 transition-all duration-500 text-black/80">
+                      <div className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:bg-black group-hover:text-white transition-all duration-500 cursor-pointer">
                         <Image
                           src={isArabic ? "https://flagcdn.com/w40/ae.png" : "https://flagcdn.com/w40/us.png"}
                           alt="Language"
@@ -172,21 +223,22 @@ export function MobileMenu() {
                       </div>
                     }
                   />
-                  <span className="text-[10px] uppercase tracking-[0.25em] text-gray-400 font-light group-hover:text-black transition-colors duration-300">
-                    {isArabic ? "العربية" : "EN"}
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-light group-hover:text-black transition-colors">
+                    {isArabic ? "العربية" : "Language"}
                   </span>
                 </div>
 
                 <div className="w-px h-12 bg-black/5" />
 
+                {/* Account */}
                 <div className="flex flex-col items-center gap-3 group">
                   <Link
                     href="/auth/signin"
-                    className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:border-black/20 group-hover:bg-gray-50 transition-all duration-500 text-black/80"
+                    className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:bg-black group-hover:text-white transition-all duration-500"
                   >
                     <User className="h-5 w-5 stroke-1" />
                   </Link>
-                  <span className="text-[10px] uppercase tracking-[0.25em] text-gray-400 font-light group-hover:text-black transition-colors duration-300">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-light group-hover:text-black transition-colors">
                     {isArabic ? "حسابي" : "Account"}
                   </span>
                 </div>
@@ -195,7 +247,7 @@ export function MobileMenu() {
           </div>
         );
     }
-  }, [level, isArabic, t]);
+  }, [level, isArabic, headerCollections, activeCollection, t]);
 
   return (
     <>
@@ -233,7 +285,7 @@ export function MobileMenu() {
                 className="relative h-full w-[90%] max-w-sm bg-[#F2F2F2] shadow-2xl flex flex-col overflow-hidden text-start"
               >
                 {/* Close Button Header */}
-                <div
+                {/* <div
                   style={{ top: 32 }}
                   className={`absolute ${isArabic ? "right-0" : "left-0"} p-6 z-10`}
                 >
@@ -244,7 +296,7 @@ export function MobileMenu() {
                   >
                     <X className="h-7 w-7 stroke-1" />
                   </button>
-                </div>
+                </div> */}
 
                 <div className="flex-1 overflow-y-auto mt-4">
                   <AnimatePresence mode="wait" initial={false}>

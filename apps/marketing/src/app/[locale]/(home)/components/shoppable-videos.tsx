@@ -57,9 +57,21 @@ function ShoppableVideoCard({
   const price = variant?.price ?? 0;
   const compareAtPrice = variant?.compareAtPrice;
 
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play().catch(() => { });
+      setIsPlaying(true);
+    }
+  };
+
   const handleMouseEnter = () => {
     setIsHovered(true);
-    if (videoRef.current) {
+    if (!isPlaying && videoRef.current) {
       videoRef.current.play().catch(() => { });
       setIsPlaying(true);
     }
@@ -81,6 +93,7 @@ function ShoppableVideoCard({
         className="relative aspect-3/4 rounded-lg overflow-hidden bg-muted cursor-pointer"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={togglePlay}
       >
         {/* Thumbnail */}
         <Image
@@ -97,7 +110,8 @@ function ShoppableVideoCard({
           muted
           loop
           playsInline
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${isPlaying ? "opacity-100" : "opacity-0"}`}
+          preload="auto"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isPlaying ? "opacity-100" : "opacity-0"}`}
         />
 
         {/* Play icon overlay */}
