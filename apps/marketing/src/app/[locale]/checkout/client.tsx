@@ -86,6 +86,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
     appliedCoupon,
     discountAmount,
     onOrderSuccess: fetchOrders,
+    locale,
   });
 
   // Track checkout view on mount
@@ -152,7 +153,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
             {/* Guest checkout benefits prompt */}
             {!isAuthenticated && <GuestBenefitsPrompt />}
 
-            <PaymentMethodSection />
+            <PaymentMethodSection formState={formState} onUpdateField={updateField} />
           </div>
 
           {/* Right: Order Summary */}

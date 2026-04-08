@@ -16,6 +16,7 @@ export function useCheckoutForm(savedAddresses: SavedAddress[]) {
     city: "",
     area: "",
     notes: "",
+    paymentMethod: "COD",
   });
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);

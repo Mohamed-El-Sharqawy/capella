@@ -19,24 +19,25 @@ export const payment = new Elysia({ prefix: "/payments" })
     }
   }, { optionalAuth: true, body: PaymentModel.checkoutBody })
   // Stripe webhook endpoint (no auth required - verified by signature)
-  .post("/webhook", async ({ body, headers }) => {
-    const signature = headers["stripe-signature"];
-    if (!signature) {
-      return status(400, { success: false as const, error: "Missing stripe-signature header" });
+  .post("/webhook", async ({ headers, body, set }) => {
+    const sig = headers["stripe-signature"];
+
+    if (!sig) {
+      console.error("❌ Webhook Error: Missing stripe-signature header");
+      set.status = 400;
+      return { success: false, error: "Missing signature" };
     }
 
     try {
-      // Get raw body for signature verification
-      const rawBody = JSON.stringify(body);
-      const result = await PaymentService.handleWebhook(rawBody, signature);
-      return { success: true as const, data: result };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Webhook processing failed";
-      console.error("Webhook error:", message);
-      return status(400, { success: false as const, error: message });
+      // Body is already a string because of parse: 'text'
+      const result = await PaymentService.handleWebhook(body as string, sig);
+      console.log(`✅ Webhook processed successfully`);
+      return result;
+    } catch (error: any) {
+      console.error("❌ Webhook Error:", error.message);
+      set.status = 400;
+      return { success: false, error: error.message };
     }
   }, {
-    // Skip body parsing to get raw body for Stripe signature verification
-    // Note: In production, you may need to configure this differently
-    parse: "json",
+    parse: "text",
   });

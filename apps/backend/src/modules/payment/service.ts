@@ -39,7 +39,12 @@ export abstract class PaymentService {
     const variants = await prisma.productVariant.findMany({
       where: { id: { in: variantIds } },
       include: {
-        product: { select: { nameEn: true, nameAr: true } },
+        product: { select: { nameEn: true, nameAr: true, descriptionEn: true } },
+        images: { 
+          orderBy: { position: "asc" }, 
+          take: 1,
+          include: { image: true },
+        },
       },
     });
 
@@ -60,26 +65,20 @@ export abstract class PaymentService {
 
     // Calculate total
     let total = 0;
-    const lineItems: Array<{
-      price_data: {
-        currency: string;
-        product_data: {
-          name: string;
-          metadata: Record<string, string>;
-        };
-        unit_amount: number;
-      };
-      quantity: number;
-    }> = items.map((item) => {
+    const lineItems = items.map((item) => {
       const variant = variants.find((v) => v.id === item.variantId)!;
       const itemTotal = variant.price * item.quantity;
       total += itemTotal;
+
+      const imageUrl = variant.images[0]?.image?.url;
 
       return {
         price_data: {
           currency: "aed",
           product_data: {
             name: `${variant.product.nameEn} - ${variant.nameEn}`,
+            description: variant.product.descriptionEn || undefined,
+            images: imageUrl ? [imageUrl] : undefined,
             metadata: {
               variantId: variant.id,
               productId: variant.productId,
@@ -158,6 +157,7 @@ export abstract class PaymentService {
               sku: variant.sku,
               quantity: item.quantity,
               price: variant.price,
+              imageUrl: variant.images[0]?.image?.url || null,
             };
           }),
         },
@@ -173,6 +173,22 @@ export abstract class PaymentService {
       cancel_url: cancelUrl || `${MARKETING_URL}/en/checkout/cancel`,
       customer_email: customerEmail || shippingData.guestEmail,
       discounts: couponId ? [{ coupon: couponId }] : undefined,
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: 2500, // 25 AED
+              currency: "aed",
+            },
+            display_name: "Standard Shipping",
+            delivery_estimate: {
+              minimum: { unit: "business_day", value: 3 },
+              maximum: { unit: "business_day", value: 5 },
+            },
+          },
+        },
+      ],
       metadata: {
         orderId: order.id,
         userId: userId || "",
@@ -203,10 +219,12 @@ export abstract class PaymentService {
 
     let event: Stripe.Event;
     try {
-      event = getStripe().webhooks.constructEvent(payload, signature, webhookSecret);
+      event = await getStripe().webhooks.constructEventAsync(payload, signature, webhookSecret);
     } catch (err) {
       throw new Error(`Webhook signature verification failed: ${(err as Error).message}`);
     }
+
+    console.log(`📩 Received Stripe Event: ${event.type}`);
 
     switch (event.type) {
       case "checkout.session.completed": {

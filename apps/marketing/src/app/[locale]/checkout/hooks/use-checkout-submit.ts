@@ -27,6 +27,7 @@ interface UseCheckoutSubmitOptions {
   appliedCoupon?: CouponData | null;
   discountAmount?: number;
   onOrderSuccess?: () => void;
+  locale: string;
 }
 
 export function useCheckoutSubmit({
@@ -39,6 +40,7 @@ export function useCheckoutSubmit({
   appliedCoupon,
   discountAmount = 0,
   onOrderSuccess,
+  locale,
 }: UseCheckoutSubmitOptions) {
   const t = useTranslations("checkout");
   const { isAuthenticated, getAccessToken } = useAuth();
@@ -86,13 +88,27 @@ export function useCheckoutSubmit({
             }),
       };
 
-      const endpoint = isAuthenticated ? "/api/orders" : "/api/orders/guest";
+      const endpoint = formState.paymentMethod === "STRIPE" ? "/api/payments/checkout" : (isAuthenticated ? "/api/orders" : "/api/orders/guest");
       const token = isAuthenticated ? getAccessToken() : undefined;
-      const data = await apiPost<{ data: { id?: string; orderNumber?: string } }>(
+      
+      const payload = formState.paymentMethod === "STRIPE" ? {
+        ...orderData,
+        customerEmail: isAuthenticated ? undefined : formState.email,
+        successUrl: `${window.location.origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/${locale}/checkout`,
+      } : orderData;
+
+      const data = await apiPost<{ data: { id?: string; orderNumber?: string; url?: string } }>(
         endpoint,
-        orderData,
+        payload,
         { token: token || undefined }
       );
+
+      // If Stripe, redirect to the provided URL
+      if (formState.paymentMethod === "STRIPE" && data.data?.url) {
+        window.location.href = data.data.url;
+        return;
+      }
 
       // Only clear cart when purchasing from cart (not buy-now)
       if (!isBuyNow) {
@@ -111,7 +127,8 @@ export function useCheckoutSubmit({
 
       // Set orderId last - this triggers the success state
       setOrderId(data.data?.id || data.data?.orderNumber || null);
-    } catch {
+    } catch (error) {
+      console.error("Checkout error:", error);
       toast.error(`${t("orderFailed")} ${t("tryAgain")}`);
     } finally {
       setIsSubmitting(false);

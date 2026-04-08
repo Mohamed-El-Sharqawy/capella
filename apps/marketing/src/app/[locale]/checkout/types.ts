@@ -40,6 +40,7 @@ export interface CheckoutFormState {
   city: string;
   area: string;
   notes: string;
+  paymentMethod: "COD" | "STRIPE";
 }
 
 export interface CheckoutItem {
