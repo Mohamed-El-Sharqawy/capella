@@ -15,37 +15,6 @@ interface CollectionHeaderProps {
   onFilterOpen: () => void;
 }
 
-function GridIcon({
-  cols,
-  gridColumns,
-  onClick,
-}: {
-  cols: number;
-  gridColumns: number;
-  onClick: () => void;
-}) {
-  const dots = [];
-  // Generate correct number of dots: 1 for 1 col, 4 for 2 cols, 9 for 3 cols, 16 for 4 cols
-  const size = cols === 1 ? 1 : cols === 2 ? 2 : cols === 3 ? 3 : 4;
-  for (let i = 0; i < size * size; i++) {
-    dots.push(
-      <div
-        key={i}
-        className={`w-1 h-1 rounded-full ${gridColumns === cols ? "bg-black" : "bg-gray-400"}`}
-      />
-    );
-  }
-  return (
-    <button
-      onClick={onClick}
-      className="p-1.5 grid gap-0.5 hover:opacity-70 transition"
-      style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
-    >
-      {dots}
-    </button>
-  );
-}
-
 export function CollectionHeader({
   sortOption,
   sortOptions,
@@ -69,14 +38,6 @@ export function CollectionHeader({
         {t("filter")}
       </button>
 
-      {/* Grid View Toggle - Hidden on mobile, visible on tablets and up */}
-      <div className="hidden md:flex items-center gap-1">
-        <GridIcon cols={1} gridColumns={gridColumns} onClick={() => setGridColumns(1)} />
-        <GridIcon cols={2} gridColumns={gridColumns} onClick={() => setGridColumns(2)} />
-        <GridIcon cols={3} gridColumns={gridColumns} onClick={() => setGridColumns(3)} />
-        <GridIcon cols={4} gridColumns={gridColumns} onClick={() => setGridColumns(4)} />
-      </div>
-
       {/* Sort Dropdown */}
       <div className="relative">
         <button
@@ -97,9 +58,8 @@ export function CollectionHeader({
                     onSortChange(option.value);
                     setIsSortOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition ${
-                    sortOption === option.value ? "font-semibold text-red-600" : ""
-                  }`}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition ${sortOption === option.value ? "font-semibold text-red-600" : ""
+                    }`}
                 >
                   {option.label}
                 </button>
