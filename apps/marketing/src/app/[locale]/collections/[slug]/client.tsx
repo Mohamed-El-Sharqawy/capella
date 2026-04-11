@@ -35,6 +35,7 @@ function CollectionPageContent({
     availability,
     setAvailability,
     navigateToCollection,
+    clearFilters,
   } = useCollectionFilters();
 
   const { products, meta, isLoading, loadMoreRef } = useCollectionProducts({
@@ -81,6 +82,7 @@ function CollectionPageContent({
         locale={locale}
         gridColumns={gridColumns}
         isLoading={isLoading}
+        onClearFilters={clearFilters}
       />
 
       <LoadMore

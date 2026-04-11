@@ -89,6 +89,8 @@
     "price": "السعر",
     "allLoaded": "تم عرض جميع المنتجات",
     "noProducts": "لا توجد منتجات",
+    "noProductsDesc": "جرّب تعديل الفلاتر للعثور على ما تبحث عنه.",
+    "clearFilters": "مسح جميع الفلاتر",
     "collections": "المجموعات",
     "products": "المنتجات",
     "shopByCollection": "تسوق حسب المجموعة",

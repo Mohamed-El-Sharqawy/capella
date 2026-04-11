@@ -89,6 +89,8 @@
     "price": "Price",
     "allLoaded": "All products loaded",
     "noProducts": "No products found",
+    "noProductsDesc": "Try adjusting your filters to find what you're looking for.",
+    "clearFilters": "Clear all filters",
     "collections": "Collections",
     "products": "Products",
     "shopByCollection": "Shop by Collection",

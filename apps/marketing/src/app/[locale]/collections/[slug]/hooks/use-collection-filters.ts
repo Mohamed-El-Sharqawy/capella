@@ -66,5 +66,10 @@ export function useCollectionFilters() {
     availability,
     setAvailability,
     navigateToCollection,
+    clearFilters: () => {
+      setMinPrice(DEFAULT_MIN_PRICE);
+      setMaxPrice(DEFAULT_MAX_PRICE);
+      setAvailability("all");
+    },
   };
 }
