@@ -164,14 +164,15 @@ export function ProductCardWithVariants({
           onMouseLeave={() => setIsImageHovered(false)}
         >
           <Link href={`/products/${product.slug}`} className="block select-none" draggable={false}>
-            <div draggable={false} className="relative aspect-337/505 overflow-hidden bg-neutral-100 select-none">
+            {/* bg-neutral-100 */}
+            <div draggable={false} className="relative aspect-337/505 overflow-hidden select-none">
               {primaryImage ? (
                 <>
                   <Image draggable={false}
                     src={primaryImage}
                     alt={name}
                     fill
-                    className={`object-cover select-none transition-all duration-700 ease-out rounded-xl ${isImageHovered && hoverImage
+                    className={`object-cover select-none transition-all duration-500 ease-out rounded-xl ${isImageHovered && hoverImage
                       ? "opacity-0 scale-105"
                       : "opacity-100 scale-100"
                       }`}
@@ -182,7 +183,7 @@ export function ProductCardWithVariants({
                       src={hoverImage}
                       alt={name}
                       fill
-                      className={`object-cover select-none transition-all duration-1000 ease-out pointer-events-none ${isImageHovered
+                      className={`object-cover select-none transition-all duration-700 ease-out pointer-events-none ${isImageHovered
                         ? "opacity-100 scale-110"
                         : "opacity-0 scale-100"
                         }`}

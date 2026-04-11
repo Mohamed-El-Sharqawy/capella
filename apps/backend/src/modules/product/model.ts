@@ -99,6 +99,7 @@ export const ProductModel = {
     maxPrice: t.Optional(t.String()),
     sortBy: t.Optional(t.String()),
     sortOrder: t.Optional(t.String()),
+    availability: t.Optional(t.String()),
   }),
   relatedProductsBody: t.Object({
     collectionIds: t.Array(t.String()),

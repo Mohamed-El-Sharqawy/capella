@@ -4,8 +4,8 @@ import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { Product } from "@ecommerce/shared-types";
 import { apiGet } from "@/lib/api-client";
-import { PRODUCTS_PER_PAGE, SORT_OPTIONS_DATA } from "../constants";
-import type { ProductMeta } from "../types";
+import { PRODUCTS_PER_PAGE, SORT_OPTIONS_DATA, DEFAULT_SORT } from "../constants";
+import type { ProductMeta, AvailabilityFilter } from "../types";
 
 interface UseCollectionProductsOptions {
   slug: string;
@@ -14,6 +14,7 @@ interface UseCollectionProductsOptions {
   sortOption: string;
   debouncedMinPrice: number;
   debouncedMaxPrice: number;
+  availability: AvailabilityFilter;
 }
 
 interface ProductsResponse {
@@ -30,6 +31,7 @@ export function useCollectionProducts({
   sortOption,
   debouncedMinPrice,
   debouncedMaxPrice,
+  availability,
 }: UseCollectionProductsOptions) {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -44,11 +46,15 @@ export function useCollectionProducts({
       params.set("collectionSlug", slug);
     }
 
-    if (debouncedMinPrice > 0) {
-      params.set("minPrice", String(debouncedMinPrice));
-    }
-    if (debouncedMaxPrice < 5000) {
-      params.set("maxPrice", String(debouncedMaxPrice));
+    // Always send prices when they differ from total range, 
+    // or always send them if we want hard filters.
+    // As per user request: "fix this behaviour" regarding products above 5000 showing up.
+    // So we should always send maxPrice if it's set in the UI.
+    params.set("minPrice", String(debouncedMinPrice));
+    params.set("maxPrice", String(debouncedMaxPrice));
+
+    if (availability !== "all") {
+      params.set("availability", availability);
     }
 
     const sort = SORT_OPTIONS_DATA[sortOption];
@@ -60,6 +66,13 @@ export function useCollectionProducts({
     return params;
   };
 
+  // Only use initialData if we are on the first page and no filters are active (matching SSR)
+  const isDefaultState = 
+    sortOption === DEFAULT_SORT && 
+    debouncedMinPrice === 0 && 
+    debouncedMaxPrice === 5000 && 
+    availability === "all";
+
   const {
     data,
     fetchNextPage,
@@ -67,7 +80,7 @@ export function useCollectionProducts({
     isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["collection-products", slug, sortOption, debouncedMinPrice, debouncedMaxPrice],
+    queryKey: ["collection-products", slug, sortOption, debouncedMinPrice, debouncedMaxPrice, availability],
     queryFn: async ({ pageParam = 1 }) => {
       const params = buildQueryParams(pageParam);
       const response = await apiGet<ProductsResponse>(`/api/products?${params}`);
@@ -83,10 +96,11 @@ export function useCollectionProducts({
       }
       return undefined;
     },
-    initialData: {
+    // Only provide initialData if it's the exact state the server rendered
+    initialData: isDefaultState ? {
       pages: [{ products: initialProducts, meta: initialMeta }],
       pageParams: [1],
-    },
+    } : undefined,
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
 

@@ -112,15 +112,38 @@ export abstract class ProductService {
         { descriptionAr: { contains: query.search, mode: "insensitive" } },
       ];
     }
+
+    const filterConditions: any[] = [];
+
     if (query.minPrice || query.maxPrice) {
-      where.variants = {
-        some: {
-          price: {
-            ...(query.minPrice ? { gte: Number(query.minPrice) } : {}),
-            ...(query.maxPrice ? { lte: Number(query.maxPrice) } : {}),
+      filterConditions.push({
+        variants: {
+          some: {
+            price: {
+              ...(query.minPrice ? { gte: Number(query.minPrice) } : {}),
+              ...(query.maxPrice ? { lte: Number(query.maxPrice) } : {}),
+            },
           },
         },
-      };
+      });
+    }
+
+    if (query.availability === "inStock") {
+      filterConditions.push({
+        variants: {
+          some: { stock: { gt: 0 } },
+        },
+      });
+    } else if (query.availability === "outOfStock") {
+      filterConditions.push({
+        variants: {
+          every: { stock: 0 },
+        },
+      });
+    }
+
+    if (filterConditions.length > 0) {
+      where.AND = filterConditions;
     }
 
     const isPriceSorting = query.sortBy === "price";

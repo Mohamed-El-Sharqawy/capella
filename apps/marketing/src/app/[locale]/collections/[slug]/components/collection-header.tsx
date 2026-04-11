@@ -10,8 +10,6 @@ interface CollectionHeaderProps {
   onSortChange: (value: string) => void;
   isSortOpen: boolean;
   setIsSortOpen: (open: boolean) => void;
-  gridColumns: number;
-  setGridColumns: (cols: GridColumns) => void;
   onFilterOpen: () => void;
 }
 
@@ -21,8 +19,6 @@ export function CollectionHeader({
   onSortChange,
   isSortOpen,
   setIsSortOpen,
-  gridColumns,
-  setGridColumns,
   onFilterOpen,
 }: CollectionHeaderProps) {
   const t = useTranslations("collection");

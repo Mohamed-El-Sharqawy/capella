@@ -20,8 +20,6 @@ function CollectionPageContent({
   const {
     sortOption,
     setSortOption,
-    gridColumns,
-    setGridColumns,
     minPrice,
     setMinPrice,
     maxPrice,
@@ -45,6 +43,7 @@ function CollectionPageContent({
     sortOption,
     debouncedMinPrice,
     debouncedMaxPrice,
+    availability,
   });
 
   // Track collection view on mount
@@ -72,15 +71,12 @@ function CollectionPageContent({
         onSortChange={setSortOption}
         isSortOpen={isSortOpen}
         setIsSortOpen={setIsSortOpen}
-        gridColumns={gridColumns}
-        setGridColumns={setGridColumns}
         onFilterOpen={() => setIsFilterOpen(true)}
       />
 
       <ProductGrid
         products={products}
         locale={locale}
-        gridColumns={gridColumns}
         isLoading={isLoading}
         onClearFilters={clearFilters}
       />
