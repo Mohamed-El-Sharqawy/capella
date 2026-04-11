@@ -104,7 +104,8 @@
       "priceAsc": "Price, low to high",
       "priceDesc": "Price, high to low",
       "dateAsc": "Date, old to new",
-      "dateDesc": "Date, new to old"
+      "dateDesc": "Date, new to old",
+      "manualOrder": "Manual order"
     }
   },
   "search": {

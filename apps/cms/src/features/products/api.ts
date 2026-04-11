@@ -17,6 +17,7 @@ import {
   linkImageToVariant,
   linkImageToVariants,
   unlinkImageFromVariant,
+  reorderProducts,
   type CreateProductBody,
   type UpdateProductBody,
   type CreateVariantBody,
@@ -69,6 +70,17 @@ export function useDeleteProduct() {
 
   return useMutation({
     mutationFn: (id: string) => deleteProduct(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+    },
+  });
+}
+
+export function useReorderProducts() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (items: { id: string; position: number }[]) => reorderProducts(items),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() });
     },

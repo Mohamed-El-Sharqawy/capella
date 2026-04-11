@@ -94,6 +94,7 @@ export function NewProductPage() {
   const [materialId, setMaterialId] = useState("");
   const [stoneId, setStoneId] = useState("");
   const [clarityId, setClarityId] = useState("");
+  const [position, setPosition] = useState(0);
   const [variants, setVariants] = useState<VariantForm[]>([createEmptyVariant()]);
 
   // Staged images (before product creation)
@@ -217,6 +218,7 @@ export function NewProductPage() {
         isFeatured,
         isTrending,
         badge: badge || undefined,
+        position,
         materialId: materialId || undefined,
         stoneId: stoneId || undefined,
         clarityId: clarityId || undefined,
@@ -459,6 +461,19 @@ export function NewProductPage() {
                       onCheckedChange={setIsTrending}
                     />
                     <Label htmlFor="isTrending">Trending</Label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="position">Display Position</Label>
+                    <Input
+                      id="position"
+                      type="number"
+                      min="0"
+                      value={position}
+                      onChange={(e) => setPosition(parseInt(e.target.value) || 0)}
+                    />
                   </div>
                 </div>
 

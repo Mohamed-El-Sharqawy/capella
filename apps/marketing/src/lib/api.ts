@@ -53,7 +53,7 @@ export const api = {
 export async function getFeaturedProducts(): Promise<Product[]> {
   try {
     const data = await apiGet<{ data: { data: Product[] } }>(
-      "/api/products?isFeatured=true&limit=8",
+      "/api/products?isFeatured=true&limit=8&sortBy=position&sortOrder=asc",
       { next: { revalidate: 60 } }
     );
     return data?.data?.data ?? [];

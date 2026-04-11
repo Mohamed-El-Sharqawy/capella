@@ -33,6 +33,8 @@ async function getInitialProducts(slug: string) {
       limit: "32",
       page: "1",
       isActive: "true",
+      sortBy: "position",
+      sortOrder: "asc",
     });
 
     // Handle special slugs

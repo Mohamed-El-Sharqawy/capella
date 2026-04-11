@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Pencil, Trash2, Loader2 } from "lucide-react";
-import { useProducts, useDeleteProduct } from "@/features/products";
+import { Plus, Search, Pencil, Trash2, Loader2, GripVertical } from "lucide-react";
+import { useProducts, useDeleteProduct, useReorderProducts } from "@/features/products";
 import { useCollections } from "@/features/collections";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,96 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+interface SortableRowProps {
+  product: any;
+  handleDelete: (id: string) => void;
+  getLowestPrice: (variants: any[]) => number;
+  getTotalStock: (variants: any[]) => number;
+}
+
+function SortableRow({ product, handleDelete, getLowestPrice, getTotalStock }: SortableRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: product.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1 : 0,
+    position: 'relative' as const,
+    backgroundColor: isDragging ? 'hsl(var(--muted))' : 'transparent',
+  };
+
+  return (
+    <TableRow ref={setNodeRef} style={style}>
+      <TableCell className="w-[40px]">
+        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1">
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </TableCell>
+      <TableCell>
+        <Link to={`/products/${product.slug}`} className="block hover:underline">
+          <div className="font-medium">{product.nameEn}</div>
+          <div className="text-sm text-muted-foreground">{product.nameAr}</div>
+        </Link>
+      </TableCell>
+      <TableCell>
+        {(product as any).collection?.nameEn ?? "-"}
+      </TableCell>
+      <TableCell>
+        {product.position}
+      </TableCell>
+      <TableCell>
+        ${getLowestPrice(product.variants).toFixed(2)}
+      </TableCell>
+      <TableCell>{getTotalStock(product.variants)}</TableCell>
+      <TableCell>
+        <Badge variant={product.isActive ? "default" : "secondary"}>
+          {product.isActive ? "Active" : "Draft"}
+        </Badge>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to={`/products/${product.slug}/edit`}>
+              <Pencil className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleDelete(product.id)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
 
 export function ProductsPage() {
   const [search, setSearch] = useState("");
@@ -32,13 +122,32 @@ export function ProductsPage() {
   if (search) params.search = search;
   if (gender) params.gender = gender;
   if (collectionId) params.collectionId = collectionId;
+  
+  // Default to sorting by position
+  params.sortBy = "position";
+  params.sortOrder = "asc";
 
   const { data: response, isLoading } = useProducts(params);
   const { data: collectionsResponse } = useCollections();
   const deleteMutation = useDeleteProduct();
+  const reorderMutation = useReorderProducts();
 
-  const products = response?.data?.data ?? [];
+  const [items, setItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (response?.data?.data) {
+      setItems(response.data.data);
+    }
+  }, [response]);
+
   const collections = collectionsResponse?.data ?? [];
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this product?")) return;
@@ -50,14 +159,44 @@ export function ProductsPage() {
     }
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+
+      const newItems = arrayMove(items, oldIndex, newIndex);
+      setItems(newItems);
+
+      // Prepare items for reordering (only needs id and new position)
+      const reorderData = newItems.map((item, index) => ({
+        id: item.id,
+        position: index,
+      }));
+
+      try {
+        await reorderMutation.mutateAsync(reorderData);
+        toast.success("Order updated");
+      } catch (err) {
+        toast.error("Failed to update order");
+        // Revert on error
+        setItems(items);
+      }
+    }
+  };
+
   const getLowestPrice = (variants: { price: number }[]) => {
-    if (!variants.length) return 0;
+    if (!variants?.length) return 0;
     return Math.min(...variants.map((v) => v.price));
   };
 
   const getTotalStock = (variants: { stock: number }[]) => {
-    return variants.reduce((sum, v) => sum + v.stock, 0);
+    return variants?.reduce((sum, v) => sum + v.stock, 0) ?? 0;
   };
+
+  // Reordering is only enabled when not searching or filtering, to ensure consistency
+  const isReorderEnabled = !search && !gender && !collectionId;
 
   return (
     <div>
@@ -65,7 +204,7 @@ export function ProductsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Products</h1>
           <p className="mt-1 text-muted-foreground">
-            Manage your product catalog.
+            Manage your product catalog and display order.
           </p>
         </div>
         <Button asChild>
@@ -119,73 +258,63 @@ export function ProductsPage() {
       </div>
 
       <div className="mt-6 rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Collection</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
-                  <Loader2 className="mx-auto h-6 w-6 animate-spin" />
-                </TableCell>
+                <TableHead className="w-[40px]"></TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Collection</TableHead>
+                <TableHead>Order</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Stock</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
-            ) : products.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                  No products found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>
-                    <Link to={`/products/${product.slug}`} className="block hover:underline">
-                      <div className="font-medium">{product.nameEn}</div>
-                      <div className="text-sm text-muted-foreground">{product.nameAr}</div>
-                    </Link>
-                  </TableCell>
-                  <TableCell>
-                    {(product as { collection?: { nameEn: string } }).collection?.nameEn ?? "-"}
-                  </TableCell>
-                  <TableCell>
-                    ${getLowestPrice(product.variants).toFixed(2)}
-                  </TableCell>
-                  <TableCell>{getTotalStock(product.variants)}</TableCell>
-                  <TableCell>
-                    <Badge variant={product.isActive ? "default" : "secondary"}>
-                      {product.isActive ? "Active" : "Draft"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link to={`/products/${product.slug}/edit`}>
-                          <Pencil className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDelete(product.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+            </TableHeader>
+            <TableBody>
+              {isLoading && items.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8">
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin" />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+              ) : items.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    No products found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <SortableContext
+                  items={items.map((i) => i.id)}
+                  strategy={verticalListSortingStrategy}
+                  disabled={!isReorderEnabled}
+                >
+                  {items.map((product) => (
+                    <SortableRow
+                      key={product.id}
+                      product={product}
+                      handleDelete={handleDelete}
+                      getLowestPrice={getLowestPrice}
+                      getTotalStock={getTotalStock}
+                    />
+                  ))}
+                </SortableContext>
+              )}
+            </TableBody>
+          </Table>
+        </DndContext>
       </div>
+      {!isReorderEnabled && (
+        <p className="mt-2 text-xs text-muted-foreground italic">
+          * Reordering is disabled while searching or filtering.
+        </p>
+      )}
     </div>
   );
 }

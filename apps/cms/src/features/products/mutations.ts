@@ -22,12 +22,14 @@ export interface CreateProductBody {
   materialId?: string;
   stoneId?: string;
   clarityId?: string;
+  position?: number;
   variants?: CreateVariantBody[];
 }
 
 export interface UpdateProductBody extends Partial<Omit<CreateProductBody, "variants">> {
   defaultVariantId?: string | null;
   hoverVariantId?: string | null;
+  position?: number;
 }
 
 export interface CreateVariantBody {
@@ -211,4 +213,8 @@ export function reorderVariantImages(variantId: string, imageIds: string[]) {
     `/api/images/variants/${variantId}/reorder`,
     { imageIds }
   );
+}
+
+export function reorderProducts(items: { id: string; position: number }[]) {
+  return api.put<ApiResponse<{ message: string }>>("/api/products/reorder", { items });
 }

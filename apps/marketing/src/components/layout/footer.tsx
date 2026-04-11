@@ -12,16 +12,14 @@ export function Footer({ locale }: FooterProps) {
   const shopLinks = [
     { href: "/about", label: isArabic ? "عن كابيلا" : "About Us" },
     { href: "/collections/all-products", label: isArabic ? "تسوق الكل" : "Shop All" },
-    { href: "/collections/women", label: isArabic ? "نساء" : "Women" },
-    { href: "/collections/men", label: isArabic ? "رجال" : "Men" },
     { href: "/collections", label: isArabic ? "تسوق حسب المجموعة" : "Shop by Collection" },
-    { href: "/return-policy", label: isArabic ? "سياسة الإرجاع" : "Return Policy" },
     { href: "/contact", label: isArabic ? "اتصل بنا" : "Contact Us" },
   ];
 
   const policyLinks = [
     { href: "/privacy-policy", label: isArabic ? "سياسة الخصوصية" : "Privacy Policy" },
     { href: "/refund-policy", label: isArabic ? "سياسة الاسترداد" : "Refund Policy" },
+    { href: "/return-policy", label: isArabic ? "سياسة الإرجاع" : "Return Policy" },
     { href: "/shipping-policy", label: isArabic ? "سياسة الشحن" : "Shipping Policy" },
     { href: "/terms-of-service", label: isArabic ? "شروط الخدمة" : "Terms of Service" },
   ];

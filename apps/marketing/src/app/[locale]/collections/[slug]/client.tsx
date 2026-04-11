@@ -52,6 +52,7 @@ function CollectionPageContent({
   }, [slug, title]);
 
   const sortOptions: SortOption[] = [
+    { value: "position", label: t("sort.manualOrder"), sortBy: "position", sortOrder: "asc" },
     { value: "featured", label: t("sort.featured"), sortBy: "isFeatured", sortOrder: "desc" },
     { value: "best-selling", label: t("sort.bestSelling"), sortBy: "createdAt", sortOrder: "desc" },
     { value: "alpha-asc", label: t("sort.alphaAsc"), sortBy: "nameEn", sortOrder: "asc" },

@@ -106,6 +106,7 @@ export function EditProductPage() {
   const [materialId, setMaterialId] = useState("");
   const [stoneId, setStoneId] = useState("");
   const [clarityId, setClarityId] = useState("");
+  const [position, setPosition] = useState(0);
   const [variants, setVariants] = useState<VariantForm[]>([]);
 
   useEffect(() => {
@@ -129,6 +130,7 @@ export function EditProductPage() {
       setMaterialId((product as any).materialId ?? "");
       setStoneId((product as any).stoneId ?? "");
       setClarityId((product as any).clarityId ?? "");
+      setPosition(product.position ?? 0);
       setVariants(
         product.variants.map((v) => ({
           id: v.id,
@@ -233,6 +235,7 @@ export function EditProductPage() {
         isFeatured,
         isTrending,
         badge: badge || undefined,
+        position,
         materialId: materialId || undefined,
         stoneId: stoneId || undefined,
         clarityId: clarityId || undefined,
@@ -461,6 +464,19 @@ export function EditProductPage() {
                   <div className="flex items-center gap-2">
                     <Switch id="isTrending" checked={isTrending} onCheckedChange={setIsTrending} />
                     <Label htmlFor="isTrending">Trending</Label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="position">Display Position</Label>
+                    <Input
+                      id="position"
+                      type="number"
+                      min="0"
+                      value={position}
+                      onChange={(e) => setPosition(parseInt(e.target.value) || 0)}
+                    />
                   </div>
                 </div>
 

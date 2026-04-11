@@ -20,8 +20,8 @@ export function ProductBreadcrumb({ productName, collectionName, collectionSlug,
           {homeText}
         </Link>
         <ChevronRight className={`h-3 w-3 ${isArabic ? "rotate-180" : ""}`} />
-        
-        <Link href="/products" className="hover:text-black transition-colors">
+
+        <Link href="/collections/all-products" className="hover:text-black transition-colors">
           {productsText}
         </Link>
         <ChevronRight className={`h-3 w-3 ${isArabic ? "rotate-180" : ""}`} />
@@ -34,7 +34,7 @@ export function ProductBreadcrumb({ productName, collectionName, collectionSlug,
             <ChevronRight className={`h-3 w-3 ${isArabic ? "rotate-180" : ""}`} />
           </>
         )}
-        
+
         <span className="text-gray-900 truncate max-w-[150px] md:max-w-none">
           {productName}
         </span>
