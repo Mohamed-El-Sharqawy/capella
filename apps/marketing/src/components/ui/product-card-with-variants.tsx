@@ -165,7 +165,7 @@ export function ProductCardWithVariants({
         >
           <Link href={`/products/${product.slug}`} className="block select-none" draggable={false}>
             {/* bg-neutral-100 */}
-            <div draggable={false} className="relative aspect-337/505 overflow-hidden select-none">
+            <div draggable={false} className="relative bg-neutral-100 overflow-hidden select-none rounded-xl" style={{ aspectRatio: '4/5' }}>
               {primaryImage ? (
                 <>
                   <Image draggable={false}
@@ -328,9 +328,9 @@ export function ProductCardWithVariants({
           </div>
         </div>
 
-        <div className="mt-3 space-y-1">
+        <div className="mt-1.5 space-y-0.5">
           <Link href={`/products/${product.slug}`}>
-            <h3 className="text-sm font-medium line-clamp-1 hover:underline">
+            <h3 className="text-[13px] font-medium line-clamp-1 hover:underline">
               {name}
             </h3>
           </Link>

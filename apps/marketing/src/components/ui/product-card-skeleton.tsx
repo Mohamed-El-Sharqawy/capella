@@ -3,7 +3,7 @@
 export function ProductCardSkeleton() {
   return (
     <div className="animate-pulse">
-      <div className="relative aspect-337/505 bg-gray-200 rounded" />
+      <div className="relative bg-gray-200 rounded" style={{ aspectRatio: '4/5' }} />
       <div className="mt-3 space-y-2">
         <div className="h-4 bg-gray-200 rounded w-3/4" />
         <div className="h-4 bg-gray-200 rounded w-1/2" />
@@ -21,7 +21,7 @@ export function ProductCardHorizontalSkeleton() {
   return (
     <div className="flex gap-8 py-8 border-b animate-pulse">
       <div className="relative w-1/3 max-w-[300px] shrink-0">
-        <div className="relative aspect-3/4 bg-gray-200 rounded" />
+        <div className="relative bg-gray-200 rounded" style={{ aspectRatio: '4/5' }} />
       </div>
       <div className="flex-1 space-y-3">
         <div className="h-5 bg-gray-200 rounded w-2/3" />
