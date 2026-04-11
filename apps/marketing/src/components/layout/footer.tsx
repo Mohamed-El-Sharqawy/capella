@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { Facebook, Instagram, Twitter } from "lucide-react";
+import { SocialShare } from "@/components/ui";
 import Image from "next/image";
 
 interface FooterProps {
@@ -51,11 +51,7 @@ export function Footer({ locale }: FooterProps) {
                 </button>
               </form>
             </div>
-            <div className="flex gap-6">
-              <a href="#" className="hover:opacity-60 transition-opacity"><Instagram className="h-4 w-4" strokeWidth={1.5} /></a>
-              <a href="#" className="hover:opacity-60 transition-opacity"><Facebook className="h-4 w-4" strokeWidth={1.5} /></a>
-              <a href="#" className="hover:opacity-60 transition-opacity"><Twitter className="h-4 w-4" strokeWidth={1.5} /></a>
-            </div>
+            <SocialShare variant="footer" />
           </div>
 
           {/* Shop Links */}

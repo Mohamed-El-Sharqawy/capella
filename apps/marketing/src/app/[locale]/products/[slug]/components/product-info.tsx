@@ -3,12 +3,11 @@ import {
   RotateCcw,
   ShieldCheck,
   Gift,
-  Share2,
   Phone
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
-import { Accordion, AccordionItem, Checkbox } from "@/components/ui";
+import { Accordion, AccordionItem, Checkbox, SocialShare } from "@/components/ui";
 import type { UniqueColor, UniqueSize, SizeAvailability } from "../types";
 import { useState } from "react";
 
@@ -192,10 +191,13 @@ export function ProductInfo({
       </div>
 
       {/* Info & SKU */}
-      <div className="flex justify-between items-center pt-6 border-t border-gray-100">
-        <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pt-6 border-t border-gray-100">
+        <div className="flex items-center gap-6">
           <a href="#" className="text-gray-400 hover:text-black transition-colors"><Phone className="h-4 w-4" /></a>
-          <a href="#" className="text-gray-400 hover:text-black transition-colors"><Share2 className="h-4 w-4" /></a>
+          <SocialShare 
+            title={name} 
+            image={product.variants?.[0]?.images?.[0]?.url} 
+          />
         </div>
         <div className="text-[9px] text-gray-400 uppercase tracking-widest font-light">
           SKU: {selectedVariant?.sku || "N/A"}

@@ -7,3 +7,4 @@ export { ProductSlider } from "./product-slider";
 export { QuickViewModal } from "./quick-view-modal";
 export { Checkbox } from "./checkbox";
 export { Accordion, AccordionItem } from "./accordion";
+export { SocialShare } from "./social-share";
