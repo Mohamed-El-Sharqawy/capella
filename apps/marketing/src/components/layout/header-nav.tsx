@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import { apiGet } from "@/lib/api-client";
+import { cn } from "@/lib/utils";
 
 interface HeaderCollection {
   id: string;
@@ -70,7 +71,7 @@ export function HeaderNav() {
 
         {/* Dropdown with collections */}
         {hoveredItem === "shop-by-collection" && headerCollections.length > 0 && (
-          <div className="absolute top-full left-0 pt-2 z-50">
+          <div className={cn("absolute top-full pt-2 z-50", isArabic ? "right-0" : "left-0")}>
             <div className="bg-white border rounded-lg shadow-lg py-2 min-w-[200px]">
               {headerCollections.map((collection) => (
                 <div key={collection.id}>

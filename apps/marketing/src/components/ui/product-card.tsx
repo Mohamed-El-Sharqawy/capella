@@ -6,26 +6,29 @@ import { Link } from "@/i18n/navigation";
 import { Heart } from "lucide-react";
 import type { Product, ProductBadge } from "@ecommerce/shared-types";
 
+import { useTranslations } from "next-intl";
+import { Badge } from "./badge";
+import { Star, TrendingUp } from "lucide-react";
+
 interface ProductCardProps {
   product: Product;
   locale: string;
 }
 
-const BADGE_LABELS: Record<ProductBadge, { en: string; ar: string }> = {
-  NEW: { en: "New", ar: "جديد" },
-  BESTSELLER: { en: "Bestseller", ar: "الأكثر مبيعاً" },
-  LIMITED_EDITION: { en: "Limited Edition", ar: "إصدار محدود" },
-};
-
 export function ProductCard({ product, locale }: ProductCardProps) {
+  const t = useTranslations("common");
   const [isHovered, setIsHovered] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const isArabic = locale === "ar";
   const name = isArabic ? product.nameAr : product.nameEn;
 
   const defaultVariant = product.variants?.[0];
-  const price = defaultVariant?.price ?? 0;
-  const compareAtPrice = defaultVariant?.compareAtPrice;
+  const prices = product.variants?.[0] ? {
+    price: product.variants[0].price,
+    compareAtPrice: product.variants[0].compareAtPrice
+  } : { price: 0, compareAtPrice: null };
+
+  const { price, compareAtPrice } = prices;
   const primaryImage = defaultVariant?.images?.[0]?.url;
   const hoverImage = defaultVariant?.images?.[1]?.url;
 
@@ -39,7 +42,6 @@ export function ProductCard({ product, locale }: ProductCardProps) {
     .filter((c, i, arr) => c && arr.indexOf(c) === i)
     .slice(0, 6);
 
-  const badgeLabel = product.badge ? BADGE_LABELS[product.badge] : null;
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -55,7 +57,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative aspect-3/4 overflow-hidden bg-neutral-50 rounded-sm">
+      <div className="relative aspect-3/4 overflow-hidden bg-neutral-50">
         {primaryImage ? (
           <>
             <Image
@@ -83,12 +85,46 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           </div>
         )}
 
-        {/* Badge Label */}
-        {badgeLabel && (
-          <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-2 py-1 text-[9px] font-medium uppercase tracking-[0.2em] text-black">
-            {isArabic ? badgeLabel.ar : badgeLabel.en}
-          </span>
-        )}
+        {/* Badges Stack */}
+        <div className="absolute top-4 left-4 flex flex-col items-start gap-2 z-10 pointer-events-none">
+          {discountPercent && (
+            <Badge variant="destructive" size="sm" className="shadow-lg border-none">
+              -{discountPercent}%
+            </Badge>
+          )}
+
+          {product.isFeatured && (
+            <Badge variant="luxury" size="sm" className="flex gap-1.5 items-center border-none shadow-xl">
+              <Star className="h-2.5 w-2.5 fill-[#B8860B] text-[#B8860B]" />
+              {t("featured")}
+            </Badge>
+          )}
+
+          {product.isTrending && (
+            <Badge variant="trending" size="sm" className="flex gap-1.5 items-center border-none shadow-md">
+              <TrendingUp className="h-2.5 w-2.5" />
+              {t("trending")}
+            </Badge>
+          )}
+
+          {product.badge === "NEW" && (
+            <Badge variant="outline" size="sm" className="border-black/5 shadow-sm">
+              {t("badges.new")}
+            </Badge>
+          )}
+
+          {product.badge === "BESTSELLER" && (
+            <Badge variant="default" size="sm" className="bg-amber-600 border-none shadow-md">
+              {t("badges.bestseller")}
+            </Badge>
+          )}
+
+          {product.badge === "LIMITED_EDITION" && (
+            <Badge variant="luxury" size="sm" className="bg-indigo-950 border-none shadow-xl">
+              {t("badges.limitedEdition")}
+            </Badge>
+          )}
+        </div>
 
         {/* Wishlist Heart Icon */}
         <button

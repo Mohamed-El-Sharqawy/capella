@@ -12,6 +12,8 @@ import { useWishlist } from "@/contexts/wishlist-context";
 import { createCartItemFromVariant } from "@/lib/cart";
 import { trackQuickAddToCart, trackFavouriteToggle, trackWishlistToggle } from "@/lib/analytics";
 import { QuickViewModal } from "./quick-view-modal";
+import { Badge } from "./badge";
+import { TrendingUp, Star } from "lucide-react";
 
 interface ProductCardWithVariantsProps {
   product: Product;
@@ -197,11 +199,46 @@ export function ProductCardWithVariants({
                 </div>
               )}
 
-              {discountPercent && (
-                <span className="absolute top-3 left-3 rounded-full bg-red-500 px-2 py-1 text-xs font-semibold text-white">
-                  -{discountPercent}%
-                </span>
-              )}
+              {/* Badges Stack */}
+              <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 z-10 pointer-events-none">
+                {discountPercent && (
+                  <Badge variant="destructive" size="sm" className="shadow-lg border-none">
+                    -{discountPercent}%
+                  </Badge>
+                )}
+
+                {product.isFeatured && (
+                  <Badge variant="luxury" size="sm" className="flex gap-1.5 items-center border-none shadow-xl">
+                    <Star className="h-2.5 w-2.5 fill-[#B8860B] text-[#B8860B]" />
+                    {t("featured")}
+                  </Badge>
+                )}
+
+                {product.isTrending && (
+                  <Badge variant="trending" size="sm" className="flex gap-1.5 items-center border-none shadow-md">
+                    <TrendingUp className="h-2.5 w-2.5" />
+                    {t("trending")}
+                  </Badge>
+                )}
+
+                {product.badge === "NEW" && (
+                  <Badge variant="outline" size="sm" className="border-black/5 shadow-sm">
+                    {t("badges.new")}
+                  </Badge>
+                )}
+
+                {product.badge === "BESTSELLER" && (
+                  <Badge variant="outline" size="sm" className="border-black/5 shadow-sm">
+                    {t("badges.bestseller")}
+                  </Badge>
+                )}
+
+                {product.badge === "LIMITED_EDITION" && (
+                  <Badge variant="luxury" size="sm" className="bg-indigo-950 border-none shadow-xl">
+                    {t("badges.limitedEdition")}
+                  </Badge>
+                )}
+              </div>
 
               {/* Favourite & Wishlist Buttons */}
               <div className="absolute top-3 right-3 flex flex-col gap-2">
