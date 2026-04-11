@@ -61,14 +61,30 @@ export async function apiClient<T = unknown>(
     fetchOptions.signal = signal;
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, fetchOptions);
+  // Add a default timeout of 10 seconds to prevent build hangs
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: "Request failed" }));
-    throw new Error(error.error || error.message || `HTTP ${response.status}`);
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      ...fetchOptions,
+      signal: signal || controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: "Request failed" }));
+      throw new Error(error.error || error.message || `HTTP ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === "AbortError") {
+      throw new Error("Request timed out after 10 seconds");
+    }
+    throw error;
   }
-
-  return response.json();
 }
 
 /**
