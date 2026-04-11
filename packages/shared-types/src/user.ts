@@ -5,6 +5,7 @@ export interface User {
   lastName: string;
   role: UserRole;
   avatar?: string;
+  phone?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,6 +21,7 @@ export interface CreateUserInput {
   firstName: string;
   lastName: string;
   password: string;
+  phone?: string;
   role?: UserRole;
 }
 

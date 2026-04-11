@@ -11,13 +11,14 @@ const USER_SELECT = {
   email: true,
   firstName: true,
   lastName: true,
+  phone: true,
   role: true,
 } as const;
 
 export abstract class AuthService {
   static async signUp(
     body: AuthModel["signUpBody"]
-  ): Promise<ServiceResult<{ id: string; email: string; firstName: string; lastName: string; role: string }>> {
+  ): Promise<ServiceResult<{ id: string; email: string; firstName: string; lastName: string; phone?: string | null; role: string }>> {
     const existing = await prisma.user.findUnique({
       where: { email: body.email },
     });
@@ -32,6 +33,7 @@ export abstract class AuthService {
         password: hashedPassword,
         firstName: body.firstName,
         lastName: body.lastName,
+        phone: body.phone,
       },
       select: USER_SELECT,
     });
@@ -41,7 +43,7 @@ export abstract class AuthService {
 
   static async signIn(
     body: AuthModel["signInBody"]
-  ): Promise<ServiceResult<{ id: string; email: string; firstName: string; lastName: string; role: string }>> {
+  ): Promise<ServiceResult<{ id: string; email: string; firstName: string; lastName: string; phone?: string | null; role: string }>> {
     const user = await prisma.user.findUnique({
       where: { email: body.email },
     });
@@ -58,6 +60,7 @@ export abstract class AuthService {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        phone: user.phone,
         role: user.role,
       },
     };

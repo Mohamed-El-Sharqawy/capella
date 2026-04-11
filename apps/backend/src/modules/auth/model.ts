@@ -6,6 +6,7 @@ export const AuthModel = {
     password: t.String({ minLength: 8 }),
     firstName: t.String({ minLength: 1 }),
     lastName: t.String({ minLength: 1 }),
+    phone: t.Optional(t.String()),
   }),
   signInBody: t.Object({
     email: t.String({ format: "email" }),
@@ -22,6 +23,7 @@ export const AuthModel = {
         email: t.String(),
         firstName: t.String(),
         lastName: t.String(),
+        phone: t.Optional(t.String()),
         role: t.String(),
       }),
       accessToken: t.String(),

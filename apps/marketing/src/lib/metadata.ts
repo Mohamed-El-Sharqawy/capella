@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 export const SITE_CONFIG = {
   name: "Capella",
   nameAr: "كابيلا",
-  domain: "nznstudio.com",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://nznstudio.com",
+  domain: "capellaae.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://capellaae.com",
   defaultImage: "/og-image.jpg",
-  twitterHandle: "@nznstudio",
+  twitterHandle: "@capellaae",
   locale: {
     en: "en_US",
     ar: "ar_EG",
@@ -15,7 +15,7 @@ export const SITE_CONFIG = {
 
 export const DEFAULT_METADATA = {
   en: {
-    title: "NZN Studio - Premium Fashion & Clothing",
+    title: "Capella - Premium Fashion & Clothing",
     description:
       "Discover the latest trends in fashion at Capella. Shop premium quality clothing, accessories, and more with fast delivery across UAE.",
     keywords: [
@@ -28,7 +28,7 @@ export const DEFAULT_METADATA = {
       "men fashion",
       "women fashion",
       "accessories",
-      "NZN Studio",
+      "Capella",
     ],
   },
   ar: {
@@ -121,16 +121,16 @@ export function generatePageMetadata({
     robots: noIndex
       ? { index: false, follow: false }
       : {
+        index: true,
+        follow: true,
+        googleBot: {
           index: true,
           follow: true,
-          googleBot: {
-            index: true,
-            follow: true,
-            "max-video-preview": -1,
-            "max-image-preview": "large",
-            "max-snippet": -1,
-          },
+          "max-video-preview": -1,
+          "max-image-preview": "large",
+          "max-snippet": -1,
         },
+      },
   };
 }
 
@@ -160,14 +160,14 @@ export function generateProductMetadata({
   locale,
 }: ProductMetadataOptions): Metadata {
   const isArabic = locale === "ar";
-  
+
   const title = isArabic
     ? product.metaTitleAr || product.nameAr
     : product.metaTitleEn || product.nameEn;
-    
+
   const description = isArabic
     ? product.metaDescriptionAr || product.shortDescriptionAr || `${product.nameAr} - تسوق الآن من إن زد إن ستوديو`
-    : product.metaDescriptionEn || product.shortDescriptionEn || `${product.nameEn} - Shop now at NZN Studio`;
+    : product.metaDescriptionEn || product.shortDescriptionEn || `${product.nameEn} - Shop now at Capella`;
 
   const image = product.variants?.[0]?.images?.[0]?.url;
   const path = `/products/${product.slug}`;
@@ -209,14 +209,14 @@ export function generateCollectionMetadata({
   locale,
 }: CollectionMetadataOptions): Metadata {
   const isArabic = locale === "ar";
-  
+
   const title = isArabic
     ? collection.metaTitleAr || collection.nameAr
     : collection.metaTitleEn || collection.nameEn;
-    
+
   const description = isArabic
     ? collection.metaDescriptionAr || collection.descriptionAr || `تسوق مجموعة ${collection.nameAr} من إن زد إن ستوديو`
-    : collection.metaDescriptionEn || collection.descriptionEn || `Shop ${collection.nameEn} collection at NZN Studio`;
+    : collection.metaDescriptionEn || collection.descriptionEn || `Shop ${collection.nameEn} collection at Capella`;
 
   const image = collection.image?.url;
   const path = `/collections/${collection.slug}`;
@@ -239,7 +239,7 @@ export function generateCollectionMetadata({
 export const STATIC_PAGE_METADATA = {
   home: {
     en: {
-      title: "NZN Studio - Premium Fashion & Clothing Store",
+      title: "Capella - Premium Fashion & Clothing Store",
       description:
         "Discover the latest fashion trends at Capella. Shop premium quality clothing for men and women with fast delivery across UAE. New arrivals weekly!",
     },
@@ -251,9 +251,9 @@ export const STATIC_PAGE_METADATA = {
   },
   collections: {
     en: {
-      title: "Shop All Collections - NZN Studio",
+      title: "Shop All Collections - Capella",
       description:
-        "Browse our curated fashion collections. From casual wear to formal attire, find your perfect style at NZN Studio.",
+        "Browse our curated fashion collections. From casual wear to formal attire, find your perfect style at Capella.",
     },
     ar: {
       title: "تسوق جميع المجموعات - إن زد إن ستوديو",
@@ -263,9 +263,9 @@ export const STATIC_PAGE_METADATA = {
   },
   contact: {
     en: {
-      title: "Contact Us - NZN Studio Customer Support",
+      title: "Contact Us - Capella Customer Support",
       description:
-        "Get in touch with NZN Studio. We're here to help with orders, returns, sizing questions, and more. Fast response guaranteed.",
+        "Get in touch with Capella. We're here to help with orders, returns, sizing questions, and more. Fast response guaranteed.",
     },
     ar: {
       title: "تواصل معنا - دعم عملاء إن زد إن ستوديو",
@@ -275,9 +275,9 @@ export const STATIC_PAGE_METADATA = {
   },
   privacyPolicy: {
     en: {
-      title: "Privacy Policy - NZN Studio",
+      title: "Privacy Policy - Capella",
       description:
-        "Learn how NZN Studio protects your personal data. Our privacy policy explains data collection, usage, and your rights.",
+        "Learn how Capella protects your personal data. Our privacy policy explains data collection, usage, and your rights.",
     },
     ar: {
       title: "سياسة الخصوصية - إن زد إن ستوديو",
@@ -287,9 +287,9 @@ export const STATIC_PAGE_METADATA = {
   },
   termsOfService: {
     en: {
-      title: "Terms of Service - NZN Studio",
+      title: "Terms of Service - Capella",
       description:
-        "Read NZN Studio's terms of service. Understand your rights and responsibilities when shopping with us.",
+        "Read Capella's terms of service. Understand your rights and responsibilities when shopping with us.",
     },
     ar: {
       title: "شروط الخدمة - إن زد إن ستوديو",
@@ -299,9 +299,9 @@ export const STATIC_PAGE_METADATA = {
   },
   refundPolicy: {
     en: {
-      title: "Refund Policy - NZN Studio",
+      title: "Refund Policy - Capella",
       description:
-        "NZN Studio refund policy. Learn about our hassle-free refund process, eligibility, and timeline for getting your money back.",
+        "Capella refund policy. Learn about our hassle-free refund process, eligibility, and timeline for getting your money back.",
     },
     ar: {
       title: "سياسة الاسترداد - إن زد إن ستوديو",
@@ -311,9 +311,9 @@ export const STATIC_PAGE_METADATA = {
   },
   returnPolicy: {
     en: {
-      title: "Return Policy - NZN Studio",
+      title: "Return Policy - Capella",
       description:
-        "Easy returns at NZN Studio. 14-day return window, simple process, and full refund on eligible items. Shop with confidence.",
+        "Easy returns at Capella. 14-day return window, simple process, and full refund on eligible items. Shop with confidence.",
     },
     ar: {
       title: "سياسة الإرجاع - إن زد إن ستوديو",
