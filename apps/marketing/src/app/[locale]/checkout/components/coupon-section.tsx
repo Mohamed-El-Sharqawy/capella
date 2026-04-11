@@ -52,13 +52,13 @@ export function CouponSection({
                 {" - "}
                 {appliedCoupon.discountType === "PERCENTAGE"
                   ? `${appliedCoupon.discountValue}% off`
-                  : `LE ${appliedCoupon.discountValue} off`}
+                  : `AED ${appliedCoupon.discountValue} off`}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-green-700 font-semibold">
-              -LE {discountAmount.toLocaleString()}
+              -AED {discountAmount.toLocaleString()}
             </span>
             <button
               type="button"

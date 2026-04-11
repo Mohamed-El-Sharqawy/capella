@@ -47,7 +47,11 @@ export function CollectionsPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
+  const [selectedBannerFile, setSelectedBannerFile] = useState<File | null>(null);
+  const [bannerPreviewUrl, setBannerPreviewUrl] = useState<string | null>(null);
+  const [selectedHomePosition, setSelectedHomePosition] = useState<number>(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerFileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: response, isLoading } = useAllCollections();
   const createMutation = useCreateCollection();
@@ -83,6 +87,20 @@ export function CollectionsPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleBannerFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedBannerFile(file);
+      setBannerPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const clearBannerFile = () => {
+    setSelectedBannerFile(null);
+    setBannerPreviewUrl(null);
+    if (bannerFileInputRef.current) bannerFileInputRef.current.value = "";
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -95,6 +113,10 @@ export function CollectionsPage() {
       metaTitleAr: (formData.get("metaTitleAr") as string) || undefined,
       metaDescriptionEn: (formData.get("metaDescriptionEn") as string) || undefined,
       metaDescriptionAr: (formData.get("metaDescriptionAr") as string) || undefined,
+      bannerTitleEn: (formData.get("bannerTitleEn") as string) || undefined,
+      bannerTitleAr: (formData.get("bannerTitleAr") as string) || undefined,
+      bannerSubtitleEn: (formData.get("bannerSubtitleEn") as string) || undefined,
+      bannerSubtitleAr: (formData.get("bannerSubtitleAr") as string) || undefined,
       inHeader: formData.get("inHeader") === "on",
       isFeaturedOnHome: formData.get("isFeaturedOnHome") === "on",
       homeFeaturedPosition: Number(formData.get("homeFeaturedPosition")) || 0,
@@ -125,9 +147,20 @@ export function CollectionsPage() {
         toast.success("Image uploaded");
       }
 
+      if (selectedBannerFile) {
+        await uploadImageMutation.mutateAsync({
+          collectionId,
+          file: selectedBannerFile,
+          altEn: body.bannerTitleEn || body.nameEn,
+          altAr: body.bannerTitleAr || body.nameAr,
+        });
+        toast.success("Banner image uploaded");
+      }
+
       setIsDialogOpen(false);
       setEditingCollection(null);
       clearFile();
+      clearBannerFile();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save");
     }
@@ -156,12 +189,16 @@ export function CollectionsPage() {
   const openEdit = (collection: Collection) => {
     setEditingCollection(collection);
     setPreviewUrl(collection.image?.url ?? null);
+    setBannerPreviewUrl((collection as any).banner?.url ?? null);
+    setSelectedHomePosition((collection as any).homeFeaturedPosition ?? 1);
     setIsDialogOpen(true);
   };
 
   const openCreate = () => {
     setEditingCollection(null);
+    setSelectedHomePosition(1);
     clearFile();
+    clearBannerFile();
     setIsDialogOpen(true);
   };
 
@@ -522,27 +559,29 @@ export function CollectionsPage() {
 
               <div className="grid gap-2">
                 <Label htmlFor="homeFeaturedPosition">Homepage Position</Label>
-                <Select name="homeFeaturedPosition" defaultValue={String((editingCollection as any)?.homeFeaturedPosition ?? 1)}>
+                <Select 
+                  name="homeFeaturedPosition" 
+                  defaultValue={String(selectedHomePosition)}
+                  onValueChange={(v) => setSelectedHomePosition(Number(v))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select position" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Position 1 (Top Left)</SelectItem>
-                    <SelectItem value="2">Position 2 (Top Right)</SelectItem>
-                    <SelectItem value="3">Position 3 (Bottom Left)</SelectItem>
-                    <SelectItem value="4">Position 4 (Bottom Center)</SelectItem>
-                    <SelectItem value="5">Position 5 (Bottom Right)</SelectItem>
+                    <SelectItem value="1">Position 1 (Left)</SelectItem>
+                    <SelectItem value="2">Position 2 (Middle)</SelectItem>
+                    <SelectItem value="3">Position 3 (Right)</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Up to 5 collections: 2 on top row, 3 on bottom row
+                  Shows in the 3-image grid on the homepage
                 </p>
               </div>
 
               <div className="grid gap-2">
                 <Label>Image</Label>
                 <p className="text-xs text-muted-foreground">
-                  Recommended: 337 × 505 px
+                  Recommended: 800 × 1200 px (Portrait 2:3 or 3:4)
                 </p>
                 {previewUrl ? (
                   <div className="relative rounded-lg overflow-hidden border" style={{ width: 337, height: 505 }}>
@@ -585,6 +624,104 @@ export function CollectionsPage() {
                   className="hidden"
                   onChange={handleFileSelect}
                 />
+              </div>
+
+              {/* Banner Section */}
+              <div className="border-t pt-4 mt-2">
+                <h4 className="text-sm font-medium mb-3">Banner Section (Optional)</h4>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Display a banner at the top of the collection page
+                </p>
+                <div className="grid gap-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="bannerTitleEn">Banner Title (English)</Label>
+                      <Input
+                        id="bannerTitleEn"
+                        name="bannerTitleEn"
+                        defaultValue={(editingCollection as any)?.bannerTitleEn ?? ""}
+                        placeholder="e.g. New Arrivals"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="bannerTitleAr">Banner Title (Arabic)</Label>
+                      <Input
+                        id="bannerTitleAr"
+                        name="bannerTitleAr"
+                        defaultValue={(editingCollection as any)?.bannerTitleAr ?? ""}
+                        placeholder="e.g. وصول جديد"
+                        dir="rtl"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="bannerSubtitleEn">Banner Subtitle (English)</Label>
+                      <Input
+                        id="bannerSubtitleEn"
+                        name="bannerSubtitleEn"
+                        defaultValue={(editingCollection as any)?.bannerSubtitleEn ?? ""}
+                        placeholder="e.g. Discover our latest collection"
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="bannerSubtitleAr">Banner Subtitle (Arabic)</Label>
+                      <Input
+                        id="bannerSubtitleAr"
+                        name="bannerSubtitleAr"
+                        defaultValue={(editingCollection as any)?.bannerSubtitleAr ?? ""}
+                        placeholder="e.g. اكتشف أحدث مجموعتنا"
+                        dir="rtl"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Banner Image</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Recommended: 1920 × 400 px (wide banner)
+                    </p>
+                    {bannerPreviewUrl ? (
+                      <div className="relative rounded-lg overflow-hidden border" style={{ maxWidth: 400 }}>
+                        <img
+                          src={bannerPreviewUrl}
+                          alt="Banner Preview"
+                          className="w-full h-auto object-cover"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-6 w-6"
+                          onClick={() => {
+                            if ((editingCollection as any)?.banner) {
+                              // TODO: Add delete banner image API
+                            }
+                            clearBannerFile();
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div
+                        className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 h-32"
+                        onClick={() => bannerFileInputRef.current?.click()}
+                      >
+                        <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                        <span className="text-sm text-muted-foreground text-center px-2">
+                          Click to upload banner
+                        </span>
+                      </div>
+                    )}
+                    <input
+                      ref={bannerFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleBannerFileSelect}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
             <DialogFooter>

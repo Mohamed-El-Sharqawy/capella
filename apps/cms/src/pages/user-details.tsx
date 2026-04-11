@@ -257,7 +257,7 @@ export function UserDetailsPage() {
                     <Badge className={STATUS_COLORS[order.status] || "bg-gray-100"}>
                       {order.status}
                     </Badge>
-                    <p className="font-bold">LE {order.total.toLocaleString()}</p>
+                    <p className="font-bold">AED {order.total.toLocaleString()}</p>
                   </div>
                   <div className="border-t pt-3">
                     <p className="text-sm font-medium mb-2">
@@ -282,7 +282,7 @@ export function UserDetailsPage() {
                             </p>
                           </div>
                           <p className="font-medium">
-                            LE {(item.price * item.quantity).toLocaleString()}
+                            AED {(item.price * item.quantity).toLocaleString()}
                           </p>
                         </div>
                       ))}

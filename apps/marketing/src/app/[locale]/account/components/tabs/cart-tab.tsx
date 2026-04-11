@@ -98,10 +98,10 @@ export function CartTab({ locale }: CartTabProps) {
                   <div className="flex flex-col items-center">
                     {item.compareAtPrice && item.compareAtPrice > item.price && (
                       <span className="text-xs text-muted-foreground line-through">
-                        LE {item.compareAtPrice.toLocaleString()}
+                        AED {item.compareAtPrice.toLocaleString()}
                       </span>
                     )}
-                    <span className="text-sm font-medium">LE {item.price.toLocaleString()}</span>
+                    <span className="text-sm font-medium">AED {item.price.toLocaleString()}</span>
                   </div>
                 </td>
                 <td className="px-4 py-3 text-center">
@@ -122,7 +122,7 @@ export function CartTab({ locale }: CartTabProps) {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-right font-medium">
-                  LE {(item.price * item.quantity).toLocaleString()}
+                  AED {(item.price * item.quantity).toLocaleString()}
                 </td>
                 <td className="px-4 py-3">
                   <button
@@ -140,7 +140,7 @@ export function CartTab({ locale }: CartTabProps) {
       <div className="flex items-center justify-between bg-white border rounded-lg p-4">
         <div>
           <p className="text-sm text-muted-foreground">{t("subtotal")}</p>
-          <p className="text-xl font-bold">LE {cartTotal.toLocaleString()} EGP</p>
+          <p className="text-xl font-bold">AED {cartTotal.toLocaleString()} EGP</p>
         </div>
         <Link
           href="/checkout"

@@ -8,8 +8,6 @@ const CART_INCLUDE = {
         include: {
           product: true,
           images: { orderBy: { position: "asc" as const }, take: 1 },
-          color: true,
-          size: true,
         },
       },
     },

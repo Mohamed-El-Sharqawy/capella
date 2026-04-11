@@ -3,6 +3,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
+  --spacing: 0.25rem;
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(0 0% 3.9%);
   --color-card: hsl(0 0% 100%);
@@ -31,21 +32,58 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
+  /* Luxury monochrome palette */
+  --color-luxury-bg: hsl(0, 0%, 100%);
+  --color-luxury-white: hsl(0, 0%, 100%);
+  --color-luxury-black: hsl(0, 0%, 0%);
+  --color-luxury-gold: hsl(43, 31%, 63%);
+  --color-luxury-gray: hsl(0, 0%, 96%);
+
+  /* Typography */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
 }
 
 @layer base {
   * {
     @apply border-border;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+
+    *,
+    *::before,
+    *::after {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    /* For Firefox. */
+    * {
+      scrollbar-width: none;
+    }
+
+    /* For WebKit (Chrome & Safari). */
+    ::-webkit-scrollbar {
+      display: none;
+    }
   }
+
   body {
     @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
   }
 }
+
 
 @keyframes marquee {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-100%);
   }

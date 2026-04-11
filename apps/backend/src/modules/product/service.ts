@@ -10,8 +10,6 @@ const VARIANT_WITH_IMAGES = {
       orderBy: { position: "asc" as const },
       include: { image: true },
     },
-    color: true,
-    size: true,
   },
 } as const;
 
@@ -24,6 +22,9 @@ const PRODUCT_INCLUDE = {
   hoverVariant: VARIANT_WITH_IMAGES,
   collection: true,
   images: true, // Product-level images
+  material: true,
+  stone: true,
+  clarity: true,
 } as const;
 
 // Helper to flatten variant images for frontend
@@ -229,10 +230,9 @@ export abstract class ProductService {
     });
     if (!product) return null;
 
-    // Collect all Cloudinary public IDs from product images + size guide
+    // Collect all Cloudinary public IDs from product images
     const publicIds = [
       ...product.images.map((img) => img.publicId),
-      ...(product.sizeGuidePublicId ? [product.sizeGuidePublicId] : []),
     ];
 
     // Delete from Cloudinary

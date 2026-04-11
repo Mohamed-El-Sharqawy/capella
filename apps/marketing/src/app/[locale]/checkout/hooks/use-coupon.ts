@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useQueryState, parseAsString } from "nuqs";
 import { apiPost } from "@/lib/api-client";
 
 interface CouponData {
@@ -31,15 +32,24 @@ interface UseCouponReturn {
   removeCoupon: () => void;
 }
 
-export function useCoupon(): UseCouponReturn {
-  const [couponCode, setCouponCode] = useState("");
+export function useCoupon(initialTotal?: number): UseCouponReturn {
+  const [couponQuery, setCouponQuery] = useQueryState("coupon", parseAsString.withDefault(""));
+  const [couponCode, setCouponCodeState] = useState(couponQuery);
   const [appliedCoupon, setAppliedCoupon] = useState<CouponData | null>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const applyCoupon = useCallback(async (orderTotal: number, userId?: string): Promise<boolean> => {
-    if (!couponCode.trim()) {
+  // Sync internal state with query param
+  const setCouponCode = useCallback((code: string) => {
+    setCouponCodeState(code);
+    setCouponQuery(code || null);
+  }, [setCouponQuery]);
+
+  const applyCoupon = useCallback(async (orderTotal: number, userId?: string, codeToUse?: string): Promise<boolean> => {
+    const code = (codeToUse || couponCode).trim().toUpperCase();
+    
+    if (!code) {
       setError("Please enter a coupon code");
       return false;
     }
@@ -49,7 +59,7 @@ export function useCoupon(): UseCouponReturn {
 
     try {
       const response = await apiPost<ValidateCouponResponse>("/api/coupons/validate", {
-        code: couponCode.trim().toUpperCase(),
+        code,
         orderTotal,
         userId,
       });
@@ -58,6 +68,8 @@ export function useCoupon(): UseCouponReturn {
         setAppliedCoupon(response.data.coupon);
         setDiscountAmount(response.data.discountAmount);
         setError(null);
+        // Ensure URL matches the successfully applied coupon
+        setCouponQuery(code);
         return true;
       } else {
         setError(response.error || "Invalid coupon code");
@@ -70,14 +82,21 @@ export function useCoupon(): UseCouponReturn {
     } finally {
       setIsValidating(false);
     }
-  }, [couponCode]);
+  }, [couponCode, setCouponQuery]);
 
   const removeCoupon = useCallback(() => {
     setAppliedCoupon(null);
     setDiscountAmount(0);
     setCouponCode("");
     setError(null);
-  }, []);
+  }, [setCouponCode]);
+
+  // Auto-apply on mount if coupon exists in URL and we have a total
+  useEffect(() => {
+    if (couponQuery && !appliedCoupon && !isValidating && initialTotal && initialTotal > 0) {
+      applyCoupon(initialTotal, undefined, couponQuery);
+    }
+  }, [initialTotal]); // Only run when total is available/changes
 
   return {
     couponCode,

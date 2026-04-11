@@ -1,30 +1,53 @@
-model Color {
-  id     String @id @default(cuid())
-  nameEn String
-  nameAr String
-  hex    String // e.g. "#FF0000"
-
-  variants ProductVariant[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([nameEn])
-  @@map("colors")
-}
-
-model Size {
+model Material {
   id       String @id @default(cuid())
-  nameEn   String // e.g. "S", "M", "L", "XL"
+  nameEn   String
   nameAr   String
-  position Int    @default(0) // for sorting
+  position Int    @default(0)
 
-  variants ProductVariant[]
+  products Product[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([nameEn])
+  @@unique([nameAr])
   @@index([nameEn])
   @@index([position])
-  @@map("sizes")
+  @@map("materials")
+}
+
+model Stone {
+  id       String @id @default(cuid())
+  nameEn   String
+  nameAr   String
+  position Int    @default(0)
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([nameEn])
+  @@unique([nameAr])
+  @@index([nameEn])
+  @@index([position])
+  @@map("stones")
+}
+
+model Clarity {
+  id       String @id @default(cuid())
+  nameEn   String
+  nameAr   String
+  position Int    @default(0)
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([nameEn])
+  @@unique([nameAr])
+  @@index([nameEn])
+  @@index([position])
+  @@map("clarities")
 }

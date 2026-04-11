@@ -5,16 +5,19 @@ import type { CollectionModel } from "./model";
 
 const COLLECTION_INCLUDE = {
   image: true,
+  banner: true,
   _count: { select: { products: true } },
 } as const;
 
 const COLLECTION_WITH_CHILDREN = {
   image: true,
+  banner: true,
   _count: { select: { products: true } },
   children: {
     where: { isActive: true },
     include: {
       image: true,
+      banner: true,
       _count: { select: { products: true } },
     },
     orderBy: { position: "asc" as const },
@@ -171,12 +174,16 @@ export abstract class CollectionService {
   static async delete(id: string) {
     const collection = await prisma.collection.findUnique({
       where: { id },
-      include: { image: true },
+      include: { image: true, banner: true },
     });
     if (!collection) return null;
 
     if (collection.image) {
       await CloudinaryService.delete(collection.image.publicId);
+    }
+
+    if (collection.banner) {
+      await CloudinaryService.delete(collection.banner.publicId);
     }
 
     await prisma.collection.delete({ where: { id } });
@@ -189,7 +196,7 @@ export abstract class CollectionService {
       where: { isFeaturedOnHome: true, isActive: true },
       include: { image: true },
       orderBy: { homeFeaturedPosition: "asc" },
-      take: 5, // Up to 5 collections: 2 on top row, 3 on bottom row
+      take: 3, // 3 collections in a single row
     });
   }
 }

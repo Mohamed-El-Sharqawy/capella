@@ -4,6 +4,12 @@ enum Gender {
   UNISEX
 }
 
+enum ProductBadge {
+  NEW
+  BESTSELLER
+  LIMITED_EDITION
+}
+
 model Product {
   id   String @id @default(cuid())
   slug String @unique
@@ -23,19 +29,25 @@ model Product {
   gender     Gender
   isActive   Boolean @default(true)
   isFeatured Boolean @default(false)
+  badge      ProductBadge?
+  isTrending Boolean @default(false)
 
   collection   Collection? @relation(fields: [collectionId], references: [id])
   collectionId String?
+
+  // Jewellery attributes
+  material   Material? @relation(fields: [materialId], references: [id])
+  materialId String?
+  stone      Stone? @relation(fields: [stoneId], references: [id])
+  stoneId    String?
+  clarity    Clarity? @relation(fields: [clarityId], references: [id])
+  clarityId  String?
 
   // Display variants for listing cards
   defaultVariant   ProductVariant? @relation("ProductDefaultVariant", fields: [defaultVariantId], references: [id])
   defaultVariantId String?
   hoverVariant     ProductVariant? @relation("ProductHoverVariant", fields: [hoverVariantId], references: [id])
   hoverVariantId   String?
-
-  // Size guide image (Cloudinary)
-  sizeGuideUrl      String?
-  sizeGuidePublicId String?
 
   variants        ProductVariant[] @relation("ProductVariants")
   images          ProductImage[]
@@ -51,6 +63,11 @@ model Product {
   @@index([collectionId])
   @@index([gender])
   @@index([isActive, isFeatured])
+  @@index([isTrending])
+  @@index([badge])
+  @@index([materialId])
+  @@index([stoneId])
+  @@index([clarityId])
   @@index([createdAt])
   @@map("products")
 }
@@ -72,11 +89,6 @@ model ProductVariant {
   price          Float
   compareAtPrice Float?
 
-  color   Color?  @relation(fields: [colorId], references: [id])
-  colorId String?
-  size    Size?   @relation(fields: [sizeId], references: [id])
-  sizeId  String?
-
   stock          Int     @default(0)
   isActive       Boolean @default(true)
 
@@ -96,8 +108,6 @@ model ProductVariant {
   @@index([sku])
   @@index([slug])
   @@index([isActive])
-  @@index([colorId])
-  @@index([sizeId])
   @@map("product_variants")
 }
 

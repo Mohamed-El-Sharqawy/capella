@@ -200,11 +200,11 @@ export function QuickViewModal({
               <div className="flex items-center gap-2 mt-2">
                 {compareAtPrice && compareAtPrice > price && (
                   <span className="text-lg text-muted-foreground line-through">
-                    LE {compareAtPrice.toLocaleString()}
+                    AED {compareAtPrice.toLocaleString()}
                   </span>
                 )}
                 <span className="text-xl font-bold text-red-600">
-                  LE {price.toLocaleString()}
+                  AED {price.toLocaleString()}
                 </span>
                 {discountPercent && (
                   <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
@@ -293,7 +293,7 @@ export function QuickViewModal({
                 onClick={handleAddToCart}
                 className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded hover:bg-primary/90 transition"
               >
-                {tCommon("addToCart")} - LE {(price * quantity).toLocaleString()}
+                {tCommon("addToCart")} - AED {(price * quantity).toLocaleString()}
               </button>
               <Link
                 href={`/products/${product.slug}`}

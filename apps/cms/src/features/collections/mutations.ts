@@ -19,6 +19,10 @@ export interface CreateCollectionBody {
   metaTitleAr?: string;
   metaDescriptionEn?: string;
   metaDescriptionAr?: string;
+  bannerTitleEn?: string;
+  bannerTitleAr?: string;
+  bannerSubtitleEn?: string;
+  bannerSubtitleAr?: string;
 }
 
 export type UpdateCollectionBody = Partial<CreateCollectionBody>;

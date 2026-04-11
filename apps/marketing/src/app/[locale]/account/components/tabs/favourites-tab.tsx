@@ -74,11 +74,11 @@ export function FavouritesTab({ locale, products, isLoading, onRemove }: Favouri
                 <div className="flex items-center gap-2 mt-2">
                   {variant?.compareAtPrice && variant.compareAtPrice > variant.price && (
                     <span className="text-sm text-muted-foreground line-through">
-                      LE {variant.compareAtPrice.toLocaleString()}
+                      AED {variant.compareAtPrice.toLocaleString()}
                     </span>
                   )}
                   <span className="font-semibold text-red-600">
-                    LE {variant?.price?.toLocaleString()}
+                    AED {variant?.price?.toLocaleString()}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">

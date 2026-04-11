@@ -1,4 +1,4 @@
-export const SHIPPING_COST = 50;
+export const SHIPPING_COST = 25;
 
 export const CHECKOUT_ROUTES = {
   CART: "/cart",
@@ -7,5 +7,5 @@ export const CHECKOUT_ROUTES = {
   SIGNIN: "/auth/signin",
 } as const;
 
-export const DEFAULT_COUNTRY = "Egypt";
+export const DEFAULT_COUNTRY = "United Arab Emirates";
 export const DEFAULT_ZIP_CODE = "00000";

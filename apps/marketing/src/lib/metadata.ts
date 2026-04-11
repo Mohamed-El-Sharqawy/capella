@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const SITE_CONFIG = {
-  name: "NZN Studio",
-  nameAr: "إن زد إن ستوديو",
+  name: "Capella",
+  nameAr: "كابيلا",
   domain: "nznstudio.com",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://nznstudio.com",
   defaultImage: "/og-image.jpg",
@@ -17,11 +17,13 @@ export const DEFAULT_METADATA = {
   en: {
     title: "NZN Studio - Premium Fashion & Clothing",
     description:
-      "Discover the latest trends in fashion at NZN Studio. Shop premium quality clothing, accessories, and more with fast delivery across Egypt.",
+      "Discover the latest trends in fashion at Capella. Shop premium quality clothing, accessories, and more with fast delivery across UAE.",
     keywords: [
       "fashion",
       "clothing",
-      "Egypt",
+      "UAE",
+      "Dubai",
+      "Abu Dhabi",
       "online shopping",
       "men fashion",
       "women fashion",
@@ -32,11 +34,13 @@ export const DEFAULT_METADATA = {
   ar: {
     title: "إن زد إن ستوديو - أزياء وملابس فاخرة",
     description:
-      "اكتشف أحدث صيحات الموضة في إن زد إن ستوديو. تسوق ملابس عالية الجودة وإكسسوارات والمزيد مع توصيل سريع في جميع أنحاء مصر.",
+      "اكتشف أحدث صيحات الموضة في كابيلا. تسوق ملابس عالية الجودة وإكسسوارات والمزيد مع توصيل سريع في جميع أنحاء الإمارات.",
     keywords: [
       "أزياء",
       "ملابس",
-      "مصر",
+      "الإمارات",
+      "دبي",
+      "أبو ظبي",
       "تسوق أونلاين",
       "أزياء رجالية",
       "أزياء نسائية",
@@ -237,12 +241,12 @@ export const STATIC_PAGE_METADATA = {
     en: {
       title: "NZN Studio - Premium Fashion & Clothing Store",
       description:
-        "Discover the latest fashion trends at NZN Studio. Shop premium quality clothing for men and women with fast delivery across Egypt. New arrivals weekly!",
+        "Discover the latest fashion trends at Capella. Shop premium quality clothing for men and women with fast delivery across UAE. New arrivals weekly!",
     },
     ar: {
       title: "إن زد إن ستوديو - متجر أزياء وملابس فاخرة",
       description:
-        "اكتشف أحدث صيحات الموضة في إن زد إن ستوديو. تسوق ملابس عالية الجودة للرجال والنساء مع توصيل سريع في جميع أنحاء مصر. وصول جديد أسبوعياً!",
+        "اكتشف أحدث صيحات الموضة في كابيلا. تسوق ملابس عالية الجودة للرجال والنساء مع توصيل سريع في جميع أنحاء الإمارات. وصول جديد أسبوعياً!",
     },
   },
   collections: {
@@ -319,14 +323,14 @@ export const STATIC_PAGE_METADATA = {
   },
   shippingPolicy: {
     en: {
-      title: "Shipping Policy - NZN Studio",
+      title: "Shipping Policy - Capella",
       description:
-        "Fast shipping across Egypt. Free delivery on orders over 1500 EGP. Track your order and get updates. NZN Studio delivery info.",
+        "Fast shipping across UAE. Free delivery on orders over 500 AED. Track your order and get updates. Capella delivery info.",
     },
     ar: {
-      title: "سياسة الشحن - إن زد إن ستوديو",
+      title: "سياسة الشحن - كابيلا",
       description:
-        "شحن سريع في جميع أنحاء مصر. توصيل مجاني للطلبات فوق 1500 جنيه. تتبع طلبك واحصل على التحديثات. معلومات توصيل إن زد إن ستوديو.",
+        "شحن سريع في جميع أنحاء الإمارات. توصيل مجاني للطلبات فوق 500 درهم. تتبع طلبك واحصل على التحديثات. معلومات توصيل كابيلا.",
     },
   },
 } as const;

@@ -41,6 +41,23 @@ export function updateShoppableVideo(id: string, data: {
   return api.patch<ApiResponse<ShoppableVideo>>(`/api/shoppable-videos/${id}`, data);
 }
 
+export function updateShoppableVideoWithFiles(id: string, data: {
+  productId?: string;
+  position?: number;
+  isActive?: boolean;
+  video?: File;
+  thumbnail?: File;
+}) {
+  const formData = new FormData();
+  if (data.productId !== undefined) formData.append("productId", data.productId);
+  if (data.position !== undefined) formData.append("position", String(data.position));
+  if (data.isActive !== undefined) formData.append("isActive", String(data.isActive));
+  if (data.video) formData.append("video", data.video);
+  if (data.thumbnail) formData.append("thumbnail", data.thumbnail);
+  
+  return api.put<ApiResponse<ShoppableVideo>>(`/api/shoppable-videos/${id}`, formData);
+}
+
 export function deleteShoppableVideo(id: string) {
   return api.delete<ApiResponse<{ message: string }>>(`/api/shoppable-videos/${id}`);
 }

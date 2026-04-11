@@ -1,99 +1,54 @@
 import { Elysia, t } from "elysia";
-import { prisma } from "../../lib/prisma";
-
-const SEARCH_LIMIT = 5;
+import { authPlugin } from "../../plugins/auth";
+import { SearchService } from "./service";
+import { SearchModel } from "./model";
 
 export const searchController = new Elysia({ prefix: "/search" })
+  .use(authPlugin)
+  // Main search endpoint
   .get("/", async ({ query }) => {
     const q = query.q?.trim();
+    const limit = query.limit ? Number(query.limit) : 5;
     
     if (!q || q.length < 2) {
       return { products: [], collections: [] };
     }
 
-    const [products, collections] = await Promise.all([
-      // Search products
-      prisma.product.findMany({
-        where: {
-          isActive: true,
-          OR: [
-            { nameEn: { contains: q, mode: "insensitive" } },
-            { nameAr: { contains: q, mode: "insensitive" } },
-            { shortDescriptionEn: { contains: q, mode: "insensitive" } },
-            { shortDescriptionAr: { contains: q, mode: "insensitive" } },
-          ],
-        },
-        select: {
-          id: true,
-          slug: true,
-          nameEn: true,
-          nameAr: true,
-          variants: {
-            where: { isActive: true },
-            take: 1,
-            orderBy: { createdAt: "asc" },
-            select: {
-              price: true,
-              images: {
-                take: 1,
-                orderBy: { position: "asc" },
-                include: { image: { select: { url: true } } },
-              },
-            },
-          },
-        },
-        take: SEARCH_LIMIT,
-        orderBy: { createdAt: "desc" },
-      }),
-
-      // Search collections
-      prisma.collection.findMany({
-        where: {
-          isActive: true,
-          OR: [
-            { nameEn: { contains: q, mode: "insensitive" } },
-            { nameAr: { contains: q, mode: "insensitive" } },
-            { descriptionEn: { contains: q, mode: "insensitive" } },
-            { descriptionAr: { contains: q, mode: "insensitive" } },
-          ],
-        },
-        select: {
-          id: true,
-          slug: true,
-          nameEn: true,
-          nameAr: true,
-          image: true,
-        },
-        take: SEARCH_LIMIT,
-        orderBy: { createdAt: "desc" },
-      }),
-    ]);
-
-    // Transform products to include image URL
-    const transformedProducts = products.map((p) => ({
-      id: p.id,
-      slug: p.slug,
-      nameEn: p.nameEn,
-      nameAr: p.nameAr,
-      price: p.variants[0]?.price ?? null,
-      imageUrl: p.variants[0]?.images[0]?.image?.url ?? null,
-    }));
-
-    // Transform collections to include image URL
-    const transformedCollections = collections.map((c) => ({
-      id: c.id,
-      slug: c.slug,
-      nameEn: c.nameEn,
-      nameAr: c.nameAr,
-      imageUrl: (c.image as any)?.url ?? null,
-    }));
-
-    return {
-      products: transformedProducts,
-      collections: transformedCollections,
-    };
+    return SearchService.search(q, limit);
   }, {
-    query: t.Object({
-      q: t.Optional(t.String()),
-    }),
+    query: SearchModel.querySchema,
+  })
+  // Get trending products
+  .get("/trending", async ({ query }) => {
+    const limit = query.limit ? Number(query.limit) : 8;
+    const products = await SearchService.getTrending(limit);
+    return { success: true as const, data: products };
+  }, {
+    query: t.Object({ limit: t.Optional(t.String()) }),
+  })
+  // Track search query
+  .post("/analytics/query", async ({ body, user, headers }) => {
+    const sessionId = headers["x-session-id"] as string | undefined;
+    const result = await SearchService.trackQuery(body, user?.id, sessionId);
+    return { success: true as const, data: result };
+  }, {
+    optionalAuth: true,
+    body: SearchModel.trackQueryBody,
+  })
+  // Track search result click
+  .post("/analytics/click", async ({ body, user, headers }) => {
+    const sessionId = headers["x-session-id"] as string | undefined;
+    const result = await SearchService.trackClick(body, user?.id, sessionId);
+    return { success: true as const, data: result };
+  }, {
+    optionalAuth: true,
+    body: SearchModel.trackClickBody,
+  })
+  // Admin analytics endpoint
+  .get("/analytics/queries", async ({ query }) => {
+    const analytics = await SearchService.getAnalytics(query);
+    return { success: true as const, data: analytics };
+  }, {
+    isAdmin: true,
+    query: SearchModel.analyticsQuery,
   });

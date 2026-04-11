@@ -66,8 +66,6 @@ export abstract class OrderService {
           take: 1,
           include: { image: true },
         },
-        color: true,
-        size: true,
       },
     });
 
@@ -92,8 +90,6 @@ export abstract class OrderService {
         sku: variant.sku,
         quantity: item.quantity,
         price: variant.price,
-        size: variant.size?.nameEn ?? null,
-        color: variant.color?.nameEn ?? null,
         imageUrl,
       };
     });

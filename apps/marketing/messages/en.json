@@ -7,7 +7,12 @@
     "outOfStock": "Out of Stock",
     "sale": "Sale",
     "new": "New",
-    "featured": "Featured"
+    "featured": "Featured",
+    "badges": {
+      "new": "New",
+      "bestseller": "Bestseller",
+      "limitedEdition": "Limited Edition"
+    }
   },
   "header": {
     "shopAll": "Shop All",
@@ -18,13 +23,18 @@
     "contactUs": "Contact us",
     "search": "Search",
     "account": "Account",
-    "cart": "Cart"
+    "cart": "Cart",
+    "virtualTailor": "Virtual Tailor",
+    "theJourney": "The Journey",
+    "instagram": "Instagram",
+    "bookConsultation": "Book Your Private Consultation",
+    "terms": "Terms & Conditions"
   },
   "home": {
     "heroMen": "Men",
     "heroWomen": "Women",
     "endOfSeasonSale": "END OF SEASON SALE",
-    "pricesStartingFrom": "PRICES STARTING FROM 350EGP",
+    "pricesStartingFrom": "PRICES STARTING FROM 350 AED",
     "featured": {
       "title": "Featured",
       "subtitle": "Street-approved Favorites For Everyday Movement."
@@ -97,6 +107,11 @@
       "dateDesc": "Date, new to old"
     }
   },
+  "search": {
+    "trending": "Trending Now",
+    "recentSearches": "Recent Searches",
+    "noResults": "No results found"
+  },
   "checkout": {
     "title": "Checkout",
     "backToCart": "Back to cart",
@@ -128,7 +143,7 @@
     "card": "Credit/Debit Card",
     "cardDesc": "Pay securely with your card",
     "wallet": "Mobile Wallet",
-    "walletDesc": "Vodafone Cash, Fawry, etc.",
+    "walletDesc": "Apple Pay, Google Pay, etc.",
     "installments": "Installments",
     "installmentsDesc": "Pay in easy installments",
     "orderSummary": "Order Summary",
@@ -141,7 +156,7 @@
     "orderFailed": "Failed to place order",
     "tryAgain": "Please try again.",
     "addressPlaceholder": "Building number, Street name",
-    "cityPlaceholder": "e.g. Cairo, Giza, Alexandria",
+    "cityPlaceholder": "e.g. Dubai, Abu Dhabi, Sharjah",
     "areaPlaceholder": "District / Neighborhood",
     "deliveryNotes": "Delivery Notes",
     "deliveryNotesPlaceholder": "Any special delivery instructions...",
@@ -160,7 +175,20 @@
     "trackOrders": "Track your orders easily",
     "exclusiveOffers": "Get exclusive coupons & offers",
     "saveAddresses": "Save addresses for faster checkout",
-    "signInNow": "Sign in now"
+    "signInNow": "Sign in now",
+    "success": {
+      "title": "Order Confirmed!",
+      "message": "Thank you for your purchase. Your order has been successfully processed.",
+      "orderId": "Order ID",
+      "emailSent": "A confirmation email has been sent to your email address.",
+      "continueShopping": "Continue Shopping"
+    },
+    "cancel": {
+      "title": "Payment Cancelled",
+      "message": "Your payment was not completed. You can try again or choose a different payment method.",
+      "retry": "Try Again",
+      "backToCart": "Back to Cart"
+    }
   },
   "cart": {
     "title": "Shopping Cart",
@@ -188,7 +216,7 @@
       "placeholder": "Enter your email",
       "button": "Subscribe"
     },
-    "copyright": "© 2026 NZN Studio. All rights reserved."
+    "copyright": "© 2026 Capella. All rights reserved."
   },
   "contact": {
     "title": "Contact Us",
@@ -226,19 +254,19 @@
     "error": "An error occurred while sending your message. Please try again.",
     "info": {
       "phone": "Phone",
-      "phoneValue": "+20 123 456 7890",
+      "phoneValue": "+971 50 123 4567",
       "email": "Email",
       "emailValue": "support@nznstudio.com",
       "address": "Address",
-      "addressValue": "Cairo, Egypt",
+      "addressValue": "Dubai, UAE",
       "hours": "Working Hours",
-      "hoursValue": "Sat - Thu: 10 AM - 10 PM"
+      "hoursValue": "Mon - Sat: 10 AM - 10 PM"
     },
     "faq": {
       "title": "Frequently Asked Questions",
       "delivery": {
         "q": "What is the delivery time?",
-        "a": "Delivery within Cairo and Giza takes 1-3 business days, other governorates take 3-5 business days."
+        "a": "Delivery within Dubai and Abu Dhabi takes 1-2 business days, other emirates take 2-3 business days."
       },
       "returns": {
         "q": "Can I return a product?",
@@ -246,7 +274,7 @@
       },
       "payment": {
         "q": "What payment methods are available?",
-        "a": "We accept cash on delivery, credit cards, Vodafone Cash, and Fawry."
+        "a": "We accept online payments (Stripe) and cash on delivery."
       },
       "tracking": {
         "q": "How can I track my order?",
@@ -258,20 +286,20 @@
     "title": "Shipping Policy",
     "areas": {
       "title": "Shipping Areas",
-      "description": "We ship to all areas within Egypt. For international orders, please contact customer service."
+      "description": "We ship to all areas within the United Arab Emirates. For international orders, please contact customer service."
     },
     "delivery": {
       "title": "Delivery Time",
-      "cairo": "Cairo & Giza: 1-3 business days",
-      "alexandria": "Alexandria: 2-4 business days",
-      "other": "Other governorates: 3-7 business days"
+      "cairo": "Dubai & Abu Dhabi: 1-2 business days",
+      "alexandria": "Sharjah & Ajman: 1-3 business days",
+      "other": "Other emirates: 2-4 business days"
     },
     "costs": {
       "title": "Shipping Costs",
-      "cairo": "Cairo & Giza: 50 EGP",
-      "alexandria": "Alexandria: 60 EGP",
-      "other": "Other governorates: 70-100 EGP",
-      "free": "Free shipping on orders over 1500 EGP"
+      "cairo": "Dubai & Abu Dhabi: 25 AED",
+      "alexandria": "Sharjah & Ajman: 25 AED",
+      "other": "Other emirates: 25 AED",
+      "free": "Free shipping on orders over 500 AED"
     },
     "tracking": {
       "title": "Order Tracking",
@@ -279,7 +307,7 @@
     },
     "cod": {
       "title": "Cash on Delivery",
-      "description": "We accept cash on delivery for all orders within Egypt. Please have the exact amount ready when the courier arrives."
+      "description": "We accept cash on delivery for all orders within the UAE. Please have the exact amount ready when the courier arrives."
     },
     "notes": {
       "title": "Important Notes",
@@ -348,7 +376,7 @@
     },
     "orders": {
       "title": "Orders and Purchases",
-      "prices": "All prices are in Egyptian Pounds and subject to change",
+      "prices": "All prices are in UAE Dirhams and subject to change",
       "refuse": "We reserve the right to refuse or cancel any order",
       "stock": "Product availability is subject to stock"
     },
@@ -373,7 +401,7 @@
     },
     "law": {
       "title": "Governing Law",
-      "description": "These terms are governed by and construed in accordance with the laws of the Arab Republic of Egypt."
+      "description": "These terms are governed by and construed in accordance with the laws of the United Arab Emirates."
     },
     "contactUs": {
       "title": "Contact Us",
@@ -561,7 +589,7 @@
       "email": "Email",
       "emailPlaceholder": "Enter your email",
       "phone": "Phone Number",
-      "phonePlaceholder": "+20 1XX XXX XXXX",
+      "phonePlaceholder": "+971 5X XXX XXXX",
       "password": "Password",
       "passwordPlaceholder": "Enter your password",
       "passwordHint": "At least 6 characters",
@@ -576,6 +604,23 @@
       "error": "Sign up failed",
       "passwordMismatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 6 characters"
+    }
+  },
+  "about": {
+    "title": "About Capella",
+    "story": {
+      "title": "Our Story",
+      "subtitle": "Crafting Elegance Since 1990",
+      "content": "Inspired by the beauty of cosmos, stars and the mysteries of outer space. We believe that just like stars, every individual shines with their own unique light. With CAPELLA explore the unknown, embrace the extraordinary and shine beyond."
+    },
+    "philosophy": {
+      "title": "Our Philosophy",
+      "quality": "Uncompromising Quality",
+      "qualityDesc": "We source the finest materials and employ master artisans to ensure every piece meets the highest standards.",
+      "craftsmanship": "Artisanal Craftsmanship",
+      "craftsmanshipDesc": "Each design is a labor of love, combining age-old techniques with modern innovation.",
+      "innovation": "Modern Innovation",
+      "innovationDesc": "We continuously push boundaries in design, creating unique geometric patterns that define modern luxury."
     }
   }
 }

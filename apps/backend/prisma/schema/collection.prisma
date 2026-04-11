@@ -12,7 +12,16 @@ model Collection {
   metaDescriptionEn String? @db.Text
   metaDescriptionAr String? @db.Text
 
+  // Banner fields
+  bannerTitleEn       String?
+  bannerTitleAr       String?
+  bannerDescriptionEn String? @db.Text
+  bannerDescriptionAr String? @db.Text
+  bannerCtaTextEn     String?
+  bannerCtaTextAr     String?
+
   image    CollectionImage?
+  banner   CollectionBanner?
   products Product[]
   isActive Boolean      @default(true)
   inHeader Boolean      @default(false)
@@ -48,4 +57,20 @@ model CollectionImage {
   createdAt DateTime @default(now())
 
   @@map("collection_images")
+}
+
+model CollectionBanner {
+  id           String     @id @default(cuid())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String     @unique
+
+  url      String
+  publicId String // Cloudinary public ID
+  altEn    String?
+  altAr    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("collection_banners")
 }

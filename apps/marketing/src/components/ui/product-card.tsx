@@ -3,15 +3,23 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
-import type { Product } from "@ecommerce/shared-types";
+import { Heart } from "lucide-react";
+import type { Product, ProductBadge } from "@ecommerce/shared-types";
 
 interface ProductCardProps {
   product: Product;
   locale: string;
 }
 
+const BADGE_LABELS: Record<ProductBadge, { en: string; ar: string }> = {
+  NEW: { en: "New", ar: "جديد" },
+  BESTSELLER: { en: "Bestseller", ar: "الأكثر مبيعاً" },
+  LIMITED_EDITION: { en: "Limited Edition", ar: "إصدار محدود" },
+};
+
 export function ProductCard({ product, locale }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
   const isArabic = locale === "ar";
   const name = isArabic ? product.nameAr : product.nameEn;
 
@@ -31,6 +39,15 @@ export function ProductCard({ product, locale }: ProductCardProps) {
     .filter((c, i, arr) => c && arr.indexOf(c) === i)
     .slice(0, 6);
 
+  const badgeLabel = product.badge ? BADGE_LABELS[product.badge] : null;
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsWishlisted(!isWishlisted);
+    // TODO: Integrate with useFavourites hook when available
+  };
+
   return (
     <Link
       href={`/products/${product.slug}`}
@@ -38,16 +55,15 @@ export function ProductCard({ product, locale }: ProductCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative aspect-337/505 overflow-hidden bg-neutral-100">
+      <div className="relative aspect-3/4 overflow-hidden bg-neutral-50 rounded-sm">
         {primaryImage ? (
           <>
             <Image
               src={primaryImage}
               alt={name}
               fill
-              className={`object-cover transition-opacity duration-300 ${
-                isHovered && hoverImage ? "opacity-0" : "opacity-100"
-              }`}
+              className={`object-cover transition-all duration-700 ${isHovered && hoverImage ? "opacity-0" : "opacity-100"
+                } ${isHovered ? "scale-110" : "scale-100"}`}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             />
             {hoverImage && (
@@ -55,50 +71,52 @@ export function ProductCard({ product, locale }: ProductCardProps) {
                 src={hoverImage}
                 alt={name}
                 fill
-                className={`object-cover transition-opacity duration-300 ${
-                  isHovered ? "opacity-100" : "opacity-0"
-                }`}
+                className={`object-cover transition-all duration-700 ${isHovered ? "opacity-100 scale-110" : "opacity-0 scale-100"
+                  }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             )}
           </>
         ) : (
-          <div className="flex h-full items-center justify-center text-muted-foreground">
+          <div className="flex h-full items-center justify-center text-muted-foreground bg-neutral-100">
             No Image
           </div>
         )}
 
-        {discountPercent && (
-          <span className="absolute top-3 right-3 rounded-full bg-red-500 px-2 py-1 text-xs font-semibold text-white">
-            -{discountPercent}%
+        {/* Badge Label */}
+        {badgeLabel && (
+          <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-2 py-1 text-[9px] font-medium uppercase tracking-[0.2em] text-black">
+            {isArabic ? badgeLabel.ar : badgeLabel.en}
           </span>
         )}
+
+        {/* Wishlist Heart Icon */}
+        <button
+          onClick={handleWishlistToggle}
+          className="absolute top-4 right-4 p-2 transition-all duration-300 opacity-0 group-hover:opacity-100"
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        >
+          <Heart
+            className={`h-4 w-4 transition-colors ${isWishlisted ? "fill-black text-black" : "text-black/40 hover:text-black"
+              }`}
+          />
+        </button>
       </div>
 
-      <div className="mt-3 space-y-1">
-        <h3 className="text-sm font-medium line-clamp-1">{name}</h3>
-        <div className="flex items-center gap-2">
+      <div className="mt-6 text-center space-y-1.5 px-2">
+        <h3 className="text-[11px] md:text-xs font-medium uppercase tracking-[0.15em] line-clamp-1 group-hover:opacity-60 transition-opacity">
+          {name}
+        </h3>
+        <div className="flex flex-col items-center gap-0.5">
           {compareAtPrice && compareAtPrice > price && (
-            <span className="text-sm text-muted-foreground line-through">
-              LE {compareAtPrice.toLocaleString()}
+            <span className="text-[10px] text-muted-foreground line-through tracking-wider">
+              AED  {compareAtPrice.toLocaleString()}
             </span>
           )}
-          <span className="text-sm font-semibold text-red-600">
-            LE {price.toLocaleString()}
+          <span className="text-xs font-semibold tracking-widest text-black">
+            AED  {price.toLocaleString()}
           </span>
         </div>
-
-        {colors && colors.length > 0 && (
-          <div className="flex gap-1 pt-1">
-            {colors.map((color, i) => (
-              <span
-                key={i}
-                className="h-4 w-4 rounded-full border border-border"
-                style={{ backgroundColor: color }}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </Link>
   );

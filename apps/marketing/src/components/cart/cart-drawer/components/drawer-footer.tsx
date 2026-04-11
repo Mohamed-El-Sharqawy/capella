@@ -13,7 +13,7 @@ export function DrawerFooter({ total, itemCount, onClose }: DrawerFooterProps) {
     <div className="border-t p-4 space-y-3">
       <div className="flex items-center justify-between text-lg font-semibold">
         <span>Total</span>
-        <span>LE {total.toLocaleString()} EGP</span>
+        <span>AED {total.toLocaleString()} EGP</span>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <Link

@@ -38,10 +38,3 @@ export interface Review {
   isApproved: boolean;
   createdAt: string;
 }
-
-export interface FrequentlyBoughtTogetherProps {
-  currentProduct: Product;
-  relatedProducts: Product[];
-  locale: string;
-  selectedVariant: ProductVariant | null;
-}

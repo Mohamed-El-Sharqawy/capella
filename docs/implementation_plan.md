@@ -16,7 +16,7 @@ This plan outlines the steps to transform the current `capella` monorepo into a 
 The current schema is robust but needs small additions to support the rich Samra experience and Stripe payments.
 
 #### [NEW] Stripe Integration
-- Implement `StripeModule` for AED transactions.
+- Implement `StripeModule` for AED  transactions.
 - Standard business account integration (non-Connect).
 - Create `/payments/checkout` endpoint for session creation.
 - Create `/payments/webhook` for handling successful payments and updating order statuses.
@@ -69,7 +69,7 @@ This is where the major visual and interactive changes will occur.
 - Improve visual hierarchy of results with larger images and better typography.
 
 #### [NEW] Stripe Checkout Flow
-- Integrate Stripe Elements or redirect to Stripe Checkout (AED only).
+- Integrate Stripe Elements or redirect to Stripe Checkout (AED  only).
 - Implementation of order success/failure pages.
 
 

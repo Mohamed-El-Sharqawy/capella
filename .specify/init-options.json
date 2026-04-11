@@ -1,8 +1,8 @@
 {
-  "ai": "opencode",
+  "ai": "windsurf",
   "branch_numbering": "sequential",
   "here": true,
-  "integration": "opencode",
+  "integration": "windsurf",
   "preset": null,
   "script": "ps",
   "speckit_version": "0.5.0"

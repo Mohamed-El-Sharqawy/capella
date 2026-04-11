@@ -224,7 +224,7 @@ export function CollectionDetailsPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {firstVariant ? `LE ${firstVariant.price.toLocaleString()}` : "-"}
+                        {firstVariant ? `AED ${firstVariant.price.toLocaleString()}` : "-"}
                       </TableCell>
                       <TableCell>
                         <Badge variant={totalStock > 0 ? "secondary" : "destructive"}>

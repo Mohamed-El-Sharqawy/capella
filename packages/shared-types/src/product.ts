@@ -6,6 +6,12 @@ export enum Gender {
   UNISEX = "UNISEX",
 }
 
+export enum ProductBadge {
+  NEW = "NEW",
+  BESTSELLER = "BESTSELLER",
+  LIMITED_EDITION = "LIMITED_EDITION",
+}
+
 export interface Color {
   id: string;
   nameEn: string;
@@ -14,6 +20,27 @@ export interface Color {
 }
 
 export interface Size {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+  position: number;
+}
+
+export interface Material {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+  position: number;
+}
+
+export interface Stone {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+  position: number;
+}
+
+export interface Clarity {
   id: string;
   nameEn: string;
   nameAr: string;
@@ -90,7 +117,15 @@ export interface Product {
   gender: Gender;
   isActive: boolean;
   isFeatured: boolean;
+  badge?: ProductBadge | null;
+  isTrending: boolean;
   collectionId?: string | null;
+  materialId?: string | null;
+  stoneId?: string | null;
+  clarityId?: string | null;
+  material?: Material | null;
+  stone?: Stone | null;
+  clarity?: Clarity | null;
   sizeGuideUrl?: string | null;
   defaultVariantId?: string | null;
   defaultVariant?: ProductVariant | null;

@@ -2,7 +2,7 @@ import { t, type UnwrapSchema } from "elysia";
 
 export const ImageModel = {
   uploadVariantImages: t.Object({
-    files: t.Files({ type: "image", maxSize: "5m" }),
+    files: t.Files({ type: "image", maxSize: "10m" }),
     altEn: t.Optional(t.String()),
     altAr: t.Optional(t.String()),
   }),
@@ -30,11 +30,8 @@ export const ImageModel = {
   reorderImages: t.Object({
     imageIds: t.Array(t.String()),
   }),
-  uploadSizeGuide: t.Object({
-    file: t.File({ type: "image", maxSize: "5m" }),
-  }),
   uploadCollectionImage: t.Object({
-    file: t.File({ type: "image", maxSize: "5m" }),
+    file: t.File({ type: "image", maxSize: "10m" }),
     altEn: t.Optional(t.String()),
     altAr: t.Optional(t.String()),
   }),

@@ -46,11 +46,11 @@ export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove 
         <div className="flex items-center gap-2 mt-1">
           {item.compareAtPrice && item.compareAtPrice > item.price && (
             <span className="text-xs text-muted-foreground line-through">
-              LE {item.compareAtPrice.toLocaleString()}
+              AED {item.compareAtPrice.toLocaleString()}
             </span>
           )}
           <span className="text-sm font-semibold text-red-600">
-            LE {item.price.toLocaleString()}
+            AED {item.price.toLocaleString()}
           </span>
         </div>
 

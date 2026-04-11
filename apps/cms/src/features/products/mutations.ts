@@ -17,6 +17,11 @@ export interface CreateProductBody {
   collectionId?: string;
   isActive?: boolean;
   isFeatured?: boolean;
+  isTrending?: boolean;
+  badge?: "NEW" | "BESTSELLER" | "LIMITED_EDITION";
+  materialId?: string;
+  stoneId?: string;
+  clarityId?: string;
   variants?: CreateVariantBody[];
 }
 
@@ -31,8 +36,6 @@ export interface CreateVariantBody {
   sku?: string;
   price: number;
   compareAtPrice?: number;
-  sizeId?: string;
-  colorId?: string;
   stock?: number;
   isActive?: boolean;
   metaTitleEn?: string;
@@ -47,8 +50,6 @@ export interface UpdateVariantBody {
   sku?: string;
   price?: number;
   compareAtPrice?: number;
-  sizeId?: string | null;
-  colorId?: string | null;
   stock?: number;
   isActive?: boolean;
   metaTitleEn?: string;

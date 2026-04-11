@@ -35,11 +35,11 @@ export function SuggestedItem({ product, locale, onClose }: SuggestedItemProps) 
       <div className="flex items-center gap-2 mt-1">
         {variant?.compareAtPrice && variant.compareAtPrice > variant.price && (
           <span className="text-xs text-muted-foreground line-through">
-            LE {variant.compareAtPrice.toLocaleString()}
+            AED {variant.compareAtPrice.toLocaleString()}
           </span>
         )}
         <span className="text-sm font-semibold text-red-600">
-          LE {variant?.price?.toLocaleString()}
+          AED {variant?.price?.toLocaleString()}
         </span>
       </div>
       <Link

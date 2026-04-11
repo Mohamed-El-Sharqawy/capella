@@ -2,15 +2,16 @@ import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Loader2, Plus, Trash2, Upload, X } from "lucide-react";
 import { useAllCollections } from "@/features/collections";
-import { useColors } from "@/features/colors";
-import { useSizes } from "@/features/sizes";
+import { useMaterials } from "@/features/materials";
+import { useStones } from "@/features/stones";
+import { useClarities } from "@/features/clarities";
 import {
   useCreateProduct,
   useUploadProductImages,
   useLinkImageToVariants,
 } from "@/features/products";
 import type { CreateVariantBody } from "@/features/products";
-import { Gender } from "@ecommerce/shared-types";
+import { Gender, ProductBadge } from "@ecommerce/shared-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,8 +37,6 @@ interface VariantForm {
   price: string;
   compareAtPrice: string;
   stock: string;
-  colorId: string;
-  sizeId: string;
   isActive: boolean;
 }
 
@@ -57,8 +56,6 @@ const createEmptyVariant = (): VariantForm => ({
   price: "",
   compareAtPrice: "",
   stock: "0",
-  colorId: "",
-  sizeId: "",
   isActive: true,
 });
 
@@ -69,12 +66,14 @@ export function NewProductPage() {
   const linkImageToVariantsMutation = useLinkImageToVariants();
 
   const { data: collectionsRes } = useAllCollections();
-  const { data: colorsRes } = useColors();
-  const { data: sizesRes } = useSizes();
+  const { data: materialsRes } = useMaterials();
+  const { data: stonesRes } = useStones();
+  const { data: claritiesRes } = useClarities();
 
   const collections = collectionsRes?.data ?? [];
-  const colors = colorsRes?.data ?? [];
-  const sizes = sizesRes?.data ?? [];
+  const materials = materialsRes?.data ?? [];
+  const stones = stonesRes?.data ?? [];
+  const clarities = claritiesRes?.data ?? [];
 
   const [nameEn, setNameEn] = useState("");
   const [nameAr, setNameAr] = useState("");
@@ -90,6 +89,11 @@ export function NewProductPage() {
   const [collectionId, setCollectionId] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [isFeatured, setIsFeatured] = useState(false);
+  const [isTrending, setIsTrending] = useState(false);
+  const [badge, setBadge] = useState<ProductBadge | "">("");
+  const [materialId, setMaterialId] = useState("");
+  const [stoneId, setStoneId] = useState("");
+  const [clarityId, setClarityId] = useState("");
   const [variants, setVariants] = useState<VariantForm[]>([createEmptyVariant()]);
 
   // Staged images (before product creation)
@@ -184,8 +188,6 @@ export function NewProductPage() {
       price: parseFloat(v.price) || 0,
       compareAtPrice: v.compareAtPrice ? parseFloat(v.compareAtPrice) : undefined,
       stock: parseInt(v.stock) || 0,
-      colorId: v.colorId || undefined,
-      sizeId: v.sizeId || undefined,
       isActive: v.isActive,
     }));
 
@@ -213,6 +215,11 @@ export function NewProductPage() {
         collectionId: collectionId || undefined,
         isActive,
         isFeatured,
+        isTrending,
+        badge: badge || undefined,
+        materialId: materialId || undefined,
+        stoneId: stoneId || undefined,
+        clarityId: clarityId || undefined,
         variants: variantsData,
       });
 
@@ -445,6 +452,94 @@ export function NewProductPage() {
                     />
                     <Label htmlFor="isFeatured">Featured</Label>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id="isTrending"
+                      checked={isTrending}
+                      onCheckedChange={setIsTrending}
+                    />
+                    <Label htmlFor="isTrending">Trending</Label>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Badge</Label>
+                    <Select
+                      value={badge || "none"}
+                      onValueChange={(v) => setBadge(v === "none" ? "" : v as ProductBadge)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select badge" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Badge</SelectItem>
+                        <SelectItem value="NEW">New</SelectItem>
+                        <SelectItem value="BESTSELLER">Bestseller</SelectItem>
+                        <SelectItem value="LIMITED_EDITION">Limited Edition</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Material</Label>
+                    <Select
+                      value={materialId || "none"}
+                      onValueChange={(v) => setMaterialId(v === "none" ? "" : v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select material" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Material</SelectItem>
+                        {materials.map((m) => (
+                          <SelectItem key={m.id} value={m.id}>
+                            {m.nameEn}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Stone</Label>
+                    <Select
+                      value={stoneId || "none"}
+                      onValueChange={(v) => setStoneId(v === "none" ? "" : v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select stone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Stone</SelectItem>
+                        {stones.map((s) => (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.nameEn}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Clarity</Label>
+                    <Select
+                      value={clarityId || "none"}
+                      onValueChange={(v) => setClarityId(v === "none" ? "" : v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select clarity" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Clarity</SelectItem>
+                        {clarities.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.nameEn}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -523,11 +618,7 @@ export function NewProductPage() {
                             <div className="flex flex-wrap gap-1">
                               {variants.filter(v => v.nameEn).map((variant) => {
                                 const isLinked = img.linkedVariantTempIds.includes(variant.tempId);
-                                const colorName = colors.find(c => c.id === variant.colorId)?.nameEn;
-                                const sizeName = sizes.find(s => s.id === variant.sizeId)?.nameEn;
-                                const label = colorName && sizeName 
-                                  ? `${colorName} / ${sizeName}`
-                                  : variant.nameEn || `Variant`;
+                                const label = variant.nameEn || `Variant`;
                                 return (
                                   <button
                                     key={variant.tempId}
@@ -647,51 +738,7 @@ export function NewProductPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label>Color</Label>
-                      <Select
-                        value={variant.colorId || "none"}
-                        onValueChange={(v) => updateVariant(index, "colorId", v === "none" ? "" : v)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select color" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">No Color</SelectItem>
-                          {colors.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>
-                              <div className="flex items-center gap-2">
-                                <div
-                                  className="h-4 w-4 rounded-full border"
-                                  style={{ backgroundColor: c.hex }}
-                                />
-                                {c.nameEn}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Size</Label>
-                      <Select
-                        value={variant.sizeId || "none"}
-                        onValueChange={(v) => updateVariant(index, "sizeId", v === "none" ? "" : v)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select size" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">No Size</SelectItem>
-                          {sizes.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>
-                              {s.nameEn}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-end pb-2">
                       <div className="flex items-center gap-2">
                         <Switch

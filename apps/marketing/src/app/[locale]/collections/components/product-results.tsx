@@ -41,7 +41,7 @@ export function ProductResults({ products, locale }: ProductResultsProps) {
             <h3 className="text-sm font-medium truncate">
               {isArabic ? product.nameAr : product.nameEn}
             </h3>
-            {product.price && <p className="text-sm text-gray-600">LE {product.price.toLocaleString()}</p>}
+            {product.price && <p className="text-sm text-gray-600">AED {product.price.toLocaleString()}</p>}
           </Link>
         ))}
       </div>

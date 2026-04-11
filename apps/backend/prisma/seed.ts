@@ -324,31 +324,7 @@ async function clearDatabase() {
   await prisma.product.deleteMany();
   await prisma.collectionImage.deleteMany();
   await prisma.collection.deleteMany();
-  await prisma.color.deleteMany();
-  await prisma.size.deleteMany();
   console.log("Database cleared.");
-}
-
-async function seedColors() {
-  console.log("Seeding colors...");
-  const colors = await Promise.all(
-    COLORS.map((color) =>
-      prisma.color.create({ data: color })
-    )
-  );
-  console.log(`Created ${colors.length} colors.`);
-  return colors;
-}
-
-async function seedSizes() {
-  console.log("Seeding sizes...");
-  const sizes = await Promise.all(
-    SIZES.map((size) =>
-      prisma.size.create({ data: size })
-    )
-  );
-  console.log(`Created ${sizes.length} sizes.`);
-  return sizes;
 }
 
 async function seedCollections() {
@@ -368,8 +344,6 @@ async function seedCollections() {
 }
 
 async function seedProducts(
-  colors: Awaited<ReturnType<typeof seedColors>>,
-  sizes: Awaited<ReturnType<typeof seedSizes>>,
   collections: Awaited<ReturnType<typeof seedCollections>>
 ) {
   console.log("Seeding products...");
@@ -409,92 +383,72 @@ async function seedProducts(
       },
     });
 
-    // Create variants for each color × size combination
-    // Use 3-4 colors and all 6 sizes for a realistic product matrix
-    const variantColors = colors.slice(0, 3 + Math.floor(Math.random() * 2));
-    const variantSizes = sizes; // All sizes
-
-    let variantCount = 0;
+    // Create 2-3 variants per product with images
+    const numVariants = 2 + Math.floor(Math.random() * 2);
     
-    // First, create product-level images for each color (shared across sizes)
-    const colorImages: Map<string, { img1Id: string; img2Id: string }> = new Map();
-    
-    for (const color of variantColors) {
+    for (let i = 0; i < numVariants; i++) {
       const img1Url = PRODUCT_IMAGES[imageIndex % PRODUCT_IMAGES.length];
       const img2Url = PRODUCT_IMAGES[(imageIndex + 1) % PRODUCT_IMAGES.length];
       imageIndex += 2;
 
-      // Create ProductImage records (one upload, shared across all sizes of this color)
+      const variant = await prisma.productVariant.create({
+        data: {
+          slug: `${slugify(productData.nameEn)}-${i + 1}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`,
+          productId: product.id,
+          nameEn: `${productData.nameEn} - Variant ${i + 1}`,
+          nameAr: `${productData.nameAr} - متغير ${i + 1}`,
+          sku: `SKU-${product.id.slice(-4)}-${i + 1}-${Date.now().toString().slice(-4)}`,
+          price: productData.price + (i * 50),
+          compareAtPrice: productData.compareAtPrice ? productData.compareAtPrice + (i * 50) : undefined,
+          stock: 20 + Math.floor(Math.random() * 80),
+          isActive: true,
+          metaTitleEn: `${productData.nameEn} - Variant ${i + 1}`,
+          metaTitleAr: `${productData.nameAr} - متغير ${i + 1}`,
+          metaDescriptionEn: productData.shortDescriptionEn,
+          metaDescriptionAr: productData.shortDescriptionAr,
+        },
+      });
+
+      // Create images for this variant
       const [productImage1, productImage2] = await Promise.all([
         prisma.productImage.create({
           data: {
             productId: product.id,
             url: img1Url,
-            publicId: `seed-${product.id}-${color.nameEn.toLowerCase()}-front`,
-            altEn: `${productData.nameEn} - ${color.nameEn} - Front`,
-            altAr: `${productData.nameAr} - ${color.nameAr} - أمامي`,
+            publicId: `seed-${product.id}-v${i + 1}-front`,
+            altEn: `${productData.nameEn} - Front`,
+            altAr: `${productData.nameAr} - أمامي`,
           },
         }),
         prisma.productImage.create({
           data: {
             productId: product.id,
             url: img2Url,
-            publicId: `seed-${product.id}-${color.nameEn.toLowerCase()}-back`,
-            altEn: `${productData.nameEn} - ${color.nameEn} - Back`,
-            altAr: `${productData.nameAr} - ${color.nameAr} - خلفي`,
+            publicId: `seed-${product.id}-v${i + 1}-back`,
+            altEn: `${productData.nameEn} - Back`,
+            altAr: `${productData.nameAr} - خلفي`,
           },
         }),
       ]);
 
-      colorImages.set(color.id, { img1Id: productImage1.id, img2Id: productImage2.id });
-    }
-
-    // Now create variants and link them to the shared images
-    for (const color of variantColors) {
-      const images = colorImages.get(color.id)!;
-
-      for (const size of variantSizes) {
-        const variant = await prisma.productVariant.create({
-          data: {
-            slug: `${slugify(productData.nameEn)}-${slugify(color.nameEn)}-${slugify(size.nameEn)}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`,
-            productId: product.id,
-            nameEn: `${productData.nameEn} - ${color.nameEn} / ${size.nameEn}`,
-            nameAr: `${productData.nameAr} - ${color.nameAr} / ${size.nameAr}`,
-            sku: `SKU-${product.id.slice(-4)}-${color.nameEn.slice(0, 2).toUpperCase()}-${size.nameEn}-${Date.now().toString().slice(-4)}`,
-            price: productData.price,
-            compareAtPrice: productData.compareAtPrice,
-            colorId: color.id,
-            sizeId: size.id,
-            stock: 20 + Math.floor(Math.random() * 80),
-            isActive: true,
-            metaTitleEn: `${productData.nameEn} - ${color.nameEn} / ${size.nameEn}`,
-            metaTitleAr: `${productData.nameAr} - ${color.nameAr} / ${size.nameAr}`,
-            metaDescriptionEn: productData.shortDescriptionEn,
-            metaDescriptionAr: productData.shortDescriptionAr,
+      // Link images to variant
+      await prisma.productVariantImage.createMany({
+        data: [
+          {
+            imageId: productImage1.id,
+            variantId: variant.id,
+            position: 0,
           },
-        });
-
-        // Link the shared images to this variant (junction table)
-        await prisma.productVariantImage.createMany({
-          data: [
-            {
-              imageId: images.img1Id,
-              variantId: variant.id,
-              position: 0,
-            },
-            {
-              imageId: images.img2Id,
-              variantId: variant.id,
-              position: 1,
-            },
-          ],
-        });
-
-        variantCount++;
-      }
+          {
+            imageId: productImage2.id,
+            variantId: variant.id,
+            position: 1,
+          },
+        ],
+      });
     }
 
-    console.log(`Created product: ${productData.nameEn} with ${variantCount} variants (${variantColors.length} colors × ${variantSizes.length} sizes), ${variantColors.length * 2} shared images`);
+    console.log(`Created product: ${productData.nameEn} with ${numVariants} variants`);
   }
 
   console.log(`Created ${PRODUCTS.length} products.`);
@@ -533,10 +487,8 @@ async function seedAdmin() {
 
 async function main() {
   await clearDatabase();
-  const colors = await seedColors();
-  const sizes = await seedSizes();
   const collections = await seedCollections();
-  await seedProducts(colors, sizes, collections);
+  await seedProducts(collections);
   await seedAdmin();
   console.log("Seeding completed successfully!");
 }

@@ -61,7 +61,7 @@ export const shoppableVideoController = new Elysia({ prefix: "/shoppable-videos"
       isActive: t.Optional(t.Union([t.Boolean(), t.String()])),
     }),
   })
-  // Admin: update video
+  // Admin: update video metadata
   .patch("/:id", async ({ params, body }) => {
     const video = await ShoppableVideoService.update(params.id, body);
     if (!video) return status(404, { ok: false, error: "Video not found" });
@@ -70,6 +70,45 @@ export const shoppableVideoController = new Elysia({ prefix: "/shoppable-videos"
     isAdmin: true,
     params: ShoppableVideoModel.params,
     body: ShoppableVideoModel.update,
+  })
+  // Admin: update video with files
+  .put("/:id", async ({ params, body }) => {
+    const existingVideo = await ShoppableVideoService.getById(params.id);
+    if (!existingVideo) return status(404, { ok: false, error: "Video not found" });
+
+    let videoUrl = existingVideo.videoUrl;
+    let videoPublicId = existingVideo.videoPublicId;
+    let thumbnailUrl = existingVideo.thumbnailUrl;
+    let thumbnailPublicId = existingVideo.thumbnailPublicId;
+
+    // Upload new video if provided
+    if (body.video) {
+      await CloudinaryService.deleteVideo(existingVideo.videoPublicId);
+      const videoResult = await CloudinaryService.uploadVideo(body.video, "shoppable-videos");
+      videoUrl = videoResult.url;
+      videoPublicId = videoResult.publicId;
+    }
+
+    // Upload new thumbnail if provided
+    if (body.thumbnail) {
+      await CloudinaryService.delete(existingVideo.thumbnailPublicId);
+      const thumbnailResult = await CloudinaryService.upload(body.thumbnail, "shoppable-videos/thumbnails");
+      thumbnailUrl = thumbnailResult.url;
+      thumbnailPublicId = thumbnailResult.publicId;
+    }
+
+    const video = await ShoppableVideoService.update(params.id, {
+      productId: body.productId,
+      position: body.position,
+      isActive: body.isActive,
+    });
+
+    // Return with updated URLs
+    return { ok: true, data: { ...video, videoUrl, videoPublicId, thumbnailUrl, thumbnailPublicId } };
+  }, {
+    isAdmin: true,
+    params: ShoppableVideoModel.params,
+    body: ShoppableVideoModel.updateWithFiles,
   })
   // Admin: delete video
   .delete("/:id", async ({ params }) => {
