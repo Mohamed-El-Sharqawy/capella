@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Plus, Search, Pencil, Trash2, Loader2, GripVertical } from "lucide-react";
 import { useProducts, useDeleteProduct, useReorderProducts } from "@/features/products";
@@ -122,7 +122,7 @@ export function ProductsPage() {
   if (search) params.search = search;
   if (gender) params.gender = gender;
   if (collectionId) params.collectionId = collectionId;
-  
+
   // Default to sorting by position
   params.sortBy = "position";
   params.sortOrder = "asc";
