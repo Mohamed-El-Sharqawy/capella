@@ -1,495 +1,230 @@
 import { prisma } from "../src/lib/prisma";
 
-const COLORS = [
-  { nameEn: "Black", nameAr: "أسود", hex: "#000000" },
-  { nameEn: "White", nameAr: "أبيض", hex: "#FFFFFF" },
-  { nameEn: "Navy", nameAr: "كحلي", hex: "#1a237e" },
-  { nameEn: "Gray", nameAr: "رمادي", hex: "#9e9e9e" },
-  { nameEn: "Beige", nameAr: "بيج", hex: "#d4c4a8" },
-  { nameEn: "Brown", nameAr: "بني", hex: "#5d4037" },
-  { nameEn: "Olive", nameAr: "زيتي", hex: "#556b2f" },
-  { nameEn: "Light Blue", nameAr: "أزرق فاتح", hex: "#90caf9" },
-  { nameEn: "Pink", nameAr: "وردي", hex: "#f8bbd9" },
-  { nameEn: "Red", nameAr: "أحمر", hex: "#c62828" },
+const PLACEHOLDER_IMAGE = "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80";
+
+const MATERIALS = [
+  { nameEn: "18K Yellow Gold", nameAr: "ذهب أصفر عيار 18", position: 0 },
+  { nameEn: "18K White Gold", nameAr: "ذهب أبيض عيار 18", position: 1 },
+  { nameEn: "Rose Gold", nameAr: "ذهب وردي", position: 2 },
+  { nameEn: "Platinum", nameAr: "بلاتين", position: 3 },
+  { nameEn: "Sterling Silver", nameAr: "فضة إسترليني", position: 4 },
 ];
 
-const SIZES = [
-  { nameEn: "XS", nameAr: "صغير جداً", position: 0 },
-  { nameEn: "S", nameAr: "صغير", position: 1 },
-  { nameEn: "M", nameAr: "وسط", position: 2 },
-  { nameEn: "L", nameAr: "كبير", position: 3 },
-  { nameEn: "XL", nameAr: "كبير جداً", position: 4 },
-  { nameEn: "XXL", nameAr: "كبير جداً جداً", position: 5 },
+const STONES = [
+  { nameEn: "Diamond", nameAr: "ألماس", position: 0 },
+  { nameEn: "Sapphire", nameAr: "ياقوت أزرق", position: 1 },
+  { nameEn: "Emerald", nameAr: "زمرد", position: 2 },
+  { nameEn: "Ruby", nameAr: "ياقوت أحمر", position: 3 },
+  { nameEn: "None", nameAr: "بدون حجر", position: 4 },
+];
+
+const CLARITIES = [
+  { nameEn: "IF (Internally Flawless)", nameAr: "نقي داخلياً", position: 0 },
+  { nameEn: "VVS1 (Very Very Slightly Included)", nameAr: "شوائب طفيفة جداً جداً", position: 1 },
+  { nameEn: "VS1 (Very Slightly Included)", nameAr: "شوائب طفيفة جداً", position: 2 },
+  { nameEn: "SI1 (Slightly Included)", nameAr: "شوائب طفيفة", position: 3 },
 ];
 
 const COLLECTIONS = [
   {
-    slug: "men",
-    nameEn: "Men",
-    nameAr: "رجال",
-    descriptionEn: "Explore our men's collection featuring modern streetwear and everyday essentials.",
-    descriptionAr: "اكتشف مجموعتنا الرجالية التي تضم أزياء الشارع العصرية والأساسيات اليومية.",
-    metaTitleEn: "Men's Collection | Shop Men's Fashion",
-    metaTitleAr: "مجموعة الرجال | تسوق أزياء الرجال",
-    metaDescriptionEn: "Shop the latest men's fashion including hoodies, jackets, t-shirts and more.",
-    metaDescriptionAr: "تسوق أحدث أزياء الرجال بما في ذلك الهوديز والجاكيتات والتيشيرتات والمزيد.",
+    slug: "rings",
+    nameEn: "Rings",
+    nameAr: "خواتم",
+    descriptionEn: "Discover our exquisite collection of diamond and gemstone rings.",
+    descriptionAr: "اكتشف مجموعتنا الرائعة من خواتم الألماس والأحجار الكريمة.",
+    isFeaturedOnHome: true,
+    homeFeaturedPosition: 0,
   },
   {
-    slug: "women",
-    nameEn: "Women",
-    nameAr: "نساء",
-    descriptionEn: "Discover our women's collection with trendy styles and comfortable fits.",
-    descriptionAr: "اكتشفي مجموعتنا النسائية مع أنماط عصرية ومقاسات مريحة.",
-    metaTitleEn: "Women's Collection | Shop Women's Fashion",
-    metaTitleAr: "مجموعة النساء | تسوق أزياء النساء",
-    metaDescriptionEn: "Shop the latest women's fashion including dresses, tops, and accessories.",
-    metaDescriptionAr: "تسوقي أحدث أزياء النساء بما في ذلك الفساتين والبلوزات والإكسسوارات.",
+    slug: "necklaces",
+    nameEn: "Necklaces",
+    nameAr: "قلادات",
+    descriptionEn: "Elegant necklaces and pendants for every occasion.",
+    descriptionAr: "قلادات ودلايات أنيقة لكل مناسبة.",
+    isFeaturedOnHome: true,
+    homeFeaturedPosition: 1,
   },
   {
-    slug: "new-arrivals",
-    nameEn: "New Arrivals",
-    nameAr: "وصل حديثاً",
-    descriptionEn: "Check out our latest arrivals and be the first to get the newest styles.",
-    descriptionAr: "اطلع على أحدث الوصولات وكن أول من يحصل على أحدث الأنماط.",
-    metaTitleEn: "New Arrivals | Latest Fashion",
-    metaTitleAr: "وصل حديثاً | أحدث الأزياء",
-    metaDescriptionEn: "Discover our newest collection of clothing and accessories.",
-    metaDescriptionAr: "اكتشف أحدث مجموعاتنا من الملابس والإكسسوارات.",
+    slug: "bracelets",
+    nameEn: "Bracelets",
+    nameAr: "أساور",
+    descriptionEn: "Stunning bracelets crafted with precision and luxury.",
+    descriptionAr: "أساور مذهلة صنعت بدقة وفخامة.",
   },
   {
-    slug: "sale",
-    nameEn: "Sale",
-    nameAr: "تخفيضات",
-    descriptionEn: "Shop our sale items and get amazing deals on your favorite styles.",
-    descriptionAr: "تسوق منتجاتنا المخفضة واحصل على عروض مذهلة على أنماطك المفضلة.",
-    metaTitleEn: "Sale | Discounted Fashion",
-    metaTitleAr: "تخفيضات | أزياء مخفضة",
-    metaDescriptionEn: "Get the best deals on clothing and accessories.",
-    metaDescriptionAr: "احصل على أفضل العروض على الملابس والإكسسوارات.",
+    slug: "earrings",
+    nameEn: "Earrings",
+    nameAr: "أقراط",
+    descriptionEn: "Beautiful earrings to complement your style.",
+    descriptionAr: "أقراط جميلة لتكمل أسلوبك.",
   },
-];
-
-const PRODUCT_IMAGES = [
-  "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1475180098004-ca77a66827be?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1544441893-675973e31985?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1622445275463-afa2ab738c34?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1564557287817-3785e38ec1f5?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1578932750294-f5075e85f44a?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1604176354204-9268737828e4?w=337&h=505&fit=crop",
-  "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=337&h=505&fit=crop",
 ];
 
 const PRODUCTS = [
-  // Featured products (8)
   {
-    nameEn: "Boxy Hoodie",
-    nameAr: "هودي بوكسي",
-    descriptionEn: "Premium oversized hoodie with a relaxed fit. Made from heavyweight cotton for ultimate comfort and durability.",
-    descriptionAr: "هودي أوفرسايز فاخر بقصة مريحة. مصنوع من القطن الثقيل لراحة ومتانة فائقة.",
-    shortDescriptionEn: "Premium oversized hoodie with relaxed fit",
-    shortDescriptionAr: "هودي أوفرسايز فاخر بقصة مريحة",
-    gender: "UNISEX",
-    isFeatured: true,
-    price: 599,
-    compareAtPrice: 650,
-  },
-  {
-    nameEn: "Vintage Leather Jacket",
-    nameAr: "جاكيت جلد فينتاج",
-    descriptionEn: "Classic leather jacket with vintage styling. Features premium quality leather and timeless design.",
-    descriptionAr: "جاكيت جلد كلاسيكي بطراز فينتاج. يتميز بجلد عالي الجودة وتصميم خالد.",
-    shortDescriptionEn: "Classic leather jacket with vintage styling",
-    shortDescriptionAr: "جاكيت جلد كلاسيكي بطراز فينتاج",
-    gender: "MEN",
-    isFeatured: true,
-    price: 1199,
-    compareAtPrice: 1600,
-  },
-  {
-    nameEn: "Off-Shoulder Sweatshirt",
-    nameAr: "سويتشيرت أوف شولدر",
-    descriptionEn: "Trendy off-shoulder sweatshirt perfect for casual outings. Soft fabric with a flattering silhouette.",
-    descriptionAr: "سويتشيرت عصري بكتف مكشوف مثالي للخروجات الكاجوال. قماش ناعم بقصة جذابة.",
-    shortDescriptionEn: "Trendy off-shoulder sweatshirt",
-    shortDescriptionAr: "سويتشيرت عصري بكتف مكشوف",
+    nameEn: "Solitaire Diamond Ring",
+    nameAr: "خاتم ألماس سوليتير",
+    descriptionEn: "A timeless classic featuring a brilliant round-cut diamond set in 18K white gold.",
+    descriptionAr: "كلاسيكية خالدة تتميز بقطعة ألماس مستديرة بقطع بريليانت مثبتة في ذهب أبيض عيار 18.",
     gender: "WOMEN",
+    price: 15000,
     isFeatured: true,
-    price: 450,
-    compareAtPrice: 599,
   },
   {
-    nameEn: "Boxy Crewneck",
-    nameAr: "كرونيك بوكسي",
-    descriptionEn: "Essential crewneck sweatshirt with a boxy fit. Perfect for layering or wearing on its own.",
-    descriptionAr: "سويتشيرت كرونيك أساسي بقصة بوكسي. مثالي للطبقات أو الارتداء بمفرده.",
-    shortDescriptionEn: "Essential crewneck with boxy fit",
-    shortDescriptionAr: "كرونيك أساسي بقصة بوكسي",
-    gender: "UNISEX",
-    isFeatured: true,
-    price: 550,
-    compareAtPrice: 650,
-  },
-  {
-    nameEn: "Zip-Up Sweater",
-    nameAr: "سويتر بسحاب",
-    descriptionEn: "Versatile zip-up sweater for everyday wear. Features a comfortable fit and quality construction.",
-    descriptionAr: "سويتر بسحاب متعدد الاستخدامات للارتداء اليومي. يتميز بقصة مريحة وجودة عالية.",
-    shortDescriptionEn: "Versatile zip-up sweater",
-    shortDescriptionAr: "سويتر بسحاب متعدد الاستخدامات",
-    gender: "UNISEX",
-    isFeatured: true,
-    price: 699,
-    compareAtPrice: 799,
-  },
-  {
-    nameEn: "Double Sleeve Boxy T-shirt",
-    nameAr: "تيشيرت بوكسي بأكمام مزدوجة",
-    descriptionEn: "Unique double sleeve design with a boxy silhouette. Stand out with this statement piece.",
-    descriptionAr: "تصميم فريد بأكمام مزدوجة وقصة بوكسي. تميز بهذه القطعة المميزة.",
-    shortDescriptionEn: "Unique double sleeve boxy t-shirt",
-    shortDescriptionAr: "تيشيرت بوكسي فريد بأكمام مزدوجة",
-    gender: "MEN",
-    isFeatured: true,
-    price: 450,
-    compareAtPrice: 599,
-  },
-  {
-    nameEn: "Oversized Bomber Jacket",
-    nameAr: "جاكيت بومبر أوفرسايز",
-    descriptionEn: "Modern oversized bomber jacket with premium materials. Perfect for transitional weather.",
-    descriptionAr: "جاكيت بومبر أوفرسايز عصري بمواد فاخرة. مثالي للطقس الانتقالي.",
-    shortDescriptionEn: "Modern oversized bomber jacket",
-    shortDescriptionAr: "جاكيت بومبر أوفرسايز عصري",
+    nameEn: "Emerald & Diamond Necklace",
+    nameAr: "قلادة الزمرد والألماس",
+    descriptionEn: "A stunning emerald pendant surrounded by a halo of micro-pave diamonds.",
+    descriptionAr: "دلاية زمرد مذهلة محاطة بهالة من الألماس الميكرو بافيه.",
     gender: "WOMEN",
+    price: 28000,
     isFeatured: true,
-    price: 899,
-    compareAtPrice: 1100,
   },
   {
-    nameEn: "Relaxed Fit Joggers",
-    nameAr: "بنطلون جوجر مريح",
-    descriptionEn: "Comfortable joggers with a relaxed fit. Perfect for lounging or casual outings.",
-    descriptionAr: "بنطلون جوجر مريح بقصة فضفاضة. مثالي للاسترخاء أو الخروجات الكاجوال.",
-    shortDescriptionEn: "Comfortable relaxed fit joggers",
-    shortDescriptionAr: "بنطلون جوجر مريح بقصة فضفاضة",
+    nameEn: "Gold Link Bracelet",
+    nameAr: "سوار من الذهب",
+    descriptionEn: "Classic 18K yellow gold link bracelet with a modern polished finish.",
+    descriptionAr: "سوار كلاسيكي من الذهب الأصفر عيار 18 بلمسة نهائية مصقولة عصرية.",
     gender: "UNISEX",
+    price: 8500,
     isFeatured: true,
-    price: 399,
-    compareAtPrice: 499,
-  },
-  // Non-featured products (8)
-  {
-    nameEn: "Basic Cotton T-shirt",
-    nameAr: "تيشيرت قطن أساسي",
-    descriptionEn: "Essential cotton t-shirt for everyday wear. Soft, breathable, and versatile.",
-    descriptionAr: "تيشيرت قطن أساسي للارتداء اليومي. ناعم ومسامي ومتعدد الاستخدامات.",
-    shortDescriptionEn: "Essential cotton t-shirt",
-    shortDescriptionAr: "تيشيرت قطن أساسي",
-    gender: "UNISEX",
-    isFeatured: false,
-    price: 199,
-    compareAtPrice: 250,
   },
   {
-    nameEn: "Slim Fit Chinos",
-    nameAr: "بنطلون تشينو ضيق",
-    descriptionEn: "Classic slim fit chinos for a polished look. Perfect for work or casual occasions.",
-    descriptionAr: "بنطلون تشينو كلاسيكي ضيق لإطلالة أنيقة. مثالي للعمل أو المناسبات الكاجوال.",
-    shortDescriptionEn: "Classic slim fit chinos",
-    shortDescriptionAr: "بنطلون تشينو كلاسيكي ضيق",
-    gender: "MEN",
-    isFeatured: false,
-    price: 449,
-    compareAtPrice: 550,
-  },
-  {
-    nameEn: "Floral Print Dress",
-    nameAr: "فستان بطبعة زهور",
-    descriptionEn: "Beautiful floral print dress perfect for spring and summer. Lightweight and flowy.",
-    descriptionAr: "فستان جميل بطبعة زهور مثالي للربيع والصيف. خفيف وانسيابي.",
-    shortDescriptionEn: "Beautiful floral print dress",
-    shortDescriptionAr: "فستان جميل بطبعة زهور",
+    nameEn: "Sapphire Drop Earrings",
+    nameAr: "أقراط ياقوت أزرق",
+    descriptionEn: "Elegant deep blue sapphire drop earrings with platinum accents.",
+    descriptionAr: "أقراط ياقوت أزرق عميق أنيقة مع لمسات من البلاتين.",
     gender: "WOMEN",
+    price: 12500,
     isFeatured: false,
-    price: 599,
-    compareAtPrice: 750,
-  },
-  {
-    nameEn: "Denim Jacket",
-    nameAr: "جاكيت جينز",
-    descriptionEn: "Classic denim jacket that never goes out of style. Durable and versatile.",
-    descriptionAr: "جاكيت جينز كلاسيكي لا يخرج عن الموضة أبداً. متين ومتعدد الاستخدامات.",
-    shortDescriptionEn: "Classic denim jacket",
-    shortDescriptionAr: "جاكيت جينز كلاسيكي",
-    gender: "UNISEX",
-    isFeatured: false,
-    price: 699,
-    compareAtPrice: 850,
-  },
-  {
-    nameEn: "Knit Cardigan",
-    nameAr: "كارديجان تريكو",
-    descriptionEn: "Cozy knit cardigan for layering. Soft and warm for cooler days.",
-    descriptionAr: "كارديجان تريكو مريح للطبقات. ناعم ودافئ للأيام الباردة.",
-    shortDescriptionEn: "Cozy knit cardigan",
-    shortDescriptionAr: "كارديجان تريكو مريح",
-    gender: "WOMEN",
-    isFeatured: false,
-    price: 549,
-    compareAtPrice: 650,
-  },
-  {
-    nameEn: "Cargo Pants",
-    nameAr: "بنطلون كارجو",
-    descriptionEn: "Functional cargo pants with multiple pockets. Perfect for utility and style.",
-    descriptionAr: "بنطلون كارجو عملي بجيوب متعددة. مثالي للعملية والأناقة.",
-    shortDescriptionEn: "Functional cargo pants",
-    shortDescriptionAr: "بنطلون كارجو عملي",
-    gender: "MEN",
-    isFeatured: false,
-    price: 499,
-    compareAtPrice: 599,
-  },
-  {
-    nameEn: "Ribbed Tank Top",
-    nameAr: "تانك توب مضلع",
-    descriptionEn: "Stretchy ribbed tank top for a flattering fit. Great for layering or wearing alone.",
-    descriptionAr: "تانك توب مضلع مطاطي بقصة جذابة. رائع للطبقات أو الارتداء بمفرده.",
-    shortDescriptionEn: "Stretchy ribbed tank top",
-    shortDescriptionAr: "تانك توب مضلع مطاطي",
-    gender: "WOMEN",
-    isFeatured: false,
-    price: 149,
-    compareAtPrice: 199,
-  },
-  {
-    nameEn: "Linen Shirt",
-    nameAr: "قميص كتان",
-    descriptionEn: "Breathable linen shirt perfect for warm weather. Relaxed fit with a casual vibe.",
-    descriptionAr: "قميص كتان مسامي مثالي للطقس الدافئ. قصة مريحة بأجواء كاجوال.",
-    shortDescriptionEn: "Breathable linen shirt",
-    shortDescriptionAr: "قميص كتان مسامي",
-    gender: "MEN",
-    isFeatured: false,
-    price: 399,
-    compareAtPrice: 499,
   },
 ];
 
 function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .trim();
+  return text.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
 }
 
 async function clearDatabase() {
   console.log("Clearing existing data...");
+  await prisma.review.deleteMany();
+  await prisma.shoppableVideo.deleteMany();
+  await prisma.instagramPost.deleteMany();
+  await prisma.banner.deleteMany();
   await prisma.productVariantImage.deleteMany();
   await prisma.productImage.deleteMany();
-  await prisma.cartItem.deleteMany();
-  await prisma.cart.deleteMany();
-  await prisma.orderItem.deleteMany();
-  await prisma.order.deleteMany();
-  await prisma.favourite.deleteMany();
-  await prisma.wishlist.deleteMany();
   await prisma.productVariant.deleteMany();
   await prisma.product.deleteMany();
   await prisma.collectionImage.deleteMany();
+  await prisma.collectionBanner.deleteMany();
   await prisma.collection.deleteMany();
+  await prisma.material.deleteMany();
+  await prisma.stone.deleteMany();
+  await prisma.clarity.deleteMany();
   console.log("Database cleared.");
-}
-
-async function seedCollections() {
-  console.log("Seeding collections...");
-  const collections = await Promise.all(
-    COLLECTIONS.map((collection) =>
-      prisma.collection.create({
-        data: {
-          ...collection,
-          isActive: true,
-        },
-      })
-    )
-  );
-  console.log(`Created ${collections.length} collections.`);
-  return collections;
-}
-
-async function seedProducts(
-  collections: Awaited<ReturnType<typeof seedCollections>>
-) {
-  console.log("Seeding products...");
-  
-  const menCollection = collections.find((c) => c.slug === "men")!;
-  const womenCollection = collections.find((c) => c.slug === "women")!;
-  
-  let imageIndex = 0;
-  
-  for (const productData of PRODUCTS) {
-    const collection =
-      productData.gender === "MEN"
-        ? menCollection
-        : productData.gender === "WOMEN"
-        ? womenCollection
-        : Math.random() > 0.5
-        ? menCollection
-        : womenCollection;
-
-    const product = await prisma.product.create({
-      data: {
-        slug: slugify(productData.nameEn) + "-" + Date.now(),
-        nameEn: productData.nameEn,
-        nameAr: productData.nameAr,
-        descriptionEn: productData.descriptionEn,
-        descriptionAr: productData.descriptionAr,
-        shortDescriptionEn: productData.shortDescriptionEn,
-        shortDescriptionAr: productData.shortDescriptionAr,
-        metaTitleEn: `${productData.nameEn} | Shop Now`,
-        metaTitleAr: `${productData.nameAr} | تسوق الآن`,
-        metaDescriptionEn: productData.shortDescriptionEn,
-        metaDescriptionAr: productData.shortDescriptionAr,
-        gender: productData.gender as "MEN" | "WOMEN" | "UNISEX",
-        isActive: true,
-        isFeatured: productData.isFeatured,
-        collectionId: collection.id,
-      },
-    });
-
-    // Create 2-3 variants per product with images
-    const numVariants = 2 + Math.floor(Math.random() * 2);
-    
-    for (let i = 0; i < numVariants; i++) {
-      const img1Url = PRODUCT_IMAGES[imageIndex % PRODUCT_IMAGES.length];
-      const img2Url = PRODUCT_IMAGES[(imageIndex + 1) % PRODUCT_IMAGES.length];
-      imageIndex += 2;
-
-      const variant = await prisma.productVariant.create({
-        data: {
-          slug: `${slugify(productData.nameEn)}-${i + 1}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`,
-          productId: product.id,
-          nameEn: `${productData.nameEn} - Variant ${i + 1}`,
-          nameAr: `${productData.nameAr} - متغير ${i + 1}`,
-          sku: `SKU-${product.id.slice(-4)}-${i + 1}-${Date.now().toString().slice(-4)}`,
-          price: productData.price + (i * 50),
-          compareAtPrice: productData.compareAtPrice ? productData.compareAtPrice + (i * 50) : undefined,
-          stock: 20 + Math.floor(Math.random() * 80),
-          isActive: true,
-          metaTitleEn: `${productData.nameEn} - Variant ${i + 1}`,
-          metaTitleAr: `${productData.nameAr} - متغير ${i + 1}`,
-          metaDescriptionEn: productData.shortDescriptionEn,
-          metaDescriptionAr: productData.shortDescriptionAr,
-        },
-      });
-
-      // Create images for this variant
-      const [productImage1, productImage2] = await Promise.all([
-        prisma.productImage.create({
-          data: {
-            productId: product.id,
-            url: img1Url,
-            publicId: `seed-${product.id}-v${i + 1}-front`,
-            altEn: `${productData.nameEn} - Front`,
-            altAr: `${productData.nameAr} - أمامي`,
-          },
-        }),
-        prisma.productImage.create({
-          data: {
-            productId: product.id,
-            url: img2Url,
-            publicId: `seed-${product.id}-v${i + 1}-back`,
-            altEn: `${productData.nameEn} - Back`,
-            altAr: `${productData.nameAr} - خلفي`,
-          },
-        }),
-      ]);
-
-      // Link images to variant
-      await prisma.productVariantImage.createMany({
-        data: [
-          {
-            imageId: productImage1.id,
-            variantId: variant.id,
-            position: 0,
-          },
-          {
-            imageId: productImage2.id,
-            variantId: variant.id,
-            position: 1,
-          },
-        ],
-      });
-    }
-
-    console.log(`Created product: ${productData.nameEn} with ${numVariants} variants`);
-  }
-
-  console.log(`Created ${PRODUCTS.length} products.`);
-}
-
-async function seedAdmin() {
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
-  const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
-
-  const existingAdmin = await prisma.user.findUnique({
-    where: { email: adminEmail },
-  });
-
-  if (existingAdmin) {
-    console.log(`Admin user already exists: ${adminEmail}`);
-    return;
-  }
-
-  const hashedPassword = await Bun.password.hash(adminPassword, {
-    algorithm: "bcrypt",
-    cost: 10,
-  });
-
-  const admin = await prisma.user.create({
-    data: {
-      email: adminEmail,
-      password: hashedPassword,
-      firstName: "Admin",
-      lastName: "User",
-      role: "ADMIN",
-    },
-  });
-
-  console.log(`Admin user created: ${admin.email}`);
 }
 
 async function main() {
   await clearDatabase();
-  const collections = await seedCollections();
-  await seedProducts(collections);
-  await seedAdmin();
+
+  console.log("Seeding attributes...");
+  const materials = await Promise.all(MATERIALS.map(m => prisma.material.create({ data: m })));
+  const stones = await Promise.all(STONES.map(s => prisma.stone.create({ data: s })));
+  const clarities = await Promise.all(CLARITIES.map(c => prisma.clarity.create({ data: c })));
+
+  console.log("Seeding collections...");
+  const collections = await Promise.all(
+    COLLECTIONS.map((c) =>
+      prisma.collection.create({
+        data: {
+          ...c,
+          isActive: true,
+          image: {
+            create: {
+              url: PLACEHOLDER_IMAGE,
+              publicId: `seed-col-${c.slug}`,
+              altEn: c.nameEn,
+              altAr: c.nameAr,
+            },
+          },
+        },
+      })
+    )
+  );
+
+  console.log("Seeding products...");
+  for (const pData of PRODUCTS) {
+    const colId = collections.find(c => pData.nameEn.toLowerCase().includes(c.nameEn.toLowerCase().slice(0, -1)))?.id || collections[0].id;
+    
+    const product = await prisma.product.create({
+      data: {
+        slug: slugify(pData.nameEn) + "-" + Math.random().toString(36).slice(2, 7),
+        nameEn: pData.nameEn,
+        nameAr: pData.nameAr,
+        descriptionEn: pData.descriptionEn,
+        descriptionAr: pData.descriptionAr,
+        gender: pData.gender as any,
+        isActive: true,
+        isFeatured: pData.isFeatured,
+        collectionId: colId,
+        materialId: materials[Math.floor(Math.random() * materials.length)].id,
+        stoneId: pData.nameEn.includes("Diamond") ? stones[0].id : stones[4].id,
+        clarityId: pData.nameEn.includes("Diamond") ? clarities[0].id : undefined,
+      },
+    });
+
+    const variant = await prisma.productVariant.create({
+      data: {
+        slug: `${product.slug}-default`,
+        productId: product.id,
+        nameEn: pData.nameEn,
+        nameAr: pData.nameAr,
+        price: pData.price,
+        stock: 10,
+        isActive: true,
+      },
+    });
+
+    const pImage = await prisma.productImage.create({
+      data: {
+        productId: product.id,
+        url: PLACEHOLDER_IMAGE,
+        publicId: `seed-prod-${product.id}`,
+        altEn: pData.nameEn,
+        altAr: pData.nameAr,
+      },
+    });
+
+    await prisma.productVariantImage.create({
+      data: {
+        imageId: pImage.id,
+        variantId: variant.id,
+        position: 0,
+      },
+    });
+
+    // Update product display variants
+    await prisma.product.update({
+      where: { id: product.id },
+      data: {
+        defaultVariantId: variant.id,
+        hoverVariantId: variant.id,
+      },
+    });
+  }
+
+  console.log("Seeding banners...");
+  await prisma.banner.create({
+    data: {
+      titleEn: "Luxury Defined",
+      titleAr: "تعريف الفخامة",
+      subtitleEn: "Exquisite jewellery for those who appreciate the finer things.",
+      subtitleAr: "مجوهرات رائعة لمن يقدرون أرقى الأشياء.",
+      imageUrl: PLACEHOLDER_IMAGE,
+      publicId: "seed-banner-1",
+      isActive: true,
+      position: 0,
+    },
+  });
+
   console.log("Seeding completed successfully!");
 }
 
