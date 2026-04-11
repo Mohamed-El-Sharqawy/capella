@@ -69,6 +69,7 @@ const PRODUCTS = [
     gender: "WOMEN",
     price: 15000,
     isFeatured: true,
+    position: 0,
   },
   {
     nameEn: "Emerald & Diamond Necklace",
@@ -78,6 +79,7 @@ const PRODUCTS = [
     gender: "WOMEN",
     price: 28000,
     isFeatured: true,
+    position: 1,
   },
   {
     nameEn: "Gold Link Bracelet",
@@ -87,6 +89,7 @@ const PRODUCTS = [
     gender: "UNISEX",
     price: 8500,
     isFeatured: true,
+    position: 2,
   },
   {
     nameEn: "Sapphire Drop Earrings",
@@ -96,6 +99,7 @@ const PRODUCTS = [
     gender: "WOMEN",
     price: 12500,
     isFeatured: false,
+    position: 3,
   },
 ];
 
@@ -164,6 +168,7 @@ async function main() {
         gender: pData.gender as any,
         isActive: true,
         isFeatured: pData.isFeatured,
+        position: pData.position,
         collectionId: colId,
         materialId: materials[Math.floor(Math.random() * materials.length)].id,
         stoneId: pData.nameEn.includes("Diamond") ? stones[0].id : stones[4].id,

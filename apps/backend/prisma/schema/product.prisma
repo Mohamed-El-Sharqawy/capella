@@ -31,6 +31,7 @@ model Product {
   isFeatured Boolean @default(false)
   badge      ProductBadge?
   isTrending Boolean @default(false)
+  position   Int     @default(0)
 
   collection   Collection? @relation(fields: [collectionId], references: [id])
   collectionId String?
@@ -64,6 +65,7 @@ model Product {
   @@index([gender])
   @@index([isActive, isFeatured])
   @@index([isTrending])
+  @@index([position])
   @@index([badge])
   @@index([materialId])
   @@index([stoneId])

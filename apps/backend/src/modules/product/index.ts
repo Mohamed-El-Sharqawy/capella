@@ -24,6 +24,10 @@ export const product = new Elysia({ prefix: "/products" })
     const product = await ProductService.create(body);
     return status(201, { success: true as const, data: product });
   }, { isEditor: true, body: ProductModel.createBody })
+  .put("/reorder", async ({ body }) => {
+    await ProductService.reorder(body.items);
+    return { success: true, message: "Products reordered" };
+  }, { isEditor: true, body: ProductModel.reorderBody })
   .put("/:id", async ({ params, body }) => {
     const product = await ProductService.update(params.id, body);
     if (!product) return status(404, { success: false as const, error: "Product not found" });

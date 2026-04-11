@@ -119,6 +119,7 @@ export interface Product {
   isFeatured: boolean;
   badge?: ProductBadge | null;
   isTrending: boolean;
+  position: number;
   collectionId?: string | null;
   materialId?: string | null;
   stoneId?: string | null;

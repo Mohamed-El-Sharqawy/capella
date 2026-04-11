@@ -18,6 +18,7 @@ export const ProductModel = {
     isFeatured: t.Optional(t.Boolean()),
     badge: t.Optional(t.Union([t.Literal("NEW"), t.Literal("BESTSELLER"), t.Literal("LIMITED_EDITION"), t.Null()])),
     isTrending: t.Optional(t.Boolean()),
+    position: t.Optional(t.Number({ minimum: 0 })),
     materialId: t.Optional(t.Union([t.String(), t.Null()])),
     stoneId: t.Optional(t.Union([t.String(), t.Null()])),
     clarityId: t.Optional(t.Union([t.String(), t.Null()])),
@@ -52,6 +53,7 @@ export const ProductModel = {
     isFeatured: t.Optional(t.Boolean()),
     badge: t.Optional(t.Union([t.Literal("NEW"), t.Literal("BESTSELLER"), t.Literal("LIMITED_EDITION"), t.Null()])),
     isTrending: t.Optional(t.Boolean()),
+    position: t.Optional(t.Number({ minimum: 0 })),
     materialId: t.Optional(t.Union([t.String(), t.Null()])),
     stoneId: t.Optional(t.Union([t.String(), t.Null()])),
     clarityId: t.Optional(t.Union([t.String(), t.Null()])),
@@ -102,6 +104,14 @@ export const ProductModel = {
     collectionIds: t.Array(t.String()),
     excludeProductIds: t.Array(t.String()),
     limit: t.Optional(t.Number({ minimum: 1, maximum: 20 })),
+  }),
+  reorderBody: t.Object({
+    items: t.Array(
+      t.Object({
+        id: t.String(),
+        position: t.Number({ minimum: 0 }),
+      })
+    ),
   }),
 } as const;
 

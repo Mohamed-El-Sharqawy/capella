@@ -127,7 +127,13 @@ export abstract class ProductService {
     const orderBy: Record<string, string> = {};
     
     if (!isPriceSorting) {
-      orderBy[query.sortBy || "createdAt"] = query.sortOrder || "desc";
+      if (query.sortBy) {
+        orderBy[query.sortBy] = query.sortOrder || "desc";
+      } else {
+        // Default sort: position ASC, then createdAt DESC
+        (orderBy as any).position = "asc";
+        (orderBy as any).createdAt = "desc";
+      }
     }
 
     const [products, total] = await Promise.all([
@@ -385,5 +391,17 @@ export abstract class ProductService {
     }
 
     return products.slice(0, limit);
+  }
+
+  static async reorder(items: { id: string; position: number }[]) {
+    await prisma.$transaction(
+      items.map((item) =>
+        prisma.product.update({
+          where: { id: item.id },
+          data: { position: item.position },
+        })
+      )
+    );
+    return true;
   }
 }
