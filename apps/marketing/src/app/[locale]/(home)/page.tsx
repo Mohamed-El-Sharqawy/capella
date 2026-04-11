@@ -70,7 +70,7 @@ export default async function HomePage({ params }: PageProps) {
               {locale === "ar" ? "تابعنا على انستغرام" : "Follow Us"}
             </h2>
             <div className="w-16 h-px bg-black/20 mx-auto" />
-            <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground font-light">@capella_luxury</p>
+            <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground font-light">@capella.uae</p>
           </div>
         </AnimateOnScroll>
         <AnimateOnScroll direction="up" delay={0.1}>
