@@ -147,15 +147,15 @@ export abstract class ProductService {
     }
 
     const isPriceSorting = query.sortBy === "price";
-    const orderBy: Record<string, string> = {};
+    const orderBy: any[] = [];
     
     if (!isPriceSorting) {
       if (query.sortBy) {
-        orderBy[query.sortBy] = query.sortOrder || "desc";
+        orderBy.push({ [query.sortBy]: query.sortOrder || "desc" });
       } else {
         // Default sort: position ASC, then createdAt DESC
-        (orderBy as any).position = "asc";
-        (orderBy as any).createdAt = "desc";
+        orderBy.push({ position: "asc" });
+        orderBy.push({ createdAt: "desc" });
       }
     }
 

@@ -57,7 +57,8 @@ export async function getFeaturedProducts(): Promise<Product[]> {
       { next: { revalidate: 60 } }
     );
     return data?.data?.data ?? [];
-  } catch {
+  } catch (error) {
+    console.error("Error in getFeaturedProducts:", error);
     return [];
   }
 }
@@ -69,7 +70,8 @@ export async function getShoppableVideos(): Promise<ShoppableVideo[]> {
       { next: { revalidate: 60 } }
     );
     return data?.data ?? [];
-  } catch {
+  } catch (error) {
+    console.error("Error in getShoppableVideos:", error);
     return [];
   }
 }
@@ -93,7 +95,8 @@ export async function getReviews(): Promise<Review[]> {
       { next: { revalidate: 60 } }
     );
     return data ?? [];
-  } catch {
+  } catch (error) {
+    console.error("Error in getReviews:", error);
     return [];
   }
 }

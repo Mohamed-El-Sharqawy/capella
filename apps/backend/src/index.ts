@@ -27,6 +27,10 @@ import { payment } from "./modules/payment";
 const port = process.env.PORT || 3001;
 
 const app = new Elysia()
+  .onError(({ code, error, set }) => {
+    console.error(`[backend] Error ${set.status || 500} (${code}):`, error);
+    return { ok: false, error: error instanceof Error ? error.message : String(error) };
+  })
   .use(requestLogger)
   .use(
     cors({

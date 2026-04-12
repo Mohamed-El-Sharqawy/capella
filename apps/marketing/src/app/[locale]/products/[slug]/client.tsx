@@ -152,12 +152,7 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
       />
 
       {/* Related Products */}
-      <div className="container mx-auto px-4 py-20 border-t border-gray-100">
-        <h2 className="text-xl md:text-2xl font-medium text-center mb-12 uppercase tracking-[0.2em]">
-          {isArabic ? "قد يعجبك أيضاً" : "You may also like"}
-        </h2>
-        <ProductSlider products={relatedProducts} locale={locale} />
-      </div>
+      <RelatedProducts products={relatedProducts} locale={locale} />
 
       {/* Quality Seals */}
       <QualitySeals locale={locale} />

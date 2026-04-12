@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { 
-  Facebook, 
-  Linkedin, 
-  Send, 
+import {
+  Facebook,
+  Linkedin,
+  Send,
 } from "lucide-react";
+import Link from "next/link";
 
 // Custom X (Twitter) Icon
 const XIcon = ({ className }: { className?: string }) => (
@@ -37,8 +38,14 @@ export function SocialShare({
   className,
   variant = "default",
 }: SocialShareProps) {
-  // Use current window location if URL is not provided
-  const shareUrl = typeof window !== "undefined" ? url || window.location.href : url || "";
+  const [shareUrl, setShareUrl] = useState(url || "");
+
+  useEffect(() => {
+    if (!url && typeof window !== "undefined") {
+      setShareUrl(window.location.href);
+    }
+  }, [url]);
+
   const shareTitle = title || "";
   const shareImage = image || "";
 
@@ -87,7 +94,7 @@ export function SocialShare({
         </h3>
         <div className="flex flex-wrap gap-3">
           {shareLinks.map((link) => (
-            <a
+            <Link
               key={link.name}
               href={link.href}
               target="_blank"
@@ -96,7 +103,7 @@ export function SocialShare({
               aria-label={link.aria}
             >
               {link.icon}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
@@ -105,26 +112,26 @@ export function SocialShare({
 
   return (
     <div className={cn("flex items-center gap-4", className)}>
-       {variant === "default" && (
-         <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-gray-400">
-           Share:
-         </span>
-       )}
+      {variant === "default" && (
+        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-gray-400">
+          Share:
+        </span>
+      )}
       <div className="flex gap-2.5">
         {shareLinks.map((link) => (
-          <a
+          <Link
             key={link.name}
             href={link.href}
             target="_blank"
             rel="noopener noreferrer nofollow"
             className={cn(
-               "flex items-center justify-center w-8 h-8 rounded-full border border-gray-100 transition-all hover:border-black hover:bg-black hover:text-white",
-               variant === "minimal" && "border-none w-auto h-auto bg-transparent hover:bg-transparent hover:text-gray-400"
+              "flex items-center justify-center w-8 h-8 rounded-full border border-gray-100 transition-all hover:border-black hover:bg-black hover:text-white",
+              variant === "minimal" && "border-none w-auto h-auto bg-transparent hover:bg-transparent hover:text-gray-400"
             )}
             aria-label={link.aria}
           >
             {link.icon}
-          </a>
+          </Link>
         ))}
       </div>
     </div>
