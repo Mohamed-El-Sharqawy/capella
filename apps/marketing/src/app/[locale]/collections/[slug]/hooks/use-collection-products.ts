@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { Product } from "@ecommerce/shared-types";
 import { apiGet } from "@/lib/api-client";
-import { PRODUCTS_PER_PAGE, SORT_OPTIONS_DATA, DEFAULT_SORT } from "../constants";
+import { PRODUCTS_PER_PAGE, SORT_OPTIONS_DATA, DEFAULT_SORT, DEFAULT_MIN_PRICE, DEFAULT_MAX_PRICE } from "../constants";
 import type { ProductMeta, AvailabilityFilter } from "../types";
 
 interface UseCollectionProductsOptions {
@@ -50,8 +50,12 @@ export function useCollectionProducts({
     // or always send them if we want hard filters.
     // As per user request: "fix this behaviour" regarding products above 5000 showing up.
     // So we should always send maxPrice if it's set in the UI.
-    params.set("minPrice", String(debouncedMinPrice));
-    params.set("maxPrice", String(debouncedMaxPrice));
+    if (debouncedMinPrice !== DEFAULT_MIN_PRICE) {
+      params.set("minPrice", String(debouncedMinPrice));
+    }
+    if (debouncedMaxPrice !== DEFAULT_MAX_PRICE) {
+      params.set("maxPrice", String(debouncedMaxPrice));
+    }
 
     if (availability !== "all") {
       params.set("availability", availability);
@@ -69,8 +73,8 @@ export function useCollectionProducts({
   // Only use initialData if we are on the first page and no filters are active (matching SSR)
   const isDefaultState = 
     sortOption === DEFAULT_SORT && 
-    debouncedMinPrice === 0 && 
-    debouncedMaxPrice === 5000 && 
+    debouncedMinPrice === DEFAULT_MIN_PRICE && 
+    debouncedMaxPrice === DEFAULT_MAX_PRICE && 
     availability === "all";
 
   const {

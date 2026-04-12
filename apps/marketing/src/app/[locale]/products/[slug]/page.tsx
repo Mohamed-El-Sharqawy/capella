@@ -20,46 +20,59 @@ async function getProduct(slug: string) {
 async function getRelatedProducts(product: any) {
   const excludeId = product.id;
   const collectionId = product.collectionId;
-  
-  // First, try to get products from the same collection
-  if (collectionId) {
-    try {
-      const params = new URLSearchParams({ limit: "6", collectionId });
-      const data = await apiGet<{ data: { data: any[] } }>(`/api/products?${params}`, { next: { revalidate: 60 } });
-      const products = (data.data.data || []).filter((p: any) => p.id !== excludeId);
-      
-      // If we have enough products from the same collection, return them
-      if (products.length >= 3) {
-        return products.slice(0, 4);
-      }
-      
-      // If not enough, try to get more from parent collection
-      if (product.collection?.parentId) {
-        try {
-          const parentParams = new URLSearchParams({ limit: "6", collectionId: product.collection.parentId });
-          const parentData = await apiGet<{ data: { data: any[] } }>(`/api/products?${parentParams}`, { next: { revalidate: 10 } });
-          const parentProducts = (parentData.data.data || []).filter(
-            (p: any) => p.id !== excludeId && !products.find((existing: any) => existing.id === p.id)
-          );
-          // Combine: products from same collection first, then parent collection
-          return [...products, ...parentProducts].slice(0, 4);
-        } catch {
-          // Ignore parent fetch error
-        }
-      }
-      
-      return products.slice(0, 4);
-    } catch {
-      // Fall through to fallback
-    }
-  }
-  
-  // Fallback: get featured products if no collection
+  const parentId = product.collection?.parentId;
+  let products: any[] = [];
+
   try {
-    const fallbackData = await apiGet<{ data: { data: any[] } }>("/api/products?limit=4&isFeatured=true", { next: { revalidate: 10 } });
-    return (fallbackData.data.data || []).filter((p: any) => p.id !== excludeId).slice(0, 4);
-  } catch {
-    return [];
+    // 1. Fetch from the same collection
+    if (collectionId) {
+      const resp = await apiGet<{ data: { data: any[] } }>(
+        `/api/products?limit=8&collectionId=${collectionId}`,
+        { next: { revalidate: 60 } }
+      );
+      products = (resp.data.data || []).filter((p: any) => p.id !== excludeId);
+    }
+
+    // 2. If we need more, fetch from the parent collection
+    if (products.length < 4 && parentId) {
+      const resp = await apiGet<{ data: { data: any[] } }>(
+        `/api/products?limit=8&collectionId=${parentId}`,
+        { next: { revalidate: 60 } }
+      );
+      const parentProducts = (resp.data.data || []).filter(
+        (p: any) => p.id !== excludeId && !products.some((existing) => existing.id === p.id)
+      );
+      products = [...products, ...parentProducts];
+    }
+
+    // 3. Fallback to featured products if still not enough
+    if (products.length < 4) {
+      const resp = await apiGet<{ data: { data: any[] } }>(
+        "/api/products?limit=8&isFeatured=true",
+        { next: { revalidate: 60 } }
+      );
+      const featured = (resp.data.data || []).filter(
+        (p: any) => p.id !== excludeId && !products.some((existing) => existing.id === p.id)
+      );
+      products = [...products, ...featured];
+    }
+    
+    // 4. Final fallback to any products if still under 4
+    if (products.length < 4) {
+      const resp = await apiGet<{ data: { data: any[] } }>(
+        "/api/products?limit=8&isActive=true",
+        { next: { revalidate: 60 } }
+      );
+      const others = (resp.data.data || []).filter(
+        (p: any) => p.id !== excludeId && !products.some((existing) => existing.id === p.id)
+      );
+      products = [...products, ...others];
+    }
+
+    return products.slice(0, 4);
+  } catch (error) {
+    console.error("Error fetching related products:", error);
+    return products.slice(0, 4);
   }
 }
 

@@ -1,7 +1,7 @@
 export const PRODUCTS_PER_PAGE = 32;
 export const DEFAULT_SORT = "position";
 export const DEFAULT_MIN_PRICE = 0;
-export const DEFAULT_MAX_PRICE = 5000;
+export const DEFAULT_MAX_PRICE = 30000;
 export const PRICE_DEBOUNCE_MS = 500;
 
 export const SORT_OPTIONS_DATA: Record<string, { sortBy: string; sortOrder: string }> = {
