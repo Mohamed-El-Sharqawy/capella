@@ -60,12 +60,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.capella-marketing.loadbalancer.server.port=3000"
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+      - "traefik.docker.network=coolify"
 
   cms:
     build:
