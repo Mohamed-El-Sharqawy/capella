@@ -78,16 +78,16 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.capella-cms.loadbalancer.server.port=80"
 
-  stripe:
-    image: stripe/stripe-cli:latest
-    container_name: capella-stripe
-    command: listen --forward-to http://localhost:3001/api/payments/webhook --api-key ${STRIPE_SECRET_KEY}
-    environment:
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-    profiles:
-      - dev
-    networks:
-      - app-network
+  # stripe:
+  #   image: stripe/stripe-cli:latest
+  #   container_name: capella-stripe
+  #   command: listen --forward-to http://localhost:3001/api/payments/webhook --api-key ${STRIPE_SECRET_KEY}
+  #   environment:
+  #     - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+  #   profiles:
+  #     - dev
+  #   networks:
+  #     - app-network
 
 networks:
   app-network:
