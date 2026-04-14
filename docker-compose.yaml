@@ -52,8 +52,11 @@ services:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+      - INTERNAL_API_URL=http://capella-internal-api:3001
     depends_on:
       - backend
+    links:
+      - "backend:capella-internal-api"
     networks:
       - app-network
       - coolify-network
@@ -80,6 +83,8 @@ services:
       - VITE_API_URL=${VITE_API_URL}
     depends_on:
       - backend
+    links:
+      - "backend:capella-internal-api"
     networks:
       - app-network
     labels:
