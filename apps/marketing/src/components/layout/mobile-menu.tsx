@@ -79,7 +79,7 @@ export function MobileMenu() {
 
   const variants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? (isArabic ? "-100%" : "100%") : (isArabic ? "100%" : "-100%"),
+      x: direction > 0 ? (isArabic ? "100%" : "-100%") : (isArabic ? "-100%" : "100%"),
       opacity: 0,
     }),
     center: {
@@ -87,7 +87,7 @@ export function MobileMenu() {
       opacity: 1,
     },
     exit: (direction: number) => ({
-      x: direction < 0 ? (isArabic ? "-100%" : "100%") : (isArabic ? "100%" : "-100%"),
+      x: direction < 0 ? (isArabic ? "100%" : "-100%") : (isArabic ? "-100%" : "100%"),
       opacity: 0,
     }),
   };
@@ -305,6 +305,7 @@ export function MobileMenu() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
                 onClick={() => setIsOpen(false)}
                 className="absolute inset-0 bg-white backdrop-blur-sm"
               />
@@ -312,10 +313,10 @@ export function MobileMenu() {
               {/* Sheet */}
               <motion.div
                 dir={isArabic ? "rtl" : "ltr"}
-                initial={{ x: isArabic ? "100%" : "-100%" }}
+                initial={{ x: "-100%" }}
                 animate={{ x: 0 }}
-                exit={{ x: isArabic ? "100%" : "-100%" }}
-                transition={{ type: "tween", duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
+                exit={{ x: "-100%"}}
+                transition={{ type: "tween", duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
                 className="relative h-full w-[90%] max-w-sm bg-[#F2F2F2] shadow-2xl flex flex-col overflow-hidden text-start"
               >
                 {/* Close Button Header */}
