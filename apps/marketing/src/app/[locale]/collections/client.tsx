@@ -28,7 +28,7 @@ function CollectionsPageContent({ collections, locale }: CollectionsPageClientPr
   } = useCollectionSearch(collections);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto px-4 py-12 pt-32 md:pt-36">
       <h1 className="text-3xl font-bold mb-6 text-center">{t("shopByCollection")}</h1>
 
       <SearchInput

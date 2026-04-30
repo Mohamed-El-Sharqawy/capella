@@ -12,7 +12,7 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
   const t = useTranslations("about");
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pt-20 md:pt-24">
       {/* Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <Image

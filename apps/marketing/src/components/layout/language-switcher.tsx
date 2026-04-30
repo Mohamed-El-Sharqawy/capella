@@ -52,7 +52,7 @@ export function LanguageSwitcher({ trigger }: { trigger?: React.ReactNode }) {
       ) : (
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-1.5 px-2 py-1.5 text-sm rounded-md hover:bg-gray-100 transition"
+          className="flex items-center gap-1.5 px-2 py-1.5 text-sm rounded-md text-current hover:opacity-70 transition"
           aria-label="Change language"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
@@ -91,7 +91,7 @@ export function LanguageSwitcher({ trigger }: { trigger?: React.ReactNode }) {
                 height={25}
                 className="rounded-sm"
               />
-              <span>{lang.name}</span>
+              <span className="text-black">{lang.name}</span>
             </button>
           ))}
         </div>

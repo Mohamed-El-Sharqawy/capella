@@ -179,67 +179,101 @@ export function MobileMenu() {
               </button>
             </div>
 
-            <div className="flex-1 px-8 py-10 space-y-12">
-              <button
-                onClick={() => setLevel("collectionsSub")}
-                className="w-full flex items-center justify-between text-3xl font-light tracking-widest hover:opacity-100 transition-all opacity-80 group text-start"
-              >
-                <span>{isArabic ? "تصفح المجموعات" : "Collections"}</span>
-                <ChevronRight className={`h-6 w-6 text-black/20 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
-              </button>
+            <div className="flex-1 px-8 py-10 space-y-8">
+              {/* Collections Header */}
+              <div className="space-y-6">
+                {/* shop all */}
+                <Link
+                  href={`/collections`}
+                  className="flex items-center justify-between text-xl font-light tracking-widest opacity-60 hover:opacity-100 transition-opacity pl-2"
+                >
+                  {isArabic ? "تسوق الكل" : "Shop All"}
+                  <ChevronRight className={`h-4 w-4 text-black/15 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
+                </Link>
+                <div className="space-y-4">
+                  {headerCollections.map((collection) => (
+                    <div key={collection.id}>
+                      {collection.children && collection.children.length > 0 ? (
+                        <button
+                          onClick={() => {
+                            setActiveCollection(collection);
+                            setLevel("singleCollection");
+                          }}
+                          className="w-full flex items-center justify-between text-2xl font-medium tracking-widest hover:opacity-100 transition-all opacity-90 group text-start"
+                        >
+                          <span>{isArabic ? collection.nameAr : collection.nameEn}</span>
+                          <ChevronRight className={`h-5 w-5 text-black/30 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
+                        </button>
+                      ) : (
+                        <Link
+                          href={`/collections/${collection.slug}`}
+                          className="flex items-center justify-between text-xl font-light tracking-widest opacity-60 hover:opacity-100 transition-opacity pl-2"
+                        >
+                          {isArabic ? collection.nameAr : collection.nameEn}
+                          <ChevronRight className={`h-4 w-4 text-black/15 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
+                        </Link>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Link href="/" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
+                {isArabic ? "الرئيسية" : "Home"}
+              </Link>
 
               <Link href="/about" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
-                {isArabic ? "قصتنا" : "House of Capella"}
+                {isArabic ? "من نحن" : "About Us"}
+              </Link>
+
+              <Link href="/contact" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
+                {isArabic ? "اتصل بنا" : "Contact Us"}
               </Link>
             </div>
 
-            {/* Footer Area - Restored Action Icons */}
-            <div className="mt-auto p-8 pt-10 border-t border-black/5 bg-white/40 backdrop-blur-md">
-              <div className="flex items-center justify-between px-4">
+            {/* Footer Area - Enhanced Action Icons */}
+            <div className="mt-auto py-8 bg-white/60 backdrop-blur-sm">
+              <div className="flex items-center justify-center gap-8 px-8">
                 {/* Search */}
-                <div className="flex flex-col items-center gap-3 group">
-                  <div className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:bg-black group-hover:text-white transition-all duration-500">
+                <div className="flex flex-col items-center gap-2.5 group cursor-pointer">
+                  <div className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/[0.06] flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300">
                     <SearchOverlay />
                   </div>
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-light group-hover:text-black transition-colors">
-                    {isArabic ? "بحث" : "Search"}
+                  <span className="text-[9px] uppercase tracking-[0.15em] text-black/40 font-medium">
+                    {isArabic ? "بحث" : "SEARCH"}
                   </span>
                 </div>
 
-                <div className="w-px h-12 bg-black/5" />
-
                 {/* Language */}
-                <div className="flex flex-col items-center gap-3 group">
+                <div className="flex flex-col items-center gap-2.5 group">
                   <LanguageSwitcher
                     trigger={
-                      <div className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:bg-black group-hover:text-white transition-all duration-500 cursor-pointer">
+                      <div className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/[0.06] flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300 cursor-pointer">
                         <Image
                           src={isArabic ? "https://flagcdn.com/w40/ae.png" : "https://flagcdn.com/w40/us.png"}
                           alt="Language"
-                          width={22}
-                          height={16}
-                          className="rounded-0 outline outline-black/5"
+                          width={20}
+                          height={15}
+                          className="rounded-sm"
                         />
                       </div>
                     }
                   />
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-light group-hover:text-black transition-colors">
-                    {isArabic ? "العربية" : "Language"}
+                  <span className="text-[9px] uppercase tracking-[0.15em] text-black/40 font-medium">
+                    {isArabic ? "اللغة" : "LANGUAGE"}
                   </span>
                 </div>
 
-                <div className="w-px h-12 bg-black/5" />
-
                 {/* Account */}
-                <div className="flex flex-col items-center gap-3 group">
+                <div className="flex flex-col items-center gap-2.5 group">
                   <Link
                     href="/auth/signin"
-                    className="p-3.5 rounded-full bg-white shadow-sm border border-black/5 group-hover:bg-black group-hover:text-white transition-all duration-500"
+                    className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/[0.06] flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300"
                   >
-                    <User className="h-5 w-5 stroke-1" />
+                    <User className="h-5 w-5 stroke-[1.5] text-black/70" />
                   </Link>
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-light group-hover:text-black transition-colors">
-                    {isArabic ? "حسابي" : "Account"}
+                  <span className="text-[9px] uppercase tracking-[0.15em] text-black/40 font-medium">
+                    {isArabic ? "الحساب" : "ACCOUNT"}
                   </span>
                 </div>
               </div>

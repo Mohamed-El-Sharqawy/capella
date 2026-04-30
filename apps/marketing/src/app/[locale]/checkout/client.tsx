@@ -134,7 +134,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pt-32 md:pt-36">
       {/* Back to cart */}
       <Link
         href={CHECKOUT_ROUTES.CART}

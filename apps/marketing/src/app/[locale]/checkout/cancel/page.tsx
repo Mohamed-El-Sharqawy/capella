@@ -12,7 +12,7 @@ export default async function CheckoutCancelPage({ params }: PageProps) {
   const isArabic = locale === "ar";
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center py-16">
+    <div className="min-h-[60vh] flex items-center justify-center py-16 pt-32 md:pt-36">
       <div className="max-w-md w-full mx-auto text-center px-4">
         <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <XCircle className="w-10 h-10 text-red-600" />

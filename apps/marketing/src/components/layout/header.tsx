@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "@/i18n/navigation";
 import { HeaderNav } from "./header-nav";
 import { MobileMenu } from "./mobile-menu";
@@ -5,31 +7,46 @@ import { CartIcon } from "./cart-icon";
 import { UserIcon } from "./user-icon";
 import { SearchOverlay } from "./search-overlay";
 import { LanguageSwitcher } from "./language-switcher";
+import { useHeaderScroll } from "./use-header-scroll";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 export function Header({ locale }: { locale: string }) {
   const isArabic = locale === "ar";
+  const { isAtTop, isVisible } = useHeaderScroll();
+  const pathName = usePathname();
+  const path = pathName.replace("/en", "").replace("/ar", "");
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100">
-      <div className="mx-auto h-16 md:h-20 max-w-8xl px-4 flex items-center justify-between">
-        {/* Left: Mobile Menu / Desktop Navigation */}
-        <div className="flex items-center gap-4">
-          <div className="lg:hidden">
+    <header
+      className={cn(
+        "fixed left-0 right-0 z-40 transition-all duration-500 ease-in-out",
+        isAtTop
+          ? "bg-transparent border-b border-transparent text-white top-[33px]"
+          : "bg-white border-b border-black/10 text-black shadow-md",
+        !isVisible && "-translate-y-full"
+      )}
+      style={{ top: !isVisible ? "0px" : isAtTop ? "33px" : "0px" }}
+    >
+      <div className={cn(
+        "mx-auto relative h-16 md:h-20 max-w-[1600px] px-4 md:px-6 flex items-center justify-between",
+        isAtTop && "[text-shadow:0_1px_10px_rgba(0,0,0,0.45)]"
+      )}>
+        <div className="flex items-center gap-4 min-w-0 flex-1">
+          <div className={cn("lg:hidden transition-colors duration-500", isAtTop ? "text-white" : "text-black")}>
             <MobileMenu />
           </div>
-          <div className="hidden lg:block">
+          <div className={cn("hidden lg:block transition-colors duration-500", isAtTop && path === "" ? "text-white" : "text-black")}>
             <HeaderNav />
           </div>
         </div>
 
-        {/* Center: Logo */}
-        <Link href="/" className="absolute left-1/2 -translate-x-1/2 text-xl sm:text-2xl md:text-3xl font-light uppercase tracking-[0.3em] whitespace-nowrap hover:opacity-80 transition-opacity">
-          <Image src={"/logo_capella.webp"} alt="Capella's Brand Logo" width={200} height={200} />
+        <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap hover:opacity-80 transition-opacity">
+          <Image src={"/logo_capella.webp"} alt="Capella's Brand Logo" width={180} height={55} className={cn("h-auto w-[140px] md:w-[180px] transition-all duration-500", !isAtTop && "brightness-0")} />
         </Link>
 
-        {/* Right: Actions */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className={cn("flex items-center justify-end gap-2 sm:gap-4 min-w-0 flex-1 transition-colors duration-500", isAtTop && path === "" ? "text-white" : "text-black")}>
           <div className="hidden md:block">
             <SearchOverlay />
           </div>

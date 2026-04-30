@@ -21,7 +21,7 @@ export function CartPageClient({ locale }: CartPageClientProps) {
 
   if (items.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-16 pt-32 md:pt-36">
         <EmptyCart />
         <SuggestedProducts
           products={suggestedProducts}
@@ -33,7 +33,7 @@ export function CartPageClient({ locale }: CartPageClientProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pt-32 md:pt-36">
       <h1 className="text-2xl font-semibold text-center mb-8">{t("title")}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
