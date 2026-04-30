@@ -247,7 +247,7 @@ export function UserDetailsPage() {
                 <div key={order.id} className="border rounded-lg p-4">
                   <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
                     <div>
-                      <p className="font-mono font-medium">
+                      <p className="font-sans font-medium">
                         {order.orderNumber || order.id.substring(0, 8)}
                       </p>
                       <p className="text-sm text-muted-foreground">

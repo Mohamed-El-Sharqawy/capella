@@ -57,7 +57,7 @@ export function OrdersTab({ locale, orders, isLoading, page, onPageChange }: Ord
                 <p className="text-sm text-muted-foreground">
                   {t("orderId")}
                 </p>
-                <p className="font-mono font-medium">{order.orderNumber || order.id}</p>
+                <p className="font-sans font-medium">{order.orderNumber || order.id}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">

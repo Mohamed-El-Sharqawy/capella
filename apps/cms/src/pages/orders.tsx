@@ -166,7 +166,7 @@ export function OrdersPage() {
               ) : (
                 filteredOrders.map((order: any) => (
                   <TableRow key={order.id}>
-                    <TableCell className="font-mono text-xs">
+                    <TableCell className="font-sans text-xs">
                       {order.id.slice(0, 8)}...
                     </TableCell>
                     <TableCell>
@@ -279,7 +279,7 @@ export function OrdersPage() {
               <div className="grid grid-cols-2 gap-4 rounded-lg border p-4">
                 <div>
                   <div className="text-xs text-muted-foreground">Order ID</div>
-                  <div className="font-mono text-sm">{orderDetail.data.id}</div>
+                  <div className="font-sans text-sm">{orderDetail.data.id}</div>
                 </div>
                 <div>
                   <div className="text-xs text-muted-foreground">Status</div>

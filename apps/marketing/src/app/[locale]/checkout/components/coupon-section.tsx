@@ -48,7 +48,7 @@ export function CouponSection({
                 {t("couponApplied")}
               </p>
               <p className="text-sm text-green-600">
-                <span className="font-mono font-semibold">{appliedCoupon.code}</span>
+                <span className="font-sans font-semibold">{appliedCoupon.code}</span>
                 {" - "}
                 {appliedCoupon.discountType === "PERCENTAGE"
                   ? `${appliedCoupon.discountValue}% off`
@@ -96,7 +96,7 @@ export function CouponSection({
               value={couponCode}
               onChange={(e) => onCouponCodeChange(e.target.value.toUpperCase())}
               placeholder={t("enterCouponCode")}
-              className="flex-1 px-3 py-2 border rounded-lg text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              className="flex-1 px-3 py-2 border rounded-lg text-sm font-sans uppercase focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               disabled={isValidating}
             />
             <button

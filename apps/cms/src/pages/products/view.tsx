@@ -185,7 +185,7 @@ export function ViewProductPage() {
                 <div className="grid grid-cols-4 gap-4 mb-4">
                   <div>
                     <p className="text-sm text-muted-foreground">SKU</p>
-                    <p className="font-mono">{variant.sku || "—"}</p>
+                    <p className="font-sans">{variant.sku || "—"}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Price</p>

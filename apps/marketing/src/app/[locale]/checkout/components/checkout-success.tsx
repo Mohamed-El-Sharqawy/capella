@@ -24,7 +24,7 @@ export function CheckoutSuccess({ orderId }: CheckoutSuccessProps) {
         <p className="text-muted-foreground mb-2">{t("orderConfirmedDesc")}</p>
         {orderId && (
           <p className="text-sm text-muted-foreground mb-8">
-            {t("orderId")} <span className="font-mono font-medium">{orderId}</span>
+            {t("orderId")} <span className="font-sans font-medium">{orderId}</span>
           </p>
         )}
         <div className="space-y-3">

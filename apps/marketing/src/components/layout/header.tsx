@@ -30,7 +30,7 @@ export function Header({ locale }: { locale: string }) {
       style={{ top: !isVisible ? "0px" : isAtTop ? "33px" : "0px" }}
     >
       <div className={cn(
-        "mx-auto relative h-16 md:h-20 max-w-[1600px] px-4 md:px-6 flex items-center justify-between",
+        "mx-auto relative h-16 md:h-20 max-w-[1600px] px-4 md:px-6 flex items-center justify-between font-primary",
         isAtTop && "[text-shadow:0_1px_10px_rgba(0,0,0,0.45)]"
       )}>
         <div className="flex items-center gap-4 min-w-0 flex-1">

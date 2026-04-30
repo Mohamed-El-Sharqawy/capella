@@ -184,7 +184,7 @@ export function CouponsPage() {
             ) : (
               filteredCoupons.map((coupon) => (
                 <TableRow key={coupon.id}>
-                  <TableCell className="font-mono font-bold">{coupon.code}</TableCell>
+                  <TableCell className="font-sans font-bold">{coupon.code}</TableCell>
                   <TableCell>
                     {coupon.discountType === "PERCENTAGE"
                       ? `${coupon.discountValue}%`

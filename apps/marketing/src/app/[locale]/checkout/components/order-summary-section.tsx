@@ -96,7 +96,7 @@ export function OrderSummarySection({
           <div className="flex justify-between text-sm text-green-600">
             <span className="flex items-center gap-1">
               {t("discount")}
-              <span className="text-xs font-mono bg-green-100 px-1.5 py-0.5 rounded">
+              <span className="text-xs font-sans bg-green-100 px-1.5 py-0.5 rounded">
                 {appliedCoupon.code}
               </span>
             </span>
@@ -126,7 +126,7 @@ export function OrderSummarySection({
                       {t("couponApplied")}
                     </p>
                     <p className="text-xs text-green-600">
-                      <span className="font-mono font-semibold">{couponProps.appliedCoupon.code}</span>
+                      <span className="font-sans font-semibold">{couponProps.appliedCoupon.code}</span>
                       {" - "}
                       {couponProps.appliedCoupon.discountType === "PERCENTAGE"
                         ? `${couponProps.appliedCoupon.discountValue}% off`
@@ -166,7 +166,7 @@ export function OrderSummarySection({
                       value={couponProps.couponCode}
                       onChange={(e) => couponProps.onCouponCodeChange(e.target.value.toUpperCase())}
                       placeholder={t("enterCouponCode")}
-                      className="flex-1 px-3 py-2 border rounded text-sm font-mono uppercase focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="flex-1 px-3 py-2 border rounded text-sm font-sans uppercase focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                       disabled={couponProps.isValidating}
                     />
                     <button

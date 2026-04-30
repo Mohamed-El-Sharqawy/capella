@@ -38,7 +38,7 @@ export function HeaderNav() {
   });
 
   return (
-    <nav className="flex items-center gap-4 lg:gap-6 text-current font-mono">
+    <nav className="flex items-center gap-4 lg:gap-6 text-current">
       {/* Shop by Collection - with dropdown */}
       <div
         className="relative"
@@ -47,7 +47,10 @@ export function HeaderNav() {
       >
         <Link
           href="/collections"
-          className="flex items-center gap-1.5 text-[14px] uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
+          className="flex items-center gap-1.5 font-medium uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
+          style={{
+            fontSize: isArabic ? "14px" : "13px",
+          }}
         >
           {t("shopByCollection")}
           <ChevronDown className="h-3 w-3" />
@@ -97,7 +100,10 @@ export function HeaderNav() {
 
       <Link
         href="/contact"
-        className="text-[14px] font-medium uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
+        className="font-medium uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
+        style={{
+          fontSize: isArabic ? "14px" : "13px",
+        }}
       >
         {t("contactUs")}
       </Link>
@@ -105,7 +111,10 @@ export function HeaderNav() {
       {/* About */}
       <Link
         href="/about"
-        className="text-[14px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
+        className="font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
+        style={{
+          fontSize: isArabic ? "14px" : "13px",
+        }}
       >
         {isArabic ? "من نحن" : "About Us"}
       </Link>

@@ -44,7 +44,7 @@ export default function CheckoutSuccessPage({ params, searchParams }: PageProps)
         {session_id && (
           <p className="text-sm text-gray-400 mb-8 overflow-hidden text-ellipsis whitespace-nowrap">
             {isArabic ? "معرف الجلسة: " : "Session ID: "}
-            <span className="font-mono text-[10px]">{session_id}</span>
+            <span className="font-sans text-[10px]">{session_id}</span>
           </p>
         )}
 
