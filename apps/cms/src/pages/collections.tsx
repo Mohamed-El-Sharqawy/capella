@@ -568,13 +568,14 @@ export function CollectionsPage() {
                     <SelectValue placeholder="Select position" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">Position 1 (Left)</SelectItem>
-                    <SelectItem value="2">Position 2 (Middle)</SelectItem>
-                    <SelectItem value="3">Position 3 (Right)</SelectItem>
+                    <SelectItem value="1">Position 1 (Large - Top Left)</SelectItem>
+                    <SelectItem value="2">Position 2 (Wide - Top Right)</SelectItem>
+                    <SelectItem value="3">Position 3 (Small - Bottom Left)</SelectItem>
+                    <SelectItem value="4">Position 4 (Small - Bottom Right)</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Shows in the 3-image grid on the homepage
+                  Shows in the 4-item bento grid on the homepage
                 </p>
               </div>
 

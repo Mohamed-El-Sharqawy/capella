@@ -190,13 +190,13 @@ export abstract class CollectionService {
     return true;
   }
 
-  // Get collections featured on homepage (for hero section)
+  // Get collections featured on homepage (for bento grid)
   static async listFeaturedOnHome() {
     return prisma.collection.findMany({
       where: { isFeaturedOnHome: true, isActive: true },
       include: { image: true },
       orderBy: { homeFeaturedPosition: "asc" },
-      take: 3, // 3 collections in a single row
+      take: 4, // 4 collections for bento grid layout
     });
   }
 }

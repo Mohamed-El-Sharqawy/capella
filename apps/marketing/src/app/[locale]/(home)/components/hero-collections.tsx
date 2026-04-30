@@ -18,36 +18,63 @@ interface HeroCollectionsProps {
   locale: string;
 }
 
+/**
+* Collections grid — 2 per row on all screen sizes.
+*
+* ┌──────┬──────┐
+* │  A   │  B   │
+* ├──────┼──────┤
+* │  C   │  D   │
+* └──────┴──────┘
+*/
 export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
   const isArabic = locale === "ar";
 
   if (collections.length === 0) return null;
 
+  const displayCollections = collections.slice(0, 4);
+
   return (
-    <section className="bg-white py-1">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-2">
-        {collections.slice(0, 3).map((collection, index) => (
+    <section className="bg-white pb-8 md:pb-12 pt-2 md:pt-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 md:gap-2.5">
+        {displayCollections.map((collection, index) => (
           <AnimateOnScroll
             key={collection.id}
             direction="up"
-            delay={index * 0.1}
+            delay={index * 0.08}
           >
             <Link
               href={`/collections/${collection.slug}`}
-              className="group relative block aspect-4/3 md:aspect-square overflow-hidden bg-neutral-100"
+              className="group relative block w-full overflow-hidden rounded-sm aspect-3/4 md:aspect-4/5"
             >
+              {/* Image */}
               <Image
-                src={collection.image?.url || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=800&fit=crop"}
+                src={
+                  collection.image?.url ||
+                  "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=1000&fit=crop"
+                }
                 alt={isArabic ? collection.nameAr : collection.nameEn}
                 fill
-                className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-110"
+                sizes="(max-width: 768px) 50vw, 50vw"
               />
-              {/* Overlay with text at bottom */}
-              <div className="absolute inset-x-0 bottom-0 py-10 md:py-16 flex flex-col items-center justify-end bg-linear-to-t from-black/20 via-transparent to-transparent text-white">
-                <h3 className="text-[10px] md:text-xs font-light uppercase tracking-[0.4em] transition-transform duration-700 group-hover:-translate-y-2">
+
+              {/* Dark gradient overlay — stronger on hover */}
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/15 to-transparent transition-colors duration-700 group-hover:from-black/70 group-hover:via-black/25" />
+
+              {/* Content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 md:pb-10 text-white">
+                {/* Decorative line */}
+                <span className="block w-6 h-px bg-white/60 mb-3 transition-all duration-700 group-hover:w-10 group-hover:bg-white/90" />
+
+                <h3 className="text-[11px] md:text-base font-light uppercase tracking-[0.3em] md:tracking-[0.45em] transition-all duration-700 group-hover:-translate-y-1">
                   {isArabic ? collection.nameAr : collection.nameEn}
                 </h3>
+
+                {/* "Shop Now" reveal on hover */}
+                <span className="mt-2 text-[9px] md:text-[11px] uppercase tracking-[0.35em] text-white/0 transition-all duration-500 translate-y-2 group-hover:text-white/80 group-hover:translate-y-0">
+                  {isArabic ? "تسوّقي الآن" : "Shop Now"}
+                </span>
               </div>
             </Link>
           </AnimateOnScroll>

@@ -34,10 +34,10 @@ export function Header({ locale }: { locale: string }) {
         isAtTop && "[text-shadow:0_1px_10px_rgba(0,0,0,0.45)]"
       )}>
         <div className="flex items-center gap-4 min-w-0 flex-1">
-          <div className={cn("lg:hidden transition-colors duration-500", isAtTop ? "text-white" : "text-black")}>
+          <div className={cn("xl:hidden transition-colors duration-500", isAtTop && path === "" ? "text-white" : "text-black")}>
             <MobileMenu />
           </div>
-          <div className={cn("hidden lg:block transition-colors duration-500", isAtTop && path === "" ? "text-white" : "text-black")}>
+          <div className={cn("hidden xl:block transition-colors duration-500", isAtTop && path === "" ? "text-white" : "text-black")}>
             <HeaderNav />
           </div>
         </div>

@@ -236,7 +236,7 @@ export function MobileMenu() {
               <div className="flex items-center justify-center gap-8 px-8">
                 {/* Search */}
                 <div className="flex flex-col items-center gap-2.5 group cursor-pointer">
-                  <div className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/[0.06] flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300">
+                  <div className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/6 flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300">
                     <SearchOverlay />
                   </div>
                   <span className="text-[9px] uppercase tracking-[0.15em] text-black/40 font-medium">
@@ -248,12 +248,12 @@ export function MobileMenu() {
                 <div className="flex flex-col items-center gap-2.5 group">
                   <LanguageSwitcher
                     trigger={
-                      <div className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/[0.06] flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300 cursor-pointer">
+                      <div className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/6 flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300 cursor-pointer">
                         <Image
                           src={isArabic ? "https://flagcdn.com/w40/ae.png" : "https://flagcdn.com/w40/us.png"}
                           alt="Language"
-                          width={20}
-                          height={15}
+                          width={32}
+                          height={32}
                           className="rounded-sm"
                         />
                       </div>
@@ -268,7 +268,7 @@ export function MobileMenu() {
                 <div className="flex flex-col items-center gap-2.5 group">
                   <Link
                     href="/auth/signin"
-                    className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/[0.06] flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300"
+                    className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/6 flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300"
                   >
                     <User className="h-5 w-5 stroke-[1.5] text-black/70" />
                   </Link>
@@ -286,11 +286,11 @@ export function MobileMenu() {
   return (
     <>
       <button
-        className={`p-2 ${isArabic ? "-mr-2" : "-ml-2"} text-black hover:opacity-60 transition-opacity`}
+        className={`p-2 ${isArabic ? "-mr-2" : "-ml-2"} hover:opacity-60 transition-opacity`}
         onClick={() => setIsOpen(true)}
         aria-label="Open menu"
       >
-        <Menu className="h-6 w-6 stroke-1" />
+        <Menu className="h-8 w-8 stroke-4" />
       </button>
 
       {mounted && createPortal(
