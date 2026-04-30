@@ -38,15 +38,7 @@ export function HeaderNav() {
   });
 
   return (
-    <nav className="flex items-center gap-4 lg:gap-6 text-current">
-      {/* Shop All */}
-      <Link
-        href="/collections/all-products"
-        className="text-[11px] font-medium uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
-      >
-        {t("shopAll")}
-      </Link>
-
+    <nav className="flex items-center gap-4 lg:gap-6 text-current font-mono">
       {/* Shop by Collection - with dropdown */}
       <div
         className="relative"
@@ -55,7 +47,7 @@ export function HeaderNav() {
       >
         <Link
           href="/collections"
-          className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
+          className="flex items-center gap-1.5 text-[14px] uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
         >
           {t("shopByCollection")}
           <ChevronDown className="h-3 w-3" />
@@ -105,7 +97,7 @@ export function HeaderNav() {
 
       <Link
         href="/contact"
-        className="text-[11px] font-medium uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
+        className="text-[14px] font-medium uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
       >
         {t("contactUs")}
       </Link>
@@ -113,7 +105,7 @@ export function HeaderNav() {
       {/* About */}
       <Link
         href="/about"
-        className="text-[11px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
+        className="text-[14px] font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
       >
         {isArabic ? "من نحن" : "About Us"}
       </Link>

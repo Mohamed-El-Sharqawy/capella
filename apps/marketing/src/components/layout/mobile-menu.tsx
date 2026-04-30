@@ -290,7 +290,7 @@ export function MobileMenu() {
         onClick={() => setIsOpen(true)}
         aria-label="Open menu"
       >
-        <Menu className="h-8 w-8 stroke-4" />
+        <Menu className="h-6 w-6 stroke-2" />
       </button>
 
       {mounted && createPortal(
