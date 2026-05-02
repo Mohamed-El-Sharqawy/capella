@@ -12,7 +12,7 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
   const t = useTranslations("about");
 
   return (
-    <div className="flex flex-col pt-20 md:pt-24">
+    <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <Image
@@ -66,18 +66,18 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             {[
-              { 
-                title: t("philosophy.quality"), 
+              {
+                title: t("philosophy.quality"),
                 desc: t("philosophy.qualityDesc"),
                 img: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&h=400&fit=crop"
               },
-              { 
-                title: t("philosophy.craftsmanship"), 
+              {
+                title: t("philosophy.craftsmanship"),
                 desc: t("philosophy.craftsmanshipDesc"),
                 img: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?w=600&h=400&fit=crop"
               },
-              { 
-                title: t("philosophy.innovation"), 
+              {
+                title: t("philosophy.innovation"),
                 desc: t("philosophy.innovationDesc"),
                 img: "https://images.unsplash.com/photo-1531995811006-35cb42e1a022?w=600&h=400&fit=crop"
               }
@@ -107,7 +107,7 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
             <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.3em] mb-12">
               {locale === "ar" ? "اكتشف مجموعتنا" : "Explore Our Collection"}
             </h2>
-            <a 
+            <a
               href="/collections/all-products"
               className="inline-block px-12 py-4 border border-white text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500"
             >

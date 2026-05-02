@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import {
   AnimateOnScroll,
+  InfiniteMarquee,
 } from "@/components/ui";
 import { FeaturedProducts } from "@/app/[locale]/(home)/components/featured-products";
 import { PromoBanner } from "@/app/[locale]/(home)/components/promo-banner";
@@ -45,10 +46,23 @@ export default async function HomePage({ params }: PageProps) {
 
   return (
     <div className="overflow-hidden bg-white">
+
       {/* Hero Banner Carousel */}
       {banners.length > 0 && (
         <HeroBanner banners={banners} locale={locale} />
       )}
+      <InfiniteMarquee
+        text={
+          locale === "ar"
+            ? "توصيل مجاني لجميع الطلبات داخل الإمارات فوق <b><i><u>500 درهم</u></i></b>"
+            : "FREE SHIPPING ON ALL UAE ORDERS ABOVE <b><i><u>500 AED</u></i></b>"
+        }
+        className="bg-black py-6 border-b border-white/10 mt-3"
+        textClassName="text-[10px] md:text-sm font-medium text-white uppercase tracking-[0.2em]"
+        separator="•"
+        speed="normal"
+        isArabic={locale === "ar"}
+      />
 
       {/* Primary Collections Grid */}
       <HeroCollections collections={heroCollections} locale={locale} />
@@ -63,7 +77,7 @@ export default async function HomePage({ params }: PageProps) {
       <ShoppableVideos videos={shoppableVideos} locale={locale} />
 
       {/* Lifestyle / Social Proof */}
-      <div className="py-16 md:py-24 bg-neutral-50/50">
+      {/* <div className="py-16 md:py-24 bg-neutral-50/50">
         <AnimateOnScroll direction="up">
           <div className="text-center mb-16 space-y-4">
             <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.25em]">
@@ -76,7 +90,7 @@ export default async function HomePage({ params }: PageProps) {
         <AnimateOnScroll direction="up" delay={0.1}>
           <InstagramGallery posts={instagramPosts} locale={locale} />
         </AnimateOnScroll>
-      </div>
+      </div> */}
 
       {/* Trust Elements */}
       <Features locale={locale} />

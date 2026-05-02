@@ -49,7 +49,7 @@ export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove 
               AED {item.compareAtPrice.toLocaleString()}
             </span>
           )}
-          <span className="text-sm font-semibold text-red-600">
+          <span className="text-sm font-semibold text-neutral-500">
             AED {item.price.toLocaleString()}
           </span>
         </div>
@@ -78,7 +78,7 @@ export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove 
               const productName = isArabic ? item.productNameAr : item.productNameEn;
               trackCartRemove(item.productId, item.variantId, productName, item.price);
             }}
-            className="text-xs text-red-600 hover:underline"
+            className="text-xs text-red-500 hover:underline"
           >
             Remove
           </button>

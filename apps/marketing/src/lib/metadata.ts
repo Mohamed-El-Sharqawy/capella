@@ -297,28 +297,16 @@ export const STATIC_PAGE_METADATA = {
         "اقرأ شروط خدمة إن زد إن ستوديو. افهم حقوقك ومسؤولياتك عند التسوق معنا.",
     },
   },
-  refundPolicy: {
+  refundReturnPolicy: {
     en: {
-      title: "Refund Policy - Capella",
+      title: "Refund & Return Policy - Capella",
       description:
-        "Capella refund policy. Learn about our hassle-free refund process, eligibility, and timeline for getting your money back.",
+        "Capella refund and return policy. Easy 14-day returns, hassle-free refunds, and clear eligibility guidelines. Shop with confidence.",
     },
     ar: {
-      title: "سياسة الاسترداد - إن زد إن ستوديو",
+      title: "سياسة الاسترداد والإرجاع - كابيلا",
       description:
-        "سياسة استرداد إن زد إن ستوديو. تعرف على عملية الاسترداد السهلة والأهلية والجدول الزمني لاسترداد أموالك.",
-    },
-  },
-  returnPolicy: {
-    en: {
-      title: "Return Policy - Capella",
-      description:
-        "Easy returns at Capella. 14-day return window, simple process, and full refund on eligible items. Shop with confidence.",
-    },
-    ar: {
-      title: "سياسة الإرجاع - إن زد إن ستوديو",
-      description:
-        "إرجاع سهل في إن زد إن ستوديو. فترة إرجاع 14 يومًا، عملية بسيطة، واسترداد كامل للمنتجات المؤهلة. تسوق بثقة.",
+        "سياسة الاسترداد والإرجاع في كابيلا. إرجاع سهل خلال 14 يومًا، استرداد بدون متاعب، وإرشادات أهلية واضحة. تسوق بثقة.",
     },
   },
   shippingPolicy: {

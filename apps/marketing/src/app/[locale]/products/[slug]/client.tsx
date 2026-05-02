@@ -89,7 +89,7 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
   const cartItem = getCartItem(selectedVariant?.id ?? null);
 
   return (
-    <div className="min-h-screen pt-20 md:pt-24">
+    <div className="min-h-screen pt-24 md:pt-32">
       <ProductBreadcrumb
         productName={name}
         collectionName={isArabic ? product.collection?.nameAr : product.collection?.nameEn}

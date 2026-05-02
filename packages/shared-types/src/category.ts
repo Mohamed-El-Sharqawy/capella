@@ -22,6 +22,7 @@ export interface Collection {
   inHeader?: boolean;
   isFeaturedOnHome?: boolean;
   homeFeaturedPosition?: number;
+  isDisplayedOnCollectionsPage?: boolean;
   createdAt: Date;
   updatedAt: Date;
   _count?: { products: number };

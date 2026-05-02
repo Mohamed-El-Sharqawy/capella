@@ -34,19 +34,19 @@ export function Header({ locale }: { locale: string }) {
         isAtTop && "[text-shadow:0_1px_10px_rgba(0,0,0,0.45)]"
       )}>
         <div className="flex items-center gap-4 min-w-0 flex-1">
-          <div className={cn("xl:hidden transition-colors duration-500", isAtTop && path === "" ? "text-white" : "text-black")}>
+          <div className={cn("xl:hidden transition-colors duration-500", isAtTop && (path === "" || path === "/about") ? "text-white" : "text-black")}>
             <MobileMenu />
           </div>
-          <div className={cn("hidden xl:block transition-colors duration-500", isAtTop && path === "" ? "text-white" : "text-black")}>
+          <div className={cn("hidden xl:block transition-colors duration-500", isAtTop && (path === "" || path === "/about") ? "text-white" : "text-black")}>
             <HeaderNav />
           </div>
         </div>
 
         <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap hover:opacity-80 transition-opacity">
-          <Image src={"/logo_capella.webp"} alt="Capella's Brand Logo" width={180} height={55} className={cn("h-auto w-[140px] md:w-[180px] transition-all duration-500", !isAtTop && "brightness-0")} />
+          <Image src={(path === "" || path === "/about") ? "/logo_capella_light.webp" : "/logo_capella.webp"} alt="Capella's Brand Logo" width={180} height={55} className={cn("h-auto w-[140px] md:w-[180px] transition-all duration-500", !isAtTop && "brightness-0")} />
         </Link>
 
-        <div className={cn("flex items-center justify-end gap-2 sm:gap-4 min-w-0 flex-1 transition-colors duration-500", isAtTop && path === "" ? "text-white" : "text-black")}>
+        <div className={cn("flex items-center justify-end gap-2 sm:gap-4 min-w-0 flex-1 transition-colors duration-500", isAtTop && (path === "" || path === "/about") ? "text-white" : "text-black")}>
           <div className="hidden md:block">
             <SearchOverlay />
           </div>

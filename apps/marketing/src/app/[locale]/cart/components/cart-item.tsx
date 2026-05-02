@@ -60,7 +60,7 @@ export function CartItem({ item, locale, onRemove, onUpdateQuantity }: CartItemD
               AED {item.compareAtPrice.toLocaleString()}
             </span>
           )}
-          <span className="font-medium text-red-600">
+          <span className="font-medium text-neutral-500">
             AED {item.price.toLocaleString()}
           </span>
         </div>

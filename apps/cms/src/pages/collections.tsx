@@ -119,6 +119,7 @@ export function CollectionsPage() {
       bannerSubtitleAr: (formData.get("bannerSubtitleAr") as string) || undefined,
       inHeader: formData.get("inHeader") === "on",
       isFeaturedOnHome: formData.get("isFeaturedOnHome") === "on",
+      isDisplayedOnCollectionsPage: formData.get("isDisplayedOnCollectionsPage") === "on",
       homeFeaturedPosition: Number(formData.get("homeFeaturedPosition")) || 0,
       position: Number(formData.get("position")) || 0,
       parentId: (formData.get("parentId") as string) === "none" ? null : (formData.get("parentId") as string) || null,
@@ -239,6 +240,7 @@ export function CollectionsPage() {
               <TableHead>Products</TableHead>
               <TableHead>In Header</TableHead>
               <TableHead>Home Hero</TableHead>
+              <TableHead>Collections Page</TableHead>
               <TableHead>Parent</TableHead>
               <TableHead className="w-[100px]">Actions</TableHead>
             </TableRow>
@@ -300,6 +302,13 @@ export function CollectionsPage() {
                     <TableCell>
                       {(collection as any).isFeaturedOnHome ? (
                         <Badge variant="default" className="bg-purple-600">#{(collection as any).homeFeaturedPosition || 1}</Badge>
+                      ) : (
+                        <Badge variant="outline">No</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {(collection as any).isDisplayedOnCollectionsPage !== false ? (
+                        <Badge variant="default" className="bg-emerald-600">Yes</Badge>
                       ) : (
                         <Badge variant="outline">No</Badge>
                       )}
@@ -367,6 +376,14 @@ export function CollectionsPage() {
                       <TableCell>
                         {child.inHeader ? (
                           <Badge variant="default">Yes</Badge>
+                        ) : (
+                          <Badge variant="outline">No</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>-</TableCell>
+                      <TableCell>
+                        {(child as any).isDisplayedOnCollectionsPage !== false ? (
+                          <Badge variant="default" className="bg-emerald-600">Yes</Badge>
                         ) : (
                           <Badge variant="outline">No</Badge>
                         )}
@@ -555,6 +572,15 @@ export function CollectionsPage() {
                   defaultChecked={(editingCollection as any)?.isFeaturedOnHome ?? false}
                 />
                 <Label htmlFor="isFeaturedOnHome">Feature on Homepage Hero</Label>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="isDisplayedOnCollectionsPage"
+                  name="isDisplayedOnCollectionsPage"
+                  defaultChecked={(editingCollection as any)?.isDisplayedOnCollectionsPage ?? true}
+                />
+                <Label htmlFor="isDisplayedOnCollectionsPage">Show on Collections Page</Label>
               </div>
 
               <div className="grid gap-2">

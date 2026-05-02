@@ -8,19 +8,18 @@ import { routing } from "@/i18n/routing";
 import { SITE_CONFIG, DEFAULT_METADATA } from "@/lib/metadata";
 import "../globals.css";
 import { Header, Footer } from "@/components/layout";
-import { InfiniteMarquee } from "@/components/ui";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { FacebookPixel } from "@/components/analytics";
 import { Providers } from "./providers";
 
-const amiri = Amiri({ 
-  subsets: ["latin", "arabic"], 
+const amiri = Amiri({
+  subsets: ["latin", "arabic"],
   variable: "--font-primary",
   weight: ["400", "700"],
   display: "swap",
 });
-const inter = Inter({ 
-  subsets: ["latin"], 
+const inter = Inter({
+  subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
@@ -97,18 +96,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <body className={`${amiri.variable} ${inter.variable} ${playfair.variable} font-primary antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <Providers>
-            <InfiniteMarquee
-              text={
-                locale === "ar"
-                  ? "توصيل مجاني لجميع الطلبات داخل الإمارات"
-                  : "FREE SHIPPING ON ALL UAE ORDERS"
-              }
-              className="bg-black py-2 border-b border-white/10"
-              textClassName="text-[10px] md:text-xs font-medium text-white uppercase tracking-[0.2em]"
-              separator="•"
-              speed="normal"
-              isArabic={locale === "ar"}
-            />
             <Header locale={locale} />
             <main>{children}</main>
             <Footer locale={locale} />

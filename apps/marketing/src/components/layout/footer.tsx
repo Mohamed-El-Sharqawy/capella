@@ -18,8 +18,7 @@ export function Footer({ locale }: FooterProps) {
 
   const policyLinks = [
     { href: "/privacy-policy", label: isArabic ? "سياسة الخصوصية" : "Privacy Policy" },
-    { href: "/refund-policy", label: isArabic ? "سياسة الاسترداد" : "Refund Policy" },
-    { href: "/return-policy", label: isArabic ? "سياسة الإرجاع" : "Return Policy" },
+    { href: "/refund-return-policy", label: isArabic ? "سياسة الاسترداد والإرجاع" : "Refund & Return Policy" },
     { href: "/shipping-policy", label: isArabic ? "سياسة الشحن" : "Shipping Policy" },
     { href: "/terms-of-service", label: isArabic ? "شروط الخدمة" : "Terms of Service" },
   ];
@@ -31,7 +30,7 @@ export function Footer({ locale }: FooterProps) {
           {/* Brand & Newsletter */}
           <div className="md:col-span-2 space-y-8">
             <Link href="/" className="text-2xl font-light uppercase tracking-[0.3em]">
-              <Image src="/logo_capella.webp" alt="Logo" width={200} height={200} />
+              <Image src="/logo_capella_light.webp" alt="Logo" width={200} height={200} />
             </Link>
             <div className="max-w-md space-y-4">
               <h3 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-gray-400">

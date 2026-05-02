@@ -14,6 +14,7 @@ export const CollectionModel = {
     inHeader: t.Optional(t.Boolean()),
     isFeaturedOnHome: t.Optional(t.Boolean()),
     homeFeaturedPosition: t.Optional(t.Number()),
+    isDisplayedOnCollectionsPage: t.Optional(t.Boolean()),
     position: t.Optional(t.Number()),
     parentId: t.Optional(t.Union([t.String(), t.Null()])),
     // Banner fields
@@ -37,6 +38,7 @@ export const CollectionModel = {
     inHeader: t.Optional(t.Boolean()),
     isFeaturedOnHome: t.Optional(t.Boolean()),
     homeFeaturedPosition: t.Optional(t.Number()),
+    isDisplayedOnCollectionsPage: t.Optional(t.Boolean()),
     position: t.Optional(t.Number()),
     parentId: t.Optional(t.Union([t.String(), t.Null()])),
     // Banner fields

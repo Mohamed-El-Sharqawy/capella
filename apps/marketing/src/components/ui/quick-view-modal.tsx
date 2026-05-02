@@ -185,14 +185,14 @@ export function QuickViewModal({
         className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
         onClick={handleClose}
       />
-      
+
       <div
         className={`relative bg-background rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden transition-all duration-300 ease-out ${isVisible
           ? "opacity-100 translate-x-0"
           : isClosing
             ? "opacity-0 translate-x-8"
             : "opacity-0 -translate-x-8"
-        }`}
+          }`}
       >
         <button
           onClick={handleClose}
@@ -204,7 +204,7 @@ export function QuickViewModal({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-6 p-0 md:p-6 overflow-auto max-h-[90vh]">
           {/* Gallery Section with HeroBanner-style carousel logic */}
-          <div 
+          <div
             className="relative aspect-square bg-neutral-50 overflow-hidden touch-pan-y select-none cursor-grab active:cursor-grabbing"
             onTouchStart={(e) => handleStart(e.targetTouches[0].clientX)}
             onTouchMove={(e) => handleMove(e.targetTouches[0].clientX)}
@@ -216,11 +216,10 @@ export function QuickViewModal({
           >
             {/* Fade Gallery exactly like hero-banner.tsx */}
             {activeImages.map((img, i) => (
-              <div 
-                key={i} 
-                className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                  i === currentImageIndex ? "opacity-100 z-10" : "opacity-0 z-0"
-                }`}
+              <div
+                key={i}
+                className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${i === currentImageIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+                  }`}
               >
                 <Image
                   src={img.url}
@@ -279,7 +278,7 @@ export function QuickViewModal({
                     AED {compareAtPrice.toLocaleString()}
                   </span>
                 )}
-                <span className="text-xl font-bold text-red-600">
+                <span className="text-xl font-bold text-neutral-500">
                   AED {price.toLocaleString()}
                 </span>
                 {discountPercent && (

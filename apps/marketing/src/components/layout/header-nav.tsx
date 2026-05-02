@@ -88,7 +88,7 @@ export function HeaderNav() {
               <div className="border-t mt-2 pt-2">
                 <Link
                   href="/collections"
-                  className="block px-4 py-2 text-sm text-red-600 font-medium hover:bg-gray-100 transition"
+                  className="block px-4 py-2 text-sm font-medium hover:bg-gray-100 transition"
                 >
                   {isArabic ? "عرض الكل" : "View All Collections"}
                 </Link>

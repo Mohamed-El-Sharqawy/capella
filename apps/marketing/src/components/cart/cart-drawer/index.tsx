@@ -23,17 +23,15 @@ export function CartDrawer({ locale }: CartDrawerProps) {
     <>
       {/* Backdrop */}
       <div
-        className={`${DRAWER_CLASSES.backdrop} ${
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`${DRAWER_CLASSES.backdrop} ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
         onClick={closeCart}
       />
 
       {/* Drawer */}
       <div
-        className={`${DRAWER_CLASSES.drawer} ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`${DRAWER_CLASSES.drawer} ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <DrawerHeader onClose={closeCart} />
 

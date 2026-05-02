@@ -24,8 +24,7 @@ const staticPages: SitemapEntry[] = [
   // Lower priority - Legal/Policy pages (0.3, monthly)
   { path: "/privacy-policy", priority: 0.3, changeFrequency: "monthly" },
   { path: "/terms-of-service", priority: 0.3, changeFrequency: "monthly" },
-  { path: "/refund-policy", priority: 0.3, changeFrequency: "monthly" },
-  { path: "/return-policy", priority: 0.3, changeFrequency: "monthly" },
+  { path: "/refund-return-policy", priority: 0.3, changeFrequency: "monthly" },
   { path: "/shipping-policy", priority: 0.3, changeFrequency: "monthly" },
 ];
 

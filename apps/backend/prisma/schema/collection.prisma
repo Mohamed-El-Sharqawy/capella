@@ -27,6 +27,7 @@ model Collection {
   inHeader Boolean      @default(false)
   isFeaturedOnHome Boolean @default(false) // Show in homepage hero section
   homeFeaturedPosition Int @default(0) // Position in homepage hero (0 = left, 1 = right)
+  isDisplayedOnCollectionsPage Boolean @default(true) // Show on /collections page
   position Int          @default(0)
 
   // Parent-child relationship for nested collections

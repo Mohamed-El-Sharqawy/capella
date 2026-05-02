@@ -115,6 +115,9 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
       onMouseMove={(e) => handleMove(e.clientX)}
       onMouseUp={handleEnd}
       onMouseLeave={handleEnd}
+      style={{
+        height: "calc(100vh)"
+      }}
     >
       {/* Banner Images */}
       {activeBanners.map((banner, index) => (

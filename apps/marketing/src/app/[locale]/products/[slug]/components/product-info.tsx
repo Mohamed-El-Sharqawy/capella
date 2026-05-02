@@ -84,9 +84,9 @@ export function ProductInfo({
   const benefits = [
     { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني خلال 1-2 أيام في الإمارات" : "Complimentary 1-2 days shipping in UAE" },
     { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني في جميع أنحاء العالم" : "Complimentary worldwide shipping" },
-    { icon: <RotateCcw className="h-4 w-4" />, text: isArabic ? "إرجاع سهل خلال 7 أيام" : "No questions asked 7 days easy returns" },
+    { icon: <RotateCcw className="h-4 w-4" />, text: isArabic ? "إرجاع سهل خلال 5 أيام" : "No questions asked 5 days easy returns" },
     { icon: <ShieldCheck className="h-4 w-4" />, text: isArabic ? "بطاقة أصالة المجوهرات" : "Jewellery authenticity card" },
-    { icon: <Gift className="h-4 w-4" />, text: isArabic ? "تغليف هدايا سامرا الفاخر" : "Signature Samra gift wrapping" },
+    { icon: <Gift className="h-4 w-4" />, text: isArabic ? "تغليف هدايا كابيلا الفاخر" : "Signature Capella gift wrapping" },
   ];
 
   return (
@@ -168,11 +168,35 @@ export function ProductInfo({
               </ul>
             </div>
           </AccordionItem>
-          <AccordionItem title={isArabic ? "الشحن والإرجاع" : "Shipping & Returns"}>
-            <p>{isArabic ? "نحن نقدم شحنًا مجانيًا في جميع أنحاء العالم لجميع الطلبات. الإرجاع متاح في غضون 7 أيام." : "We offer complimentary worldwide shipping on all orders. Returns are available within 7 days for any unworn items."}</p>
+          <AccordionItem title={isArabic ? "الاستبدال والإرجاع" : "Exchange & Return"}>
+            <div className="space-y-4 text-[11px] md:text-xs font-light leading-relaxed text-gray-600">
+              <p className="font-medium text-gray-900">
+                {isArabic ? "رضا عملائنا هو أولويتنا القصوى." : "The satisfaction of our customers is our priority."}
+              </p>
+              <p>
+                {isArabic
+                  ? "يمكن استبدال أو إرجاع المنتجات التي تم شراؤها ولم تُستخدم خلال 5 أيام من تاريخ التوصيل. نقبل المنتجات غير الملبوسة، غير المستخدمة، وغير التالفة، والمرفقة بتغليف كابيلا الأصلي."
+                  : "Products purchased and not used can be exchanged or returned up to 5 days from the delivery date. We accept products unworn, unused and undamaged, accompanied by the original CAPELLA packaging."}
+              </p>
+              <p>
+                {isArabic
+                  ? "يرجى ملاحظة أن رسوم الشحن والرسوم البنكية من طلبك الأصلي لن يتم استردادها، وسيتم خصم رسوم شحن ثابتة من المبلغ المسترد عند الإرجاع."
+                  : "Please note that shipping and bank handling fees from your original order will not be refunded. For returns, a fixed shipping fee will be deducted from your refund."}
+              </p>
+              <p>
+                {isArabic
+                  ? "كابيلا لن تكون مسؤولة عن أي فقدان أثناء النقل خارج دولة الإمارات العربية المتحدة."
+                  : "CAPELLA will not be responsible for any loss during transportation outside the UAE."}
+              </p>
+              <div className="pt-2 border-t border-gray-50 space-y-1">
+                <p>{isArabic ? "لأي استفسارات، يسعدنا تواصلكم معنا:" : "For any questions, please contact us:"}</p>
+                <p className="text-gray-900">Capellaaae@hotmail.com</p>
+                <p className="text-gray-900" dir="ltr">+971 52 451 4147</p>
+              </div>
+            </div>
           </AccordionItem>
           <AccordionItem title={isArabic ? "تغليف الطلبات وتقديم الهدايا" : "Order Wrapping & Gifting"}>
-            <p>{isArabic ? "يصل كل طلب من سامرا مغلفًا بذوق رفيع في صندوق هدايا مميز." : "Every Samra order arrives exquisitely wrapped in our signature gift box."}</p>
+            <p>{isArabic ? "يصل كل طلب من كابيلا مغلفًا بذوق رفيع في صندوق هدايا مميز." : "Every Capella order arrives exquisitely wrapped in our signature gift box."}</p>
           </AccordionItem>
         </Accordion>
       </div>
@@ -194,9 +218,9 @@ export function ProductInfo({
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pt-6 border-t border-gray-100">
         <div className="flex items-center gap-6">
           <a href="#" className="text-gray-400 hover:text-black transition-colors"><Phone className="h-4 w-4" /></a>
-          <SocialShare 
-            title={name} 
-            image={product.variants?.[0]?.images?.[0]?.url} 
+          <SocialShare
+            title={name}
+            image={product.variants?.[0]?.images?.[0]?.url}
           />
         </div>
         <div className="text-[9px] text-gray-400 uppercase tracking-widest font-light">

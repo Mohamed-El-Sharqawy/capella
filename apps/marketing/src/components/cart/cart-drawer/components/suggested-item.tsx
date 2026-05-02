@@ -38,7 +38,7 @@ export function SuggestedItem({ product, locale, onClose }: SuggestedItemProps) 
             AED {variant.compareAtPrice.toLocaleString()}
           </span>
         )}
-        <span className="text-sm font-semibold text-red-600">
+        <span className="text-sm font-semibold text-neutral-500">
           AED {variant?.price?.toLocaleString()}
         </span>
       </div>

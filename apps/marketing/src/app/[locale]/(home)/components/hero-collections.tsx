@@ -35,7 +35,7 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
   const displayCollections = collections.slice(0, 4);
 
   return (
-    <section className="bg-white pb-8 md:pb-12 pt-2 md:pt-4">
+    <section className="bg-white pb-8 md:pb-12 pt-3 px-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 md:gap-2.5">
         {displayCollections.map((collection, index) => (
           <AnimateOnScroll
@@ -45,7 +45,7 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
           >
             <Link
               href={`/collections/${collection.slug}`}
-              className="group relative block w-full overflow-hidden rounded-sm aspect-3/4 md:aspect-4/5"
+              className="group relative block w-full overflow-hidden rounded-md aspect-3/4 md:aspect-4/5"
             >
               {/* Image */}
               <Image

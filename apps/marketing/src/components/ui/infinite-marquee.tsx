@@ -37,9 +37,8 @@ export function InfiniteMarquee({
               key={i}
               className={cn("mx-4 shrink-0 whitespace-nowrap", textClassName)}
               dir={isArabic ? "rtl" : "ltr"}
-            >
-              {item}
-            </span>
+              dangerouslySetInnerHTML={{ __html: item }}
+            />
           ))}
         </div>
 
@@ -50,12 +49,11 @@ export function InfiniteMarquee({
               key={`dup-${i}`}
               className={cn("mx-4 shrink-0 whitespace-nowrap", textClassName)}
               dir={isArabic ? "rtl" : "ltr"}
-            >
-              {item}
-            </span>
+              dangerouslySetInnerHTML={{ __html: item }}
+            />
           ))}
         </div>
       </div>
-    </div>
+    </div >
   );
 }

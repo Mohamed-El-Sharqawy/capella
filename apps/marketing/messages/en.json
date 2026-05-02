@@ -20,7 +20,7 @@
     "women": "Women",
     "men": "Men",
     "shopByCollection": "Shop by Collection",
-    "returnPolicy": "Return Policy",
+    "returnPolicy": "Refund & Return Policy",
     "contactUs": "Contact us",
     "search": "Search",
     "account": "Account",
@@ -414,54 +414,17 @@
       "description": "If you have any questions about our terms of service, please contact us through our contact page."
     }
   },
-  "refundPolicy": {
-    "title": "Refund Policy",
+  "refundReturnPolicy": {
+    "title": "Refund & Return Policy",
     "overview": {
       "title": "Overview",
-      "description": "We strive to ensure your complete satisfaction with your purchases. If you are not satisfied, we offer refund options according to the following terms."
+      "description": "We want you to be completely satisfied with your purchase. If you are not satisfied, we offer returns and refunds according to the terms outlined below."
     },
-    "eligibility": {
-      "title": "Refund Eligibility",
-      "time": "Refund must be requested within 14 days of receipt",
-      "condition": "Products must be in original condition",
-      "proof": "Proof of purchase must be included"
-    },
-    "process": {
-      "title": "Refund Process",
-      "submit": "Submit refund request through customer service",
-      "wait": "Wait for refund request approval",
-      "return": "Return the product (if required)",
-      "receive": "Receive refund amount"
-    },
-    "timeline": {
-      "title": "Refund Timeline",
-      "description": "Once the refund request is approved and the returned product is received, the refund will be processed within 5-10 business days. It may take additional time for the amount to appear in your account depending on your bank."
-    },
-    "methods": {
-      "title": "Refund Methods",
-      "original": "Return to original payment method",
-      "credit": "Store credit (optional)"
-    },
-    "exceptions": {
-      "title": "Exceptions",
-      "description": "Some products are non-refundable, including final sale items and customized products. Please review our return policy for full details."
-    },
-    "contactUs": {
-      "title": "Contact Us",
-      "description": "If you have any questions about our refund policy, please contact us through our contact page."
-    }
-  },
-  "returnPolicy": {
-    "title": "Return Policy",
-    "overview": {
-      "title": "Overview",
-      "description": "We want you to be completely satisfied with your purchase. If you are not satisfied with a product, you may return it according to the terms outlined below."
-    },
-    "period": {
+    "returnPeriod": {
       "title": "Return Period",
       "description": "You may return products within 14 days of receipt. Products must be in their original condition with all tags and packaging intact."
     },
-    "conditions": {
+    "returnConditions": {
       "title": "Return Conditions",
       "unused": "Products must be unused and in original condition",
       "tags": "All tags and labels must be attached",
@@ -474,16 +437,31 @@
       "custom": "Customized or made-to-order products",
       "sale": "Final sale items"
     },
-    "howTo": {
+    "howToReturn": {
       "title": "How to Return",
       "contact": "Contact customer service to request a return",
       "authorization": "Obtain a return authorization number",
       "pack": "Pack the product securely",
       "ship": "Ship the product to the designated address"
     },
+    "refundEligibility": {
+      "title": "Refund Eligibility",
+      "time": "Refund must be requested within 14 days of receipt",
+      "condition": "Products must be in original condition",
+      "proof": "Proof of purchase must be included"
+    },
+    "refundMethods": {
+      "title": "Refund Methods",
+      "original": "Return to original payment method",
+      "credit": "Store credit (optional)"
+    },
+    "refundTimeline": {
+      "title": "Refund Timeline",
+      "description": "Once the refund request is approved and the returned product is received, the refund will be processed within 5-10 business days. It may take additional time for the amount to appear in your account depending on your bank."
+    },
     "contactUs": {
       "title": "Contact Us",
-      "description": "If you have any questions about our return policy, please contact us through our contact page."
+      "description": "If you have any questions about our refund and return policy, please contact us through our contact page."
     }
   },
   "account": {

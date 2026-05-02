@@ -27,7 +27,7 @@ const COLLECTION_WITH_CHILDREN = {
 export abstract class CollectionService {
   static async list() {
     const collections = await prisma.collection.findMany({
-      where: { parentId: null }, // Only top-level collections
+      where: { parentId: null, isDisplayedOnCollectionsPage: true }, // Only top-level collections visible on collections page
       include: COLLECTION_WITH_CHILDREN,
       orderBy: [{ position: "asc" }, { nameEn: "asc" }],
     });
