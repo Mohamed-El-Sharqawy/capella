@@ -130,6 +130,8 @@ export function createBanner(data: {
   buttonTextAr?: string;
   imageUrl: string;
   publicId: string;
+  mobileImageUrl?: string;
+  mobilePublicId?: string;
   linkUrl?: string;
   position?: number;
   isActive?: boolean;
@@ -146,6 +148,8 @@ export function updateBanner(id: string, data: {
   buttonTextAr?: string;
   imageUrl?: string;
   publicId?: string;
+  mobileImageUrl?: string;
+  mobilePublicId?: string;
   linkUrl?: string;
   position?: number;
   isActive?: boolean;

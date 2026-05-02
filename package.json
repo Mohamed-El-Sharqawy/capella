@@ -12,6 +12,7 @@
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "db:generate": "pnpm --filter @ecommerce/backend db:generate",
+    "db:push": "pnpm --filter @ecommerce/backend db:push",
     "db:migrate": "pnpm --filter @ecommerce/backend db:migrate",
     "db:studio": "pnpm --filter @ecommerce/backend db:studio",
     "db:seed": "pnpm --filter @ecommerce/backend db:seed",

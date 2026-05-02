@@ -69,9 +69,13 @@ model Banner {
   buttonTextEn String?
   buttonTextAr String?
 
-  // Image (full-width hero)
+  // Desktop image (16:9)
   imageUrl String // Cloudinary image URL
   publicId String // Cloudinary public ID for deletion
+
+  // Mobile image (9:16)
+  mobileImageUrl String?
+  mobilePublicId String?
 
   // Link destination (collection slug, product slug, or external URL)
   linkUrl String?

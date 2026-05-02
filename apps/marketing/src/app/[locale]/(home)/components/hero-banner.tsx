@@ -126,16 +126,42 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
           className={`absolute inset-0 transition-opacity duration-700 ${index === currentIndex ? "opacity-100" : "opacity-0"
             }`}
         >
-          <Image
-            src={banner.imageUrl}
-            alt={isArabic ? banner.titleAr : banner.titleEn}
-            fill
-            loading="eager"
-            priority={index === 0}
-            className="object-cover"
-            sizes="100vw"
-            draggable={false}
-          />
+          {banner.mobileImageUrl ? (
+            <picture>
+              <source media="(min-width: 1024px)" srcSet={banner.imageUrl} />
+              <Image
+                src={banner.mobileImageUrl}
+                alt={isArabic ? banner.titleAr : banner.titleEn}
+                fill
+                loading="eager"
+                priority={index === 0}
+                className="object-cover lg:hidden"
+                sizes="100vw"
+                draggable={false}
+              />
+              <Image
+                src={banner.imageUrl}
+                alt={isArabic ? banner.titleAr : banner.titleEn}
+                fill
+                loading="eager"
+                priority={index === 0}
+                className="object-cover hidden lg:block"
+                sizes="100vw"
+                draggable={false}
+              />
+            </picture>
+          ) : (
+            <Image
+              src={banner.imageUrl}
+              alt={isArabic ? banner.titleAr : banner.titleEn}
+              fill
+              loading="eager"
+              priority={index === 0}
+              className="object-cover"
+              sizes="100vw"
+              draggable={false}
+            />
+          )}
           {/* Subtle overlay */}
           <div className="absolute inset-0 bg-black/10" />
         </div>

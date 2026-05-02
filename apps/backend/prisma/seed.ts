@@ -225,6 +225,8 @@ async function main() {
       subtitleAr: "مجوهرات رائعة لمن يقدرون أرقى الأشياء.",
       imageUrl: PLACEHOLDER_IMAGE,
       publicId: "seed-banner-1",
+      mobileImageUrl: PLACEHOLDER_IMAGE,
+      mobilePublicId: "seed-banner-1-mobile",
       isActive: true,
       position: 0,
     },

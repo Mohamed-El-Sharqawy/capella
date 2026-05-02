@@ -43,6 +43,8 @@ interface BannerFormData {
   linkUrl: string;
   imageUrl: string;
   publicId: string;
+  mobileImageUrl: string;
+  mobilePublicId: string;
   isActive: boolean;
 }
 
@@ -56,6 +58,8 @@ const defaultFormData: BannerFormData = {
   linkUrl: "",
   imageUrl: "",
   publicId: "",
+  mobileImageUrl: "",
+  mobilePublicId: "",
   isActive: true,
 };
 
@@ -71,6 +75,7 @@ export function BannersPage() {
   const [formData, setFormData] = useState<BannerFormData>(defaultFormData);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingMobile, setIsUploadingMobile] = useState(false);
 
   const banners = bannersRes?.data ?? [];
 
@@ -92,6 +97,8 @@ export function BannersPage() {
       linkUrl: banner.linkUrl || "",
       imageUrl: banner.imageUrl,
       publicId: banner.publicId,
+      mobileImageUrl: banner.mobileImageUrl || "",
+      mobilePublicId: banner.mobilePublicId || "",
       isActive: banner.isActive,
     });
     setShowDialog(true);
@@ -122,6 +129,34 @@ export function BannersPage() {
       toast.error("Failed to upload image");
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleMobileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingMobile(true);
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append("file", file);
+      formDataUpload.append("folder", "banners");
+
+      const data = await api.post<{ data: { url: string; publicId: string } }>(
+        "/api/images/upload",
+        formDataUpload
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        mobileImageUrl: data.data.url,
+        mobilePublicId: data.data.publicId,
+      }));
+      toast.success("Mobile image uploaded");
+    } catch {
+      toast.error("Failed to upload mobile image");
+    } finally {
+      setIsUploadingMobile(false);
     }
   };
 
@@ -264,6 +299,15 @@ export function BannersPage() {
                       alt={banner.titleEn}
                       className="w-full h-full object-cover"
                     />
+                    {banner.mobileImageUrl && (
+                      <div className="absolute bottom-1 right-1 w-8 h-14 rounded overflow-hidden border-2 border-white shadow">
+                        <img
+                          src={banner.mobileImageUrl}
+                          alt="Mobile"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between">
@@ -329,14 +373,14 @@ export function BannersPage() {
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
-            {/* Image Upload */}
+            {/* Desktop Image Upload */}
             <div className="space-y-2">
-              <Label>Banner Image *</Label>
+              <Label>Desktop Image (16:9) *</Label>
               {formData.imageUrl ? (
                 <div className="relative">
                   <img
                     src={formData.imageUrl}
-                    alt="Banner preview"
+                    alt="Desktop banner preview"
                     className="w-full h-48 object-cover rounded-lg"
                   />
                   <Button
@@ -345,7 +389,7 @@ export function BannersPage() {
                     className="absolute bottom-2 right-2"
                     onClick={() => document.getElementById("banner-image")?.click()}
                   >
-                    Change Image
+                    Change
                   </Button>
                 </div>
               ) : (
@@ -359,10 +403,10 @@ export function BannersPage() {
                     <>
                       <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                       <p className="text-sm text-muted-foreground">
-                        Click to upload banner image
+                        Click to upload desktop image
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Recommended: 1920x1080 or larger
+                        Recommended: 1920x1080 (16:9)
                       </p>
                     </>
                   )}
@@ -374,6 +418,54 @@ export function BannersPage() {
                 accept="image/*"
                 className="hidden"
                 onChange={handleImageUpload}
+              />
+            </div>
+
+            {/* Mobile Image Upload */}
+            <div className="space-y-2">
+              <Label>Mobile Image (9:16)</Label>
+              {formData.mobileImageUrl ? (
+                <div className="relative inline-block">
+                  <img
+                    src={formData.mobileImageUrl}
+                    alt="Mobile banner preview"
+                    className="h-48 object-cover rounded-lg"
+                  />
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="absolute bottom-2 right-2"
+                    onClick={() => document.getElementById("banner-mobile-image")?.click()}
+                  >
+                    Change
+                  </Button>
+                </div>
+              ) : (
+                <div
+                  className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition"
+                  onClick={() => document.getElementById("banner-mobile-image")?.click()}
+                >
+                  {isUploadingMobile ? (
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
+                  ) : (
+                    <>
+                      <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        Click to upload mobile image
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Recommended: 1080x1920 (9:16)
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
+              <input
+                id="banner-mobile-image"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleMobileImageUpload}
               />
             </div>
 

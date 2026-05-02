@@ -37,6 +37,8 @@ export abstract class BannerService {
         buttonTextAr: data.buttonTextAr,
         imageUrl: data.imageUrl,
         publicId: data.publicId,
+        mobileImageUrl: data.mobileImageUrl,
+        mobilePublicId: data.mobilePublicId,
         linkUrl: data.linkUrl,
         position: data.position ?? 0,
         isActive: data.isActive ?? true,
@@ -53,6 +55,18 @@ export abstract class BannerService {
       await CloudinaryService.delete(banner.publicId);
     }
 
+    // If mobile image is being replaced, delete old one from Cloudinary
+    if (data.mobilePublicId && data.mobilePublicId !== banner.mobilePublicId) {
+      if (banner.mobilePublicId) {
+        await CloudinaryService.delete(banner.mobilePublicId);
+      }
+    }
+
+    // If mobile image is being explicitly cleared (empty string sent)
+    if (data.mobileImageUrl === "" && banner.mobilePublicId) {
+      await CloudinaryService.delete(banner.mobilePublicId);
+    }
+
     return prisma.banner.update({
       where: { id },
       data,
@@ -65,6 +79,11 @@ export abstract class BannerService {
 
     // Delete image from Cloudinary
     await CloudinaryService.delete(banner.publicId);
+
+    // Delete mobile image from Cloudinary
+    if (banner.mobilePublicId) {
+      await CloudinaryService.delete(banner.mobilePublicId);
+    }
 
     return prisma.banner.delete({ where: { id } });
   }

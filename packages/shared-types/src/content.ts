@@ -85,6 +85,8 @@ export interface Banner {
   buttonTextAr?: string | null;
   imageUrl: string;
   publicId: string;
+  mobileImageUrl?: string | null;
+  mobilePublicId?: string | null;
   linkUrl?: string | null;
   position: number;
   isActive: boolean;
