@@ -67,12 +67,12 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
                 {/* Decorative line */}
                 <span className="block w-6 h-px bg-white/60 mb-3 transition-all duration-700 group-hover:w-10 group-hover:bg-white/90" />
 
-                <h3 className="text-[11px] md:text-base font-light uppercase tracking-[0.3em] md:tracking-[0.45em] transition-all duration-700 group-hover:-translate-y-1">
+                <h3 className="text-sm md:text-base font-light uppercase tracking-[0.2em] md:tracking-[0.3em] transition-all duration-700 group-hover:-translate-y-1">
                   {isArabic ? collection.nameAr : collection.nameEn}
                 </h3>
 
                 {/* "Shop Now" reveal on hover */}
-                <span className="mt-2 text-[9px] md:text-[11px] uppercase tracking-[0.35em] text-white/0 transition-all duration-500 translate-y-2 group-hover:text-white/80 group-hover:translate-y-0">
+                <span className="mt-2 text-xs md:text-sm uppercase tracking-[0.2em] text-white/0 transition-all duration-500 translate-y-2 group-hover:text-white/80 group-hover:translate-y-0">
                   {isArabic ? "تسوّقي الآن" : "Shop Now"}
                 </span>
               </div>

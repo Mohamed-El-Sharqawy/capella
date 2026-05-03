@@ -140,7 +140,7 @@ export function CartTab({ locale }: CartTabProps) {
       <div className="flex items-center justify-between bg-white border rounded-lg p-4">
         <div>
           <p className="text-sm text-muted-foreground">{t("subtotal")}</p>
-          <p className="text-xl font-bold">AED {cartTotal.toLocaleString()} EGP</p>
+          <p className="text-xl font-bold">AED {cartTotal.toLocaleString()}</p>
         </div>
         <Link
           href="/checkout"

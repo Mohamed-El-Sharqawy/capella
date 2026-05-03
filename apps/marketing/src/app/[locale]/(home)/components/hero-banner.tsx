@@ -172,12 +172,12 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
         {buttonText && currentBanner.linkUrl ? (
           <Link
             href={currentBanner.linkUrl}
-            className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em] hover:opacity-60 transition-opacity"
+            className="text-sm md:text-base font-medium uppercase tracking-[0.2em] hover:opacity-60 transition-opacity"
           >
             {buttonText}
           </Link>
         ) : (
-          <p className="text-[10px] md:text-xs font-medium uppercase tracking-[0.4em]">
+          <p className="text-sm md:text-base font-medium uppercase tracking-[0.2em]">
             {isArabic ? "اكتشف" : "Discover"}
           </p>
         )}

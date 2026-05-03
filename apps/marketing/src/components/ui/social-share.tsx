@@ -89,7 +89,7 @@ export function SocialShare({
   if (variant === "footer") {
     return (
       <div className={cn("space-y-4", className)}>
-        <h3 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-gray-400">
+        <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
           Share
         </h3>
         <div className="flex flex-wrap gap-3">
@@ -99,7 +99,7 @@ export function SocialShare({
               href={link.href}
               target="_blank"
               rel="noopener noreferrer nofollow"
-              className="flex items-center justify-center w-8 h-8 rounded-full border border-gray-800 text-gray-400 transition-all hover:bg-white hover:text-black hover:border-white shadow-sm"
+              className="flex items-center justify-center w-11 h-11 rounded-full border border-gray-800 text-gray-400 transition-all hover:bg-white hover:text-black hover:border-white shadow-sm cursor-pointer"
               aria-label={link.aria}
             >
               {link.icon}
@@ -113,7 +113,7 @@ export function SocialShare({
   return (
     <div className={cn("flex items-center gap-4", className)}>
       {variant === "default" && (
-        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-gray-400">
+        <span className="text-xs font-medium uppercase tracking-[0.2em] text-gray-400">
           Share:
         </span>
       )}
@@ -125,7 +125,7 @@ export function SocialShare({
             target="_blank"
             rel="noopener noreferrer nofollow"
             className={cn(
-              "flex items-center justify-center w-8 h-8 rounded-full border border-gray-100 transition-all hover:border-black hover:bg-black hover:text-white",
+              "flex items-center justify-center w-11 h-11 rounded-full border border-gray-100 transition-all hover:border-black hover:bg-black hover:text-white cursor-pointer",
               variant === "minimal" && "border-none w-auto h-auto bg-transparent hover:bg-transparent hover:text-gray-400"
             )}
             aria-label={link.aria}

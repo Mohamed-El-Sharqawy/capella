@@ -79,7 +79,7 @@ export function MobileMenu() {
 
   const variants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? (isArabic ? "100%" : "-100%") : (isArabic ? "-100%" : "100%"),
+      x: direction > 0 ? "-100%" : "100%",
       opacity: 0,
     }),
     center: {
@@ -87,7 +87,7 @@ export function MobileMenu() {
       opacity: 1,
     },
     exit: (direction: number) => ({
-      x: direction < 0 ? (isArabic ? "100%" : "-100%") : (isArabic ? "-100%" : "100%"),
+      x: direction < 0 ? "-100%" : "100%",
       opacity: 0,
     }),
   };
@@ -99,7 +99,7 @@ export function MobileMenu() {
           <div className="flex flex-col h-full bg-[#F2F2F2]">
             <button
               onClick={() => setLevel("main")}
-              className="flex items-center gap-2 p-6 text-[11px] uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
+              className="flex items-center gap-2 p-6 text-sm uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
             >
               <ChevronLeft className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} />
               {isArabic ? "العودة" : "Back"}
@@ -140,7 +140,7 @@ export function MobileMenu() {
           <div className="flex flex-col h-full bg-[#F2F2F2]">
             <button
               onClick={() => setLevel("collectionsSub")}
-              className="flex items-center gap-2 p-6 text-[11px] uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
+              className="flex items-center gap-2 p-6 text-sm uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
             >
               <ChevronLeft className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} />
               {isArabic ? "العودة" : "Back"}
@@ -239,7 +239,7 @@ export function MobileMenu() {
                   <div className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/6 flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300">
                     <SearchOverlay />
                   </div>
-                  <span className="text-[9px] uppercase tracking-[0.15em] text-black/40 font-medium">
+                  <span className="text-xs uppercase tracking-[0.15em] text-black/40 font-medium">
                     {isArabic ? "بحث" : "SEARCH"}
                   </span>
                 </div>
@@ -259,7 +259,7 @@ export function MobileMenu() {
                       </div>
                     }
                   />
-                  <span className="text-[9px] uppercase tracking-[0.15em] text-black/40 font-medium">
+                  <span className="text-xs uppercase tracking-[0.15em] text-black/40 font-medium">
                     {isArabic ? "اللغة" : "LANGUAGE"}
                   </span>
                 </div>
@@ -272,7 +272,7 @@ export function MobileMenu() {
                   >
                     <User className="h-5 w-5 stroke-[1.5] text-black/70" />
                   </Link>
-                  <span className="text-[9px] uppercase tracking-[0.15em] text-black/40 font-medium">
+                  <span className="text-xs uppercase tracking-[0.15em] text-black/40 font-medium">
                     {isArabic ? "الحساب" : "ACCOUNT"}
                   </span>
                 </div>
@@ -298,7 +298,8 @@ export function MobileMenu() {
           {isOpen && (
             <div
               style={{ zIndex: 99999 }}
-              className={`fixed inset-0 flex ${isArabic ? "justify-end" : "justify-start"}`}
+              dir="ltr"
+              className="fixed inset-0 flex justify-start"
             >
               {/* Backdrop */}
               <motion.div
@@ -312,11 +313,11 @@ export function MobileMenu() {
 
               {/* Sheet */}
               <motion.div
-                dir={isArabic ? "rtl" : "ltr"}
                 initial={{ x: "-100%" }}
                 animate={{ x: 0 }}
-                exit={{ x: "-100%"}}
+                exit={{ x: "-100%" }}
                 transition={{ type: "tween", duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
+                dir={isArabic ? "rtl" : "ltr"}
                 className="relative h-full w-[90%] max-w-sm bg-[#F2F2F2] shadow-2xl flex flex-col overflow-hidden text-start"
               >
                 {/* Close Button Header */}

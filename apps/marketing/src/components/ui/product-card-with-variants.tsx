@@ -3,14 +3,12 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
-import { Eye, ShoppingBag, Heart, Bookmark, Minus, Plus, Check, Loader2, ShoppingCart } from "lucide-react";
+import { Eye, ShoppingBag, Minus, Plus, Check, Loader2, ShoppingCart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import { useCart } from "@/contexts/cart-context";
-import { useFavourites } from "@/contexts/favourites-context";
-import { useWishlist } from "@/contexts/wishlist-context";
 import { createCartItemFromVariant } from "@/lib/cart";
-import { trackQuickAddToCart, trackFavouriteToggle, trackWishlistToggle } from "@/lib/analytics";
+import { trackQuickAddToCart } from "@/lib/analytics";
 import { QuickViewModal } from "./quick-view-modal";
 import { Badge } from "./badge";
 import { TrendingUp, Star } from "lucide-react";
@@ -26,11 +24,6 @@ export function ProductCardWithVariants({
 }: ProductCardWithVariantsProps) {
   const t = useTranslations("common");
   const { items: cartItems, addItem, updateQuantity } = useCart();
-  const { favouriteIds, addFavourite, removeFavourite } = useFavourites();
-  const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
-
-  const isFavourite = favouriteIds.includes(product.id);
-  const isInWishlist = wishlistItems.some((item) => item.productId === product.id);
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     product.variants?.[0] ?? null
@@ -233,50 +226,6 @@ export function ProductCardWithVariants({
               )}
             </div>
 
-            {/* Favourite & Wishlist */}
-            <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (isFavourite) {
-                    removeFavourite(product.id);
-                    trackFavouriteToggle(product.id, "remove");
-                  } else {
-                    addFavourite(product.id);
-                    trackFavouriteToggle(product.id, "add");
-                  }
-                }}
-                className={`p-2 rounded-full cursor-pointer transition-all duration-300 ${isFavourite
-                  ? "bg-white text-red-500 shadow-md hover:scale-110 hover:shadow-lg"
-                  : "bg-white/0 text-transparent opacity-0 group-hover:opacity-100 group-hover:bg-white/90 group-hover:backdrop-blur-md group-hover:text-neutral-500 group-hover:shadow-sm hover:scale-110 hover:bg-white! hover:text-red-500! hover:shadow-md"
-                  }`}
-                aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
-              >
-                <Heart className={`h-4 w-4 transition-transform duration-200 ${isFavourite ? "fill-current" : ""}`} />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (isInWishlist) {
-                    removeFromWishlist(product.id);
-                    trackWishlistToggle(product.id, "remove");
-                  } else {
-                    addToWishlist(product.id);
-                    trackWishlistToggle(product.id, "add");
-                  }
-                }}
-                className={`p-2 rounded-full cursor-pointer transition-all duration-300 ${isInWishlist
-                  ? "bg-white text-blue-500 shadow-md hover:scale-110 hover:shadow-lg"
-                  : "bg-white/0 text-transparent opacity-0 group-hover:opacity-100 group-hover:bg-white/90 group-hover:backdrop-blur-md group-hover:text-neutral-500 group-hover:shadow-sm hover:scale-110 hover:bg-white! hover:text-blue-500! hover:shadow-md"
-                  }`}
-                aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
-              >
-                <Bookmark className={`h-4 w-4 transition-transform duration-200 ${isInWishlist ? "fill-current" : ""}`} />
-              </button>
-            </div>
-
             {/* Hover Overlay with Quick Actions */}
             <div
               className={`hidden md:block absolute bottom-0 left-0 right-0 transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${isCardHovered
@@ -291,14 +240,14 @@ export function ProductCardWithVariants({
                       <div className="flex-1 flex items-center justify-center gap-1 py-3">
                         <button
                           onClick={handleDecrement}
-                          className="w-7 h-7 flex items-center justify-center rounded-full cursor-pointer hover:bg-neutral-100 transition-all duration-200 active:scale-90"
+                          className="w-9 h-9 flex items-center justify-center rounded-full cursor-pointer hover:bg-neutral-100 transition-all duration-200 active:scale-90"
                         >
                           <Minus className="h-3.5 w-3.5" />
                         </button>
                         <span className="w-8 text-center text-xs font-semibold tabular-nums">{cartItem.quantity}</span>
                         <button
                           onClick={handleIncrement}
-                          className="w-7 h-7 flex items-center justify-center rounded-full cursor-pointer hover:bg-neutral-100 transition-all duration-200 active:scale-90"
+                          className="w-9 h-9 flex items-center justify-center rounded-full cursor-pointer hover:bg-neutral-100 transition-all duration-200 active:scale-90"
                         >
                           <Plus className="h-3.5 w-3.5" />
                         </button>
@@ -306,7 +255,7 @@ export function ProductCardWithVariants({
                       <div className="border-l border-neutral-200" />
                       <Link
                         href="/checkout"
-                        className="flex-1 flex items-center justify-center gap-2 py-3 text-[11px] font-semibold tracking-[0.15em] uppercase cursor-pointer bg-foreground text-background hover:bg-foreground/85 transition-all duration-200 active:scale-[0.98]"
+                        className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold tracking-[0.15em] uppercase cursor-pointer bg-foreground text-background hover:bg-foreground/85 transition-all duration-200 active:scale-[0.98]"
                       >
                         <ShoppingCart className="h-3.5 w-3.5" />
                         Checkout
@@ -317,7 +266,7 @@ export function ProductCardWithVariants({
                       <button
                         onClick={handleQuickAdd}
                         disabled={isAdding}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 text-[11px] font-semibold tracking-[0.15em] uppercase cursor-pointer bg-background text-foreground hover:bg-black hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                        className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold tracking-[0.15em] uppercase cursor-pointer bg-background text-foreground hover:bg-black hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
                       >
                         {isAdding ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -332,7 +281,7 @@ export function ProductCardWithVariants({
                       <div className="border-l border-neutral-200" />
                       <button
                         onClick={() => setIsQuickViewOpen(true)}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 text-[11px] font-semibold tracking-[0.15em] uppercase cursor-pointer transition-all duration-200 bg-background text-foreground hover:bg-black hover:text-white active:scale-[0.98]"
+                        className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold tracking-[0.15em] uppercase cursor-pointer transition-all duration-200 bg-background text-foreground hover:bg-black hover:text-white active:scale-[0.98]"
                       >
                         <Eye className="h-3.5 w-3.5" />
                         View
@@ -347,7 +296,7 @@ export function ProductCardWithVariants({
                       <button
                         key={size.id}
                         onClick={() => handleSizeSelect(size.id)}
-                        className={`min-w-[32px] px-2 py-1 text-[10px] font-medium tracking-wider uppercase border rounded-md cursor-pointer transition-all duration-200 ${selectedSizeId === size.id
+                        className={`min-w-[32px] px-2 py-1 text-xs font-medium tracking-wider uppercase border rounded-md cursor-pointer transition-all duration-200 ${selectedSizeId === size.id
                           ? "bg-foreground text-background border-foreground"
                           : "border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50"
                           }`}
@@ -369,12 +318,11 @@ export function ProductCardWithVariants({
               </h3>
 
               <div className="flex items-baseline gap-2">
-                <span className="text-sm font-medium text-neutral-900 tracking-wide">
-                  <span className="text-sm font-normal text-neutral-400 tracking-widest mr-0.5">AED</span>
-                  {" "}{price.toLocaleString()}
+                <span className="text-sm font-semibold tracking-wide text-foreground">
+                  AED {price.toLocaleString()}
                 </span>
                 {compareAtPrice && compareAtPrice > price && (
-                  <span className="text-sm text-neutral-400 line-through">
+                  <span className="text-xs text-muted-foreground line-through">
                     AED {compareAtPrice.toLocaleString()}
                   </span>
                 )}
@@ -385,14 +333,21 @@ export function ProductCardWithVariants({
                   {uniqueColors.map((color) => (
                     <button
                       key={color.id}
-                      className={`h-3.5 w-3.5 rounded-full border transition-all duration-200 hover:scale-[1.3] ${selectedVariant?.color?.id === color.id
-                        ? "border-luxury-gold ring-[1.5px] ring-luxury-gold/40 ring-offset-2 ring-offset-white"
-                        : "border-neutral-300/80"
+                      className={`h-9 w-9 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200 hover:scale-110 ${selectedVariant?.color?.id === color.id
+                        ? "ring-2 ring-luxury-gold/40 ring-offset-2 ring-offset-white"
+                        : ""
                         }`}
-                      style={{ backgroundColor: color.hex }}
                       onMouseEnter={() => handleColorHover(color.id)}
                       aria-label={isArabic ? color.nameAr : color.nameEn}
-                    />
+                    >
+                      <span
+                        className={`h-4 w-4 rounded-full border transition-all ${selectedVariant?.color?.id === color.id
+                          ? "border-luxury-gold"
+                          : "border-neutral-300/80"
+                          }`}
+                        style={{ backgroundColor: color.hex }}
+                      />
+                    </button>
                   ))}
                 </div>
               )}

@@ -109,7 +109,7 @@ export function OrderSummarySection({
         </div>
         <div className="flex justify-between font-semibold text-lg pt-2 border-t">
           <span>{t("total")}</span>
-          <span>AED {grandTotal.toLocaleString()} EGP</span>
+          <span>AED {grandTotal.toLocaleString()}</span>
         </div>
       </div>
 

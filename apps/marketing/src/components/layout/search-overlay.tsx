@@ -112,7 +112,7 @@ export function SearchOverlay() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={isArabic ? "ابحث هنا..." : "Search product..."}
-                  className="flex-1 bg-transparent border-none outline-none text-[11px] uppercase tracking-wider text-gray-900 placeholder:text-gray-300"
+                  className="flex-1 bg-transparent border-none outline-none text-sm uppercase tracking-wider text-gray-900 placeholder:text-gray-300"
                   dir={isArabic ? "rtl" : "ltr"}
                 />
                 {isLoading && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}
@@ -129,7 +129,7 @@ export function SearchOverlay() {
                   {/* Products Results */}
                   {results?.products && results.products.length > 0 && (
                     <div className="space-y-6">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">Products</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Products</p>
                       <div className="grid gap-6">
                         {results.products.map((product) => (
                           <Link
@@ -149,10 +149,10 @@ export function SearchOverlay() {
                               )}
                             </div>
                             <div className="flex-1 flex flex-col justify-center">
-                              <h4 className="text-[11px] uppercase tracking-wider font-medium text-gray-900 truncate">
+                              <h4 className="text-sm uppercase tracking-wider font-medium text-gray-900 truncate">
                                 {isArabic ? product.nameAr : product.nameEn}
                               </h4>
-                              <p className="text-[10px] text-gray-500 mt-1">AED {product.price?.toLocaleString()}</p>
+                              <p className="text-xs text-gray-500 mt-1">AED {product.price?.toLocaleString()}</p>
                             </div>
                             <div className="flex items-center opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all">
                               <ArrowRight className="h-4 w-4 text-gray-300 transition-colors" />
@@ -166,14 +166,14 @@ export function SearchOverlay() {
                   {/* Collections Results */}
                   {results?.collections && results.collections.length > 0 && (
                     <div className="space-y-4">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-400">Collections</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Collections</p>
                       <div className="flex flex-col gap-2">
                         {results.collections.map((coll) => (
                           <Link
                             key={coll.id}
                             href={`/collections/${coll.slug}`}
                             onClick={handleClose}
-                            className="text-[11px] uppercase tracking-widest text-gray-600 hover:text-black hover:pl-2 transition-all"
+                            className="text-sm uppercase tracking-widest text-gray-600 hover:text-black hover:pl-2 transition-all"
                           >
                             {isArabic ? coll.nameAr : coll.nameEn}
                           </Link>
@@ -184,7 +184,7 @@ export function SearchOverlay() {
 
                   {!isLoading && results?.products.length === 0 && results?.collections.length === 0 && (
                     <div className="text-center py-12">
-                      <p className="text-[10px] uppercase tracking-widest text-gray-400">No results found for "{debouncedQuery}"</p>
+                      <p className="text-xs uppercase tracking-widest text-gray-400">No results found for "{debouncedQuery}"</p>
                     </div>
                   )}
                 </div>
@@ -194,7 +194,7 @@ export function SearchOverlay() {
                     <div className="inline-flex items-center justify-center p-6 bg-gray-50 rounded-full mb-6">
                       <Search className="h-8 w-8 text-gray-200 stroke-1" />
                     </div>
-                    <p className="text-[11px] uppercase tracking-[0.2em] text-gray-400 font-light">Start typing to search Products...</p>
+                    <p className="text-sm uppercase tracking-[0.2em] text-gray-400 font-light">Start typing to search Products...</p>
                   </div>
                 </div>
               )}
@@ -207,7 +207,7 @@ export function SearchOverlay() {
 
   return (
     <>
-      <button onClick={handleOpen} className="p-2 hover:opacity-60 transition-opacity" aria-label="Search">
+      <button onClick={handleOpen} className="p-2.5 hover:opacity-60 transition-opacity cursor-pointer" aria-label="Search">
         <Search className="h-5 w-5 stroke-1" />
       </button>
 

@@ -10,7 +10,7 @@ export function CartIcon({ isArabic }: { isArabic: boolean }) {
   return (
     <button
       onClick={openCart}
-      className="relative p-2 text-current hover:opacity-60 transition-opacity"
+      className="relative p-2.5 text-current hover:opacity-60 transition-opacity cursor-pointer"
     >
       <ShoppingBag className="h-5 w-5 stroke-1" />
       {itemCount > 0 && (

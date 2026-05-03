@@ -27,7 +27,7 @@ export function ContactInfoSection({ formState, onUpdateField }: ContactInfoSect
             value={formState.firstName}
             onChange={(e) => onUpdateField("firstName", e.target.value)}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
         <div>
@@ -37,7 +37,7 @@ export function ContactInfoSection({ formState, onUpdateField }: ContactInfoSect
             value={formState.lastName}
             onChange={(e) => onUpdateField("lastName", e.target.value)}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
         <div>
@@ -47,7 +47,7 @@ export function ContactInfoSection({ formState, onUpdateField }: ContactInfoSect
             value={formState.email}
             onChange={(e) => onUpdateField("email", e.target.value)}
             required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
         <div>
@@ -58,7 +58,7 @@ export function ContactInfoSection({ formState, onUpdateField }: ContactInfoSect
             onChange={(e) => onUpdateField("phone", e.target.value)}
             required
             placeholder="+20 1XX XXX XXXX"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
       </div>

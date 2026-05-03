@@ -16,8 +16,8 @@ export function CustomersFeedback({ reviews, locale }: CustomersFeedbackProps) {
   const isArabic = locale === "ar";
 
   return (
-    <section className="py-16 px-4 md:px-8">
-      <div className="max-w-7xl mx-auto">
+    <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+      <div>
         <h2 className="text-2xl font-bold tracking-tight mb-8">
           {isArabic ? "آراء العملاء" : "Customers Feedback"}
         </h2>

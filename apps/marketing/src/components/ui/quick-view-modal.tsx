@@ -196,13 +196,13 @@ export function QuickViewModal({
       >
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 z-20 p-2 hover:bg-muted bg-white border border-gray-200 rounded-full shadow-sm"
+          className="absolute top-4 right-4 z-20 p-2.5 hover:bg-muted bg-white border border-gray-200 rounded-full shadow-sm cursor-pointer"
           aria-label="Close"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-6 p-0 md:p-6 overflow-auto max-h-[90vh]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 p-4 md:p-6 overflow-auto max-h-[90vh]">
           {/* Gallery Section with HeroBanner-style carousel logic */}
           <div
             className="relative aspect-square bg-neutral-50 overflow-hidden touch-pan-y select-none cursor-grab active:cursor-grabbing"
@@ -366,10 +366,10 @@ export function QuickViewModal({
               </button>
               <Link
                 href={`/products/${product.slug}`}
-                className="block w-full py-4 text-center text-[10px] font-bold uppercase tracking-[0.2em] border border-transparent hover:border-black/10 transition-all"
+                className="block w-full py-4 text-center text-xs font-bold uppercase tracking-[0.2em] border border-transparent hover:border-black/10 transition-all"
                 onClick={onClose}
               >
-                View full product details
+                {tCommon("viewFullDetails")}
               </Link>
             </div>
           </div>

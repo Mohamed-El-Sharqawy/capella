@@ -33,7 +33,7 @@ export function Footer({ locale }: FooterProps) {
               <Image src="/logo_capella_light.webp" alt="Logo" width={200} height={200} />
             </Link>
             <div className="max-w-md space-y-4">
-              <h3 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-gray-400">
+              <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
                 {isArabic ? "اشترك للحصول على التحديثات" : "Subscribe for Updates"}
               </h3>
               <form className="relative">
@@ -44,7 +44,11 @@ export function Footer({ locale }: FooterProps) {
                 />
                 <button
                   type="submit"
-                  className="absolute right-0 top-1/2 -translate-y-1/2 text-[10px] uppercase tracking-widest hover:opacity-60 transition-opacity"
+                  className="absolute top-1/2 -translate-y-1/2 text-xs uppercase tracking-widest px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black transition-all cursor-pointer"
+                  style={{
+                    left: isArabic ? 0 : undefined,
+                    right: isArabic ? undefined : 0
+                  }}
                 >
                   {isArabic ? "إرسال" : "Submit"}
                 </button>
@@ -55,7 +59,7 @@ export function Footer({ locale }: FooterProps) {
 
           {/* Shop Links */}
           <div className="space-y-6">
-            <h3 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-gray-400">
+            <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
               {isArabic ? "تسوق" : "Shop"}
             </h3>
             <ul className="space-y-3">
@@ -63,7 +67,7 @@ export function Footer({ locale }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[11px] md:text-xs uppercase tracking-widest hover:text-gray-400 transition"
+                    className="text-xs md:text-sm uppercase tracking-widest hover:text-gray-400 transition"
                   >
                     {link.label}
                   </Link>
@@ -74,7 +78,7 @@ export function Footer({ locale }: FooterProps) {
 
           {/* Policy Links */}
           <div className="space-y-6">
-            <h3 className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] text-gray-400">
+            <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
               {isArabic ? "السياسات" : "Policies"}
             </h3>
             <ul className="space-y-3">
@@ -82,7 +86,7 @@ export function Footer({ locale }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-[11px] md:text-xs uppercase tracking-widest hover:text-gray-400 transition"
+                    className="text-xs md:text-sm uppercase tracking-widest hover:text-gray-400 transition"
                   >
                     {link.label}
                   </Link>
@@ -94,7 +98,7 @@ export function Footer({ locale }: FooterProps) {
 
         {/* Bottom Bar */}
         <div className="mt-20 pt-8 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-[10px] uppercase tracking-widest text-gray-500">
+          <p className="text-xs uppercase tracking-widest text-gray-500">
             © 2026 capella. {isArabic ? "جميع الحقوق محفوظة." : "All rights reserved."}
           </p>
           <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">

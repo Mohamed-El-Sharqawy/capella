@@ -76,7 +76,8 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
   }, [product.id, product.slug, product.nameEn, product.nameAr, product.variants, isArabic]);
 
   // Derived values
-  const name = isArabic ? product.nameAr : product.nameEn;
+  // const name = isArabic ? product.nameAr : product.nameEn;
+  const name = product.nameEn;
   const price = selectedVariant?.price ?? 0;
   const compareAtPrice = selectedVariant?.compareAtPrice;
   const images = selectedVariant?.images ?? [];

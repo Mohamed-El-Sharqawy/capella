@@ -49,7 +49,7 @@ export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove 
               AED {item.compareAtPrice.toLocaleString()}
             </span>
           )}
-          <span className="text-sm font-semibold text-neutral-500">
+          <span className="text-sm font-semibold text-foreground">
             AED {item.price.toLocaleString()}
           </span>
         </div>
@@ -58,16 +58,16 @@ export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove 
           <div className="flex items-center border rounded">
             <button
               onClick={() => onUpdateQuantity(item.variantId, item.quantity - 1)}
-              className="w-7 h-7 flex items-center justify-center hover:bg-gray-100 transition"
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition cursor-pointer"
             >
-              <Minus className="h-3 w-3" />
+              <Minus className="h-3.5 w-3.5" />
             </button>
             <span className="w-8 text-center text-sm">{item.quantity}</span>
             <button
               onClick={() => onUpdateQuantity(item.variantId, item.quantity + 1)}
-              className="w-7 h-7 flex items-center justify-center hover:bg-gray-100 transition"
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition cursor-pointer"
             >
-              <Plus className="h-3 w-3" />
+              <Plus className="h-3.5 w-3.5" />
             </button>
           </div>
           <button
@@ -78,7 +78,7 @@ export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove 
               const productName = isArabic ? item.productNameAr : item.productNameEn;
               trackCartRemove(item.productId, item.variantId, productName, item.price);
             }}
-            className="text-xs text-red-500 hover:underline"
+            className="text-xs text-red-500 hover:underline px-2 py-1 cursor-pointer"
           >
             Remove
           </button>

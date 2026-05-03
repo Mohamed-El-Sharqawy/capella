@@ -12,8 +12,8 @@ function Seal({ icon, title, description }: SealProps) {
       <div className="text-gray-900 border border-gray-100 p-3 rounded-full bg-gray-50 mb-2">
         {icon}
       </div>
-      <h3 className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.2em]">{title}</h3>
-      <div className="text-[10px] md:text-xs font-light text-gray-500 leading-relaxed max-w-[250px]">
+      <h3 className="text-xs md:text-sm font-semibold uppercase tracking-[0.2em]">{title}</h3>
+      <div className="text-xs md:text-sm font-light text-gray-500 leading-relaxed max-w-[250px]">
         {description}
       </div>
     </div>

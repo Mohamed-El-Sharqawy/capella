@@ -189,11 +189,13 @@ export function ProductSlider({ products, locale }: ProductSliderProps) {
             <button
               key={index}
               onClick={() => scrollToPage(index)}
-              className={`h-2 w-2 rounded-full transition-colors ${
-                currentPage === index ? "bg-primary" : "bg-gray-300"
-              }`}
+              className={`p-2 cursor-pointer transition-colors`}
               aria-label={`Go to page ${index + 1}`}
-            />
+            >
+              <span className={`block h-2 w-2 rounded-full transition-colors ${
+                currentPage === index ? "bg-primary" : "bg-gray-300"
+              }`} />
+            </button>
           ))}
         </div>
       )}

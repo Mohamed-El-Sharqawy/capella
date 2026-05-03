@@ -40,7 +40,7 @@ export function AccordionItem({ title, children, isOpen, onToggle, className = "
         aria-expanded={active}
         className="flex w-full items-center justify-between py-6 text-left transition-all group"
       >
-        <span className="text-[10px] md:text-xs font-medium uppercase tracking-[0.25em] text-gray-900 group-hover:text-black transition-colors">
+        <span className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-900 group-hover:text-black transition-colors">
           {title}
         </span>
         <ChevronDown
@@ -56,7 +56,7 @@ export function AccordionItem({ title, children, isOpen, onToggle, className = "
           visibility: active ? "visible" : "hidden",
         }}
       >
-        <div ref={contentRef} className="pt-2 pb-8 text-[11px] md:text-xs leading-relaxed text-gray-500 font-light tracking-wide space-y-4 pr-4">
+        <div ref={contentRef} className="pt-2 pb-8 text-xs md:text-sm leading-relaxed text-gray-500 font-light tracking-wide space-y-4 pr-4">
           {children}
         </div>
       </div>

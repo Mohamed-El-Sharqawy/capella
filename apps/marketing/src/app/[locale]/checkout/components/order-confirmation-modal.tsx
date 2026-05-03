@@ -85,7 +85,7 @@ export function OrderConfirmationModal({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-100 italic text-[10px] text-gray-400">
+                        <div className="w-full h-full flex items-center justify-center bg-gray-100 italic text-xs text-gray-400">
                           No img
                         </div>
                       )}

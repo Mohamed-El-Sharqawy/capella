@@ -58,7 +58,7 @@ export default async function HomePage({ params }: PageProps) {
             : "FREE SHIPPING ON ALL UAE ORDERS ABOVE <b><i><u>500 AED</u></i></b>"
         }
         className="bg-black py-6 border-b border-white/10 mt-3"
-        textClassName="text-[10px] md:text-sm font-medium text-white uppercase tracking-[0.2em]"
+        textClassName="text-xs md:text-sm font-medium text-white uppercase tracking-[0.2em]"
         separator="•"
         speed="normal"
         isArabic={locale === "ar"}
@@ -71,7 +71,7 @@ export default async function HomePage({ params }: PageProps) {
       <FeaturedProducts locale={locale} products={featuredProducts} />
 
       {/* Shoppable Content / Promotional Banner */}
-      <PromoBanner locale={locale} />
+      <PromoBanner />
 
       {/* Video Commerce */}
       <ShoppableVideos videos={shoppableVideos} locale={locale} />

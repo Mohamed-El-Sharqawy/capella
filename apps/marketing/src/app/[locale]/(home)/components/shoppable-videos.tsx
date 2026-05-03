@@ -16,8 +16,8 @@ export function ShoppableVideos({ videos, locale }: ShoppableVideosProps) {
   if (videos.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-24">
-      <div className="max-w-7xl mx-auto px-4">
+    <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
+      <div>
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.25em]">
             {locale === "ar" ? "تسوق عبر الفيديو" : "Shoppable Videos"}
@@ -142,15 +142,15 @@ function ShoppableVideoCard({
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-medium uppercase tracking-widest truncate group-hover/link:opacity-60 transition-opacity">{productName}</p>
+              <p className="text-sm font-medium uppercase tracking-widest truncate group-hover/link:opacity-60 transition-opacity">{productName}</p>
               <div className="flex items-center gap-2 mt-1">
                 {compareAtPrice && compareAtPrice > price && (
-                  <span className="text-[10px] text-muted-foreground line-through tracking-wider">
-                    AED  {compareAtPrice.toLocaleString()}
+                  <span className="text-xs text-muted-foreground line-through tracking-wider">
+                    AED {compareAtPrice.toLocaleString()}
                   </span>
                 )}
-                <span className="text-xs font-semibold tracking-widest text-black">
-                  AED  {price.toLocaleString()}
+                <span className="text-sm font-semibold tracking-wide text-foreground">
+                  AED {price.toLocaleString()}
                 </span>
               </div>
             </div>

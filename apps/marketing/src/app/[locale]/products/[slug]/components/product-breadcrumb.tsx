@@ -15,7 +15,7 @@ export function ProductBreadcrumb({ productName, collectionName, collectionSlug,
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <nav className={`flex items-center gap-2 text-[10px] md:text-xs font-light tracking-[0.2em] text-gray-400 uppercase ${isArabic ? "flex-row-reverse" : "flex-row"}`}>
+      <nav className={`flex items-center gap-2 text-xs md:text-sm font-light tracking-[0.15em] text-gray-400 uppercase ${isArabic ? "flex-row-reverse" : "flex-row"}`}>
         <Link href="/" className="hover:text-black transition-colors">
           {homeText}
         </Link>

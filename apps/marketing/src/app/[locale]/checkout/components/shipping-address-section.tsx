@@ -110,7 +110,7 @@ export function ShippingAddressSection({
             onChange={(e) => onUpdateField("address", e.target.value)}
             required
             placeholder={t("addressPlaceholder")}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -122,7 +122,7 @@ export function ShippingAddressSection({
               onChange={(e) => onUpdateField("city", e.target.value)}
               required
               placeholder={t("cityPlaceholder")}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
           <div>
@@ -132,7 +132,7 @@ export function ShippingAddressSection({
               value={formState.area}
               onChange={(e) => onUpdateField("area", e.target.value)}
               placeholder={t("areaPlaceholder")}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
             />
           </div>
         </div>

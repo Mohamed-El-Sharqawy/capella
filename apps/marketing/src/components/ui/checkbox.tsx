@@ -17,14 +17,14 @@ export function Checkbox({ id, label, checked, onChange, className = "" }: Check
         type="button"
         id={id}
         onClick={() => onChange(!checked)}
-        className={`flex h-4 w-4 shrink-0 items-center justify-center border transition-all duration-200 ${checked ? "bg-black border-black" : "bg-white border-gray-300 hover:border-black"
+        className={`flex h-5 w-5 shrink-0 items-center justify-center border transition-all duration-200 cursor-pointer ${checked ? "bg-black border-black" : "bg-white border-gray-300 hover:border-black"
           }`}
       >
-        <Check className={`h-3 w-3 text-white transition-opacity ${checked ? "opacity-100" : "opacity-0"}`} />
+        <Check className={`h-3.5 w-3.5 text-white transition-opacity ${checked ? "opacity-100" : "opacity-0"}`} />
       </button>
       <label
         htmlFor={id}
-        className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] cursor-pointer select-none"
+        className="text-xs font-medium uppercase tracking-[0.2em] cursor-pointer select-none"
       >
         {label}
       </label>

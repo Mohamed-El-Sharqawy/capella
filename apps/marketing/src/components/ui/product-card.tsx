@@ -129,7 +129,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
         {/* Wishlist Heart Icon */}
         <button
           onClick={handleWishlistToggle}
-          className="absolute top-4 right-4 p-2 transition-all duration-300 opacity-0 group-hover:opacity-100"
+          className="absolute top-4 right-4 p-2.5 transition-all duration-300 opacity-0 group-hover:opacity-100 cursor-pointer"
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >
           <Heart
@@ -140,17 +140,17 @@ export function ProductCard({ product, locale }: ProductCardProps) {
       </div>
 
       <div className="mt-6 text-center space-y-1.5 px-2">
-        <h3 className="text-[11px] md:text-xs font-medium uppercase tracking-[0.15em] line-clamp-1 group-hover:opacity-60 transition-opacity">
+        <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.15em] line-clamp-1 group-hover:opacity-60 transition-opacity">
           {name}
         </h3>
         <div className="flex flex-col items-center gap-0.5">
           {compareAtPrice && compareAtPrice > price && (
-            <span className="text-[10px] text-muted-foreground line-through tracking-wider">
-              AED  {compareAtPrice.toLocaleString()}
+            <span className="text-xs text-muted-foreground line-through tracking-wider">
+              AED {compareAtPrice.toLocaleString()}
             </span>
           )}
-          <span className="text-xs font-semibold tracking-widest text-black">
-            AED  {price.toLocaleString()}
+          <span className="text-sm font-semibold tracking-wide text-foreground">
+            AED {price.toLocaleString()}
           </span>
         </div>
       </div>

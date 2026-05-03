@@ -143,17 +143,17 @@ export function ProductCardHorizontal({
         {/* Product Info */}
         <div className={`flex-1 ${isArabic ? "text-right" : ""}`}>
           <Link href={`/products/${product.slug}`}>
-            <h3 className="text-lg font-medium hover:underline">{name}</h3>
+            <h3 className="text-sm font-medium uppercase tracking-wide hover:underline">{name}</h3>
           </Link>
 
           {/* Price */}
           <div className="flex items-center gap-2 mt-1">
             {compareAtPrice && compareAtPrice > price && (
-              <span className="text-sm text-muted-foreground line-through">
+              <span className="text-xs text-muted-foreground line-through">
                 AED {compareAtPrice.toLocaleString()}
               </span>
             )}
-            <span className="text-sm font-semibold text-red-600">
+            <span className="text-sm font-semibold tracking-wide text-foreground">
               AED {price.toLocaleString()}
             </span>
           </div>
@@ -167,18 +167,25 @@ export function ProductCardHorizontal({
 
           {/* Colors */}
           {uniqueColors && uniqueColors.length > 0 && (
-            <div className="flex gap-2 mt-4">
+            <div className="flex items-center gap-1.5 mt-4">
               {uniqueColors.map((color) => (
                 <button
                   key={color.id}
                   onClick={() => handleColorClick(color.id)}
-                  className={`h-6 w-6 rounded-full border-2 transition-transform hover:scale-110 ${selectedVariant?.color?.id === color.id
-                    ? "border-black ring-1 ring-black ring-offset-1"
-                    : "border-gray-300"
+                  className={`h-9 w-9 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200 hover:scale-110 ${selectedVariant?.color?.id === color.id
+                    ? "ring-2 ring-luxury-gold/40 ring-offset-2 ring-offset-white"
+                    : ""
                     }`}
-                  style={{ backgroundColor: color.hex }}
                   aria-label={isArabic ? color.nameAr : color.nameEn}
-                />
+                >
+                  <span
+                    className={`h-4 w-4 rounded-full border transition-all ${selectedVariant?.color?.id === color.id
+                      ? "border-luxury-gold"
+                      : "border-neutral-300/80"
+                      }`}
+                    style={{ backgroundColor: color.hex }}
+                  />
+                </button>
               ))}
             </div>
           )}

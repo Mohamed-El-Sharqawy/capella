@@ -25,9 +25,9 @@ const badgeVariants = cva(
           "border-white/20 bg-black/10 text-white backdrop-blur-md",
       },
       size: {
-        sm: "px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[0.2em]",
-        default: "px-2 py-1 text-[9px] font-bold uppercase tracking-[0.15em]",
-        lg: "px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.2em]",
+        sm: "px-1.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em]",
+        default: "px-2 py-1 text-[11px] font-bold uppercase tracking-[0.15em]",
+        lg: "px-3 py-1.5 text-xs font-black uppercase tracking-[0.2em]",
       }
     },
     defaultVariants: {

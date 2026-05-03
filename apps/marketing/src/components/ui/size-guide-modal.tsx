@@ -39,7 +39,7 @@ export function SizeGuideModal({ isOpen, onClose, imageUrl, locale }: SizeGuideM
             </h2>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-gray-100 rounded-full transition"
+              className="p-2 hover:bg-gray-100 rounded-full transition cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>

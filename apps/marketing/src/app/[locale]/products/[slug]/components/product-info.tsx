@@ -82,9 +82,9 @@ export function ProductInfo({
   ].filter(Boolean).join(', ');
 
   const benefits = [
-    { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني خلال 1-2 أيام في الإمارات" : "Complimentary 1-2 days shipping in UAE" },
-    { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني في جميع أنحاء العالم" : "Complimentary worldwide shipping" },
-    { icon: <RotateCcw className="h-4 w-4" />, text: isArabic ? "إرجاع سهل خلال 5 أيام" : "No questions asked 5 days easy returns" },
+    { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني خلال 2-5 أيام في الإمارات" : "Complimentary 1-2 days shipping in UAE" },
+    // { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني في جميع أنحاء العالم" : "Complimentary worldwide shipping" },
+    { icon: <RotateCcw className="h-4 w-4" />, text: isArabic ? "إرجاع سهل خلال 14 أيام" : "No questions asked 5 days easy returns" },
     { icon: <ShieldCheck className="h-4 w-4" />, text: isArabic ? "بطاقة أصالة المجوهرات" : "Jewellery authenticity card" },
     { icon: <Gift className="h-4 w-4" />, text: isArabic ? "تغليف هدايا كابيلا الفاخر" : "Signature Capella gift wrapping" },
   ];
@@ -95,7 +95,7 @@ export function ProductInfo({
       <div className="space-y-3">
         <h1 className="text-xl md:text-2xl font-medium tracking-tight text-gray-900">{name}</h1>
         {composition && (
-          <p className="text-[11px] md:text-sm text-gray-500 font-light tracking-wide italic">
+          <p className="text-sm md:text-base text-gray-500 font-light tracking-wide italic">
             {composition}
           </p>
         )}
@@ -118,9 +118,9 @@ export function ProductInfo({
       <div className="space-y-4 mb-0">
         <button
           onClick={onAddToCart}
-          className="w-full bg-black text-white py-4 text-[11px] font-medium uppercase tracking-[0.3em] hover:bg-neutral-800 transition-colors shadow-sm"
+          className="w-full bg-black text-white py-4 text-sm font-medium uppercase tracking-[0.2em] hover:bg-neutral-800 transition-colors shadow-sm"
         >
-          {isArabic ? "أضف إلى الحقبة" : "ADD TO BAG"}
+          {isArabic ? "أضف إلى الحقيبة" : "ADD TO BAG"}
         </button>
 
         {/* Benefits List */}
@@ -128,7 +128,7 @@ export function ProductInfo({
           {benefits.map((benefit, idx) => (
             <div key={idx} className="flex items-center gap-4 text-gray-600">
               <span className="text-gray-400">{benefit.icon}</span>
-              <span className="text-[10px] md:text-xs font-light tracking-wider">{benefit.text}</span>
+              <span className="text-xs md:text-sm font-light tracking-wider">{benefit.text}</span>
             </div>
           ))}
         </div>
@@ -138,18 +138,25 @@ export function ProductInfo({
       <div className="space-y-6">
         {uniqueColors.length > 0 && (
           <div>
-            <p className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em] mb-3">{isArabic ? "اللون" : "Color"}</p>
-            <div className="flex gap-3">
+            <p className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] mb-3">{isArabic ? "اللون" : "Color"}</p>
+            <div className="flex gap-2">
               {uniqueColors.map((color) => (
                 <button
                   key={color.id}
                   onClick={() => onColorSelect(color.id)}
-                  className={`w-6 h-6 rounded-full border transition-all ${selectedVariant?.color?.id === color.id
-                    ? "border-black ring-1 ring-offset-1 ring-black"
-                    : "border-gray-200"
+                  className={`w-11 h-11 flex items-center justify-center rounded-full cursor-pointer transition-all ${selectedVariant?.color?.id === color.id
+                    ? "ring-2 ring-offset-2 ring-black"
+                    : ""
                     }`}
-                  style={{ backgroundColor: color.hex }}
-                />
+                >
+                  <span
+                    className={`w-6 h-6 rounded-full border-2 transition-all ${selectedVariant?.color?.id === color.id
+                      ? "border-black"
+                      : "border-gray-200"
+                      }`}
+                    style={{ backgroundColor: color.hex }}
+                  />
+                </button>
               ))}
             </div>
           </div>
@@ -169,7 +176,7 @@ export function ProductInfo({
             </div>
           </AccordionItem>
           <AccordionItem title={isArabic ? "الاستبدال والإرجاع" : "Exchange & Return"}>
-            <div className="space-y-4 text-[11px] md:text-xs font-light leading-relaxed text-gray-600">
+            <div className="space-y-4 text-xs md:text-sm font-light leading-relaxed text-gray-600">
               <p className="font-medium text-gray-900">
                 {isArabic ? "رضا عملائنا هو أولويتنا القصوى." : "The satisfaction of our customers is our priority."}
               </p>
@@ -208,7 +215,7 @@ export function ProductInfo({
         </button> */}
         <button
           onClick={onToggleWishlist}
-          className="w-full py-3 border border-gray-900 text-[10px] font-medium uppercase tracking-widest hover:bg-gray-50 transition-colors"
+          className="w-full py-3 border border-gray-900 text-xs font-medium uppercase tracking-widest hover:bg-gray-50 transition-colors"
         >
           {isArabic ? (isInWishlist ? "حذف من قائمة الأمنيات" : "إضافة إلى قائمة الأمنيات") : (isInWishlist ? "REMOVE FROM WISHLIST" : "ADD TO WISHLIST")}
         </button>
@@ -223,7 +230,7 @@ export function ProductInfo({
             image={product.variants?.[0]?.images?.[0]?.url}
           />
         </div>
-        <div className="text-[9px] text-gray-400 uppercase tracking-widest font-light">
+        <div className="text-xs text-gray-400 uppercase tracking-widest font-light">
           SKU: {selectedVariant?.sku || "N/A"}
         </div>
       </div>

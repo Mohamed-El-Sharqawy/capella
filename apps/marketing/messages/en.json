@@ -13,7 +13,8 @@
       "new": "New",
       "bestseller": "Bestseller",
       "limitedEdition": "Limited Edition"
-    }
+    },
+    "viewFullDetails": "View full product details"
   },
   "header": {
     "shopAll": "Shop All",
@@ -41,8 +42,8 @@
       "subtitle": "Street-approved Favorites For Everyday Movement."
     },
     "promoBanner": {
-      "title": "THE BAGGY FIT DENIM",
-      "description": "Made from denim that maintains its shape with everyday comfort.",
+      "title": "At Capella",
+      "description": "Silver is not just a metal—it is a reflection of timeless elegance, a quiet expression of individuality, and a story crafted to shine with you in every moment, capturing beauty that doesn't fade, but evolves with your journey.",
       "cta": "Shop Now"
     }
   },

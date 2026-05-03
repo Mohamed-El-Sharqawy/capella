@@ -130,7 +130,7 @@ export function FrequentlyBoughtTogether({
                     </div>
 
                     {isCurrentProduct && (
-                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-black text-white text-[8px] px-1.5 py-0.5 rounded-full whitespace-nowrap z-10">
+                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap z-10">
                         {t("thisItem")}
                       </span>
                     )}
@@ -147,7 +147,7 @@ export function FrequentlyBoughtTogether({
                       )}
                     </div>
 
-                    <p className="text-[10px] font-medium text-center line-clamp-1 w-full">
+                    <p className="text-xs font-medium text-center line-clamp-1 w-full">
                       {productName}
                     </p>
 
@@ -212,7 +212,7 @@ export function FrequentlyBoughtTogether({
                   </div>
 
                   {isCurrentProduct && (
-                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-0.5 rounded-full whitespace-nowrap">
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-0.5 rounded-full whitespace-nowrap">
                       {t("thisItem")}
                     </span>
                   )}
