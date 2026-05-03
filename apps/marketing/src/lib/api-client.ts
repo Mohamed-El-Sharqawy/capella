@@ -4,9 +4,8 @@
 
 const IS_SERVER = typeof window === 'undefined';
 const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const INTERNAL_API_URL = process.env.INTERNAL_API_URL || "http://localhost:3001";
 
-const API_URL = IS_SERVER ? INTERNAL_API_URL : PUBLIC_API_URL;
+const API_URL = PUBLIC_API_URL;
 
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";

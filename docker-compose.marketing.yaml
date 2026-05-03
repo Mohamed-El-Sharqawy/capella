@@ -11,16 +11,20 @@ services:
     container_name: capella-marketing
     restart: unless-stopped
     expose:
-      - "3000"
+      - "4000"
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-      - INTERNAL_API_URL=http://backend:3001
+      - PORT=4000
     networks:
       - coolify-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.capella-marketing.loadbalancer.server.port=4000"
+      - "traefik.docker.network=coolify"
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/robots.txt"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:4000/robots.txt"]
       interval: 30s
       timeout: 10s
       retries: 3
