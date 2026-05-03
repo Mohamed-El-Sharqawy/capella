@@ -1,0 +1,22 @@
+model PromoBanner {
+  id String @id @default(cuid())
+
+  titleEn      String
+  titleAr      String
+  buttonTextEn String
+  buttonTextAr String
+  linkUrl      String
+
+  imageUrl String
+  publicId String
+
+  position Int     @default(0)
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([position])
+  @@index([isActive])
+  @@map("promo_banners")
+}

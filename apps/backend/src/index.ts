@@ -20,6 +20,7 @@ import { shoppableVideoController } from "./modules/shoppable-video";
 import { instagramPostController } from "./modules/instagram-post";
 import { reviewController } from "./modules/review";
 import { banner } from "./modules/banner";
+import { promoBanner } from "./modules/promo-banner";
 import { searchController } from "./modules/search";
 import { analyticsController } from "./modules/analytics";
 import { payment } from "./modules/payment";
@@ -79,6 +80,7 @@ const app = new Elysia()
       .use(instagramPostController)
       .use(reviewController)
       .use(banner)
+      .use(promoBanner)
       .use(searchController)
       .use(analyticsController)
       .use(payment)

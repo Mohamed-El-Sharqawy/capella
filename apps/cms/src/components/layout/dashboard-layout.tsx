@@ -13,6 +13,7 @@ import {
   BarChart3,
   Gem,
   Sparkles,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ const navItems = [
   { label: "Coupons", href: "/coupons", icon: Ticket },
   { label: "Content", href: "/content", icon: Video },
   { label: "Banners", href: "/banners", icon: Image },
+  { label: "Promo Banners", href: "/promo-banners", icon: Megaphone },
   { label: "Users", href: "/users", icon: Users },
 ];
 

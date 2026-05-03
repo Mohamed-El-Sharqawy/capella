@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import type { ShoppableVideo, InstagramPost, Banner } from "@ecommerce/shared-types";
+import type { ShoppableVideo, InstagramPost, Banner, PromoBanner } from "@ecommerce/shared-types";
 
 interface ApiResponse<T> {
   ok: boolean;
@@ -163,4 +163,49 @@ export function deleteBanner(id: string) {
 
 export function reorderBanners(ids: string[]) {
   return api.post<ApiResponse<{ message: string }>>("/api/banners/reorder", { ids });
+}
+
+// Promo Banners
+export function getPromoBanners() {
+  return api.get<ApiResponse<PromoBanner[]>>("/api/promo-banners");
+}
+
+export function getPromoBanner(id: string) {
+  return api.get<ApiResponse<PromoBanner>>(`/api/promo-banners/${id}`);
+}
+
+export function createPromoBanner(data: {
+  titleEn: string;
+  titleAr: string;
+  buttonTextEn: string;
+  buttonTextAr: string;
+  linkUrl: string;
+  imageUrl: string;
+  publicId: string;
+  position?: number;
+  isActive?: boolean;
+}) {
+  return api.post<ApiResponse<PromoBanner>>("/api/promo-banners", data);
+}
+
+export function updatePromoBanner(id: string, data: {
+  titleEn?: string;
+  titleAr?: string;
+  buttonTextEn?: string;
+  buttonTextAr?: string;
+  linkUrl?: string;
+  imageUrl?: string;
+  publicId?: string;
+  position?: number;
+  isActive?: boolean;
+}) {
+  return api.put<ApiResponse<PromoBanner>>(`/api/promo-banners/${id}`, data);
+}
+
+export function deletePromoBanner(id: string) {
+  return api.delete<ApiResponse<{ message: string }>>(`/api/promo-banners/${id}`);
+}
+
+export function reorderPromoBanners(ids: string[]) {
+  return api.post<ApiResponse<{ message: string }>>("/api/promo-banners/reorder", { ids });
 }

@@ -19,6 +19,12 @@ import {
   updateBanner,
   deleteBanner,
   reorderBanners,
+  getPromoBanners,
+  getPromoBanner,
+  createPromoBanner,
+  updatePromoBanner,
+  deletePromoBanner,
+  reorderPromoBanners,
 } from "./mutations";
 
 // Query keys
@@ -219,6 +225,70 @@ export function useReorderBanners() {
     mutationFn: reorderBanners,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: bannerKeys.all });
+    },
+  });
+}
+
+// Promo Banner query keys
+export const promoBannerKeys = {
+  all: ["promoBanners"] as const,
+  list: () => [...promoBannerKeys.all, "list"] as const,
+  detail: (id: string) => [...promoBannerKeys.all, "detail", id] as const,
+};
+
+// Promo Banner hooks
+export function usePromoBanners() {
+  return useQuery({
+    queryKey: promoBannerKeys.list(),
+    queryFn: getPromoBanners,
+  });
+}
+
+export function usePromoBanner(id: string) {
+  return useQuery({
+    queryKey: promoBannerKeys.detail(id),
+    queryFn: () => getPromoBanner(id),
+    enabled: !!id,
+  });
+}
+
+export function useCreatePromoBanner() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: createPromoBanner,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: promoBannerKeys.all });
+    },
+  });
+}
+
+export function useUpdatePromoBanner() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Parameters<typeof updatePromoBanner>[1] }) =>
+      updatePromoBanner(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: promoBannerKeys.all });
+    },
+  });
+}
+
+export function useDeletePromoBanner() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deletePromoBanner,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: promoBannerKeys.all });
+    },
+  });
+}
+
+export function useReorderPromoBanners() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: reorderPromoBanners,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: promoBannerKeys.all });
     },
   });
 }

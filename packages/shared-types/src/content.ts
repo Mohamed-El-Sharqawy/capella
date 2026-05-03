@@ -94,6 +94,22 @@ export interface Banner {
   updatedAt: string;
 }
 
+// Promo Banner types (homepage promo cards)
+export interface PromoBanner {
+  id: string;
+  titleEn: string;
+  titleAr: string;
+  buttonTextEn: string;
+  buttonTextAr: string;
+  linkUrl: string;
+  imageUrl: string;
+  publicId: string;
+  position: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Instagram Post types (capella - FW25 Drops gallery)
 export interface InstagramPost {
   id: string;
