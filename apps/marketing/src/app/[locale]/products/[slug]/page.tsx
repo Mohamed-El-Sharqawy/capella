@@ -19,30 +19,39 @@ async function getProduct(slug: string) {
 
 async function getRelatedProducts(product: any) {
   const excludeId = product.id;
-  const collectionId = product.collectionId;
-  const parentId = product.collection?.parentId;
+  const collectionIds = product.collections?.map((c: any) => c.id) ?? [];
+  const parentIds = product.collections?.map((c: any) => c.parentId).filter(Boolean) ?? [];
   let products: any[] = [];
 
   try {
-    // 1. Fetch from the same collection
-    if (collectionId) {
-      const resp = await apiGet<{ data: { data: any[] } }>(
-        `/api/products?limit=8&collectionId=${collectionId}`,
-        { next: { revalidate: 60 } }
-      );
-      products = (resp.data.data || []).filter((p: any) => p.id !== excludeId);
+    // 1. Fetch from the same collections
+    if (collectionIds.length > 0) {
+      for (const cid of collectionIds) {
+        if (products.length >= 4) break;
+        const resp = await apiGet<{ data: { data: any[] } }>(
+          `/api/products?limit=8&collectionId=${cid}`,
+          { next: { revalidate: 60 } }
+        );
+        const found = (resp.data.data || []).filter(
+          (p: any) => p.id !== excludeId && !products.some((existing) => existing.id === p.id)
+        );
+        products = [...products, ...found];
+      }
     }
 
-    // 2. If we need more, fetch from the parent collection
-    if (products.length < 4 && parentId) {
-      const resp = await apiGet<{ data: { data: any[] } }>(
-        `/api/products?limit=8&collectionId=${parentId}`,
-        { next: { revalidate: 60 } }
-      );
-      const parentProducts = (resp.data.data || []).filter(
-        (p: any) => p.id !== excludeId && !products.some((existing) => existing.id === p.id)
-      );
-      products = [...products, ...parentProducts];
+    // 2. If we need more, fetch from parent collections
+    if (products.length < 4 && parentIds.length > 0) {
+      for (const parentId of [...new Set(parentIds)]) {
+        if (products.length >= 4) break;
+        const resp = await apiGet<{ data: { data: any[] } }>(
+          `/api/products?limit=8&collectionId=${parentId}`,
+          { next: { revalidate: 60 } }
+        );
+        const parentProducts = (resp.data.data || []).filter(
+          (p: any) => p.id !== excludeId && !products.some((existing) => existing.id === p.id)
+        );
+        products = [...products, ...parentProducts];
+      }
     }
 
     // 3. Fallback to featured products if still not enough

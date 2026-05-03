@@ -22,7 +22,7 @@ model Collection {
 
   image    CollectionImage?
   banner   CollectionBanner?
-  products Product[]
+  productCollections ProductCollection[]
   isActive Boolean      @default(true)
   inHeader Boolean      @default(false)
   isFeaturedOnHome Boolean @default(false) // Show in homepage hero section

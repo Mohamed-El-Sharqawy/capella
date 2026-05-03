@@ -110,7 +110,7 @@ export function ViewProductPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold">
-                  {(product as { collection?: { nameEn: string } }).collection?.nameEn ?? "—"}
+                  {(product as { collections?: { nameEn: string }[] }).collections?.map((c) => c.nameEn).join(", ") || "—"}
                 </p>
               </CardContent>
             </Card>

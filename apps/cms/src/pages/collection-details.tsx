@@ -172,7 +172,7 @@ export function CollectionDetailsPage() {
                 <p className="font-medium">{child.nameEn}</p>
                 <p className="text-sm text-muted-foreground">{child.nameAr}</p>
                 <Badge variant="outline" className="mt-2">
-                  {child._count?.products ?? 0} products
+                   {child._count?.products ?? 0} products
                 </Badge>
               </Link>
             ))}

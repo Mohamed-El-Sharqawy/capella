@@ -33,8 +33,7 @@ model Product {
   isTrending Boolean @default(false)
   position   Int     @default(0)
 
-  collection   Collection? @relation(fields: [collectionId], references: [id])
-  collectionId String?
+  productCollections ProductCollection[]
 
   // Jewellery attributes
   material   Material? @relation(fields: [materialId], references: [id])
@@ -61,7 +60,6 @@ model Product {
   updatedAt DateTime @updatedAt
 
   @@index([slug])
-  @@index([collectionId])
   @@index([gender])
   @@index([isActive, isFeatured])
   @@index([isTrending])
@@ -150,4 +148,21 @@ model ProductVariantImage {
   @@index([imageId])
   @@index([position])
   @@map("product_variant_images")
+}
+
+model ProductCollection {
+  id String @id @default(cuid())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String
+
+  position Int @default(0)
+
+  @@unique([productId, collectionId])
+  @@index([productId])
+  @@index([collectionId])
+  @@map("product_collections")
 }

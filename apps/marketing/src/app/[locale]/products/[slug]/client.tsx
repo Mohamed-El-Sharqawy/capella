@@ -93,8 +93,8 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
     <div className="min-h-screen pt-24 md:pt-32">
       <ProductBreadcrumb
         productName={name}
-        collectionName={isArabic ? product.collection?.nameAr : product.collection?.nameEn}
-        collectionSlug={product.collection?.slug}
+        collectionName={isArabic ? product.collections?.[0]?.nameAr : product.collections?.[0]?.nameEn}
+        collectionSlug={product.collections?.[0]?.slug}
         locale={locale}
       />
 

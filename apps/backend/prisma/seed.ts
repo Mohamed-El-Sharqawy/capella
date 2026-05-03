@@ -114,6 +114,7 @@ async function clearDatabase() {
   await prisma.instagramPost.deleteMany();
   await prisma.banner.deleteMany();
   await prisma.productVariantImage.deleteMany();
+  await prisma.productCollection.deleteMany();
   await prisma.productImage.deleteMany();
   await prisma.productVariant.deleteMany();
   await prisma.product.deleteMany();
@@ -169,8 +170,21 @@ async function main() {
         isActive: true,
         isFeatured: pData.isFeatured,
         position: pData.position,
-        collectionId: colId,
         materialId: materials[Math.floor(Math.random() * materials.length)].id,
+        stoneId: pData.nameEn.includes("Diamond") ? stones[0].id : stones[4].id,
+        clarityId: pData.nameEn.includes("Diamond") ? clarities[0].id : undefined,
+      },
+    });
+
+    await prisma.productCollection.create({
+      data: {
+        productId: product.id,
+        collectionId: colId,
+        position: 0,
+      },
+    });
+
+    const variant = await prisma.productVariant.create({
         stoneId: pData.nameEn.includes("Diamond") ? stones[0].id : stones[4].id,
         clarityId: pData.nameEn.includes("Diamond") ? clarities[0].id : undefined,
       },

@@ -98,7 +98,7 @@ export function EditProductPage() {
   const [metaDescriptionEn, setMetaDescriptionEn] = useState("");
   const [metaDescriptionAr, setMetaDescriptionAr] = useState("");
   const [gender, setGender] = useState<Gender>(Gender.UNISEX);
-  const [collectionId, setCollectionId] = useState("");
+  const [collectionIds, setCollectionIds] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
   const [isFeatured, setIsFeatured] = useState(false);
   const [isTrending, setIsTrending] = useState(false);
@@ -122,7 +122,7 @@ export function EditProductPage() {
       setMetaDescriptionEn(product.metaDescriptionEn ?? "");
       setMetaDescriptionAr(product.metaDescriptionAr ?? "");
       setGender(product.gender as Gender);
-      setCollectionId(product.collectionId ?? "");
+      setCollectionIds((product as any).collections?.map((c: any) => c.id) ?? []);
       setIsActive(product.isActive);
       setIsFeatured(product.isFeatured);
       setIsTrending(product.isTrending ?? false);
@@ -230,7 +230,7 @@ export function EditProductPage() {
         metaDescriptionEn: metaDescriptionEn || undefined,
         metaDescriptionAr: metaDescriptionAr || undefined,
         gender,
-        collectionId: collectionId || undefined,
+        collectionIds: collectionIds.length > 0 ? collectionIds : undefined,
         isActive,
         isFeatured,
         isTrending,
@@ -407,35 +407,56 @@ export function EditProductPage() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Collection</Label>
-                    <Select
-                      value={collectionId || "none"}
-                      onValueChange={(v) => setCollectionId(v === "none" ? "" : v)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select collection" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No Collection</SelectItem>
-                        {collections
-                          .filter((c: any) => !c.parentId)
-                          .map((parent: any) => {
-                            const children = collections.filter((c: any) => c.parentId === parent.id);
-                            return (
-                              <div key={parent.id}>
-                                <SelectItem value={parent.id} className="font-medium">
-                                  {parent.nameEn}
-                                </SelectItem>
-                                {children.map((child: any) => (
-                                  <SelectItem key={child.id} value={child.id} className="pl-6 text-muted-foreground">
-                                    └ {child.nameEn}
-                                  </SelectItem>
-                                ))}
-                              </div>
-                            );
-                          })}
-                      </SelectContent>
-                    </Select>
+                    <Label>Collections</Label>
+                    <div className="border rounded-md p-3 max-h-60 overflow-y-auto space-y-1">
+                      {collections
+                        .filter((c: any) => !c.parentId)
+                        .map((parent: any) => {
+                          const children = collections.filter((c: any) => c.parentId === parent.id);
+                          return (
+                            <div key={parent.id}>
+                              <label className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted/50 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={collectionIds.includes(parent.id)}
+                                  onChange={() =>
+                                    setCollectionIds((prev) =>
+                                      prev.includes(parent.id)
+                                        ? prev.filter((id) => id !== parent.id)
+                                        : [...prev, parent.id]
+                                    )
+                                  }
+                                  className="rounded"
+                                />
+                                <span className="font-medium">{parent.nameEn}</span>
+                              </label>
+                              {children.map((child: any) => (
+                                <label key={child.id} className="flex items-center gap-2 pl-6 pr-2 py-1.5 rounded hover:bg-muted/50 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={collectionIds.includes(child.id)}
+                                    onChange={() =>
+                                      setCollectionIds((prev) =>
+                                        prev.includes(child.id)
+                                          ? prev.filter((id) => id !== child.id)
+                                          : [...prev, child.id]
+                                      )
+                                    }
+                                    className="rounded"
+                                  />
+                                  <span className="text-muted-foreground">└ {child.nameEn}</span>
+                                </label>
+                              ))}
+                            </div>
+                          );
+                        })}
+                      {collections.length === 0 && (
+                        <p className="text-sm text-muted-foreground px-2">No collections available</p>
+                      )}
+                    </div>
+                    {collectionIds.length > 0 && (
+                      <p className="text-xs text-muted-foreground">{collectionIds.length} selected</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label>Gender</Label>

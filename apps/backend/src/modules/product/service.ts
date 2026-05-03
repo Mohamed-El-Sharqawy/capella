@@ -20,8 +20,11 @@ const PRODUCT_INCLUDE = {
   },
   defaultVariant: VARIANT_WITH_IMAGES,
   hoverVariant: VARIANT_WITH_IMAGES,
-  collection: true,
-  images: true, // Product-level images
+  productCollections: {
+    include: { collection: true },
+    orderBy: { position: "asc" as const },
+  },
+  images: true,
   material: true,
   stone: true,
   clarity: true,
@@ -50,18 +53,20 @@ function flattenVariantImages(variant: {
 // Transform product to flatten variant images
 function transformProduct(product: any) {
   if (!product) return null;
+  const { productCollections, ...rest } = product;
   return {
-    ...product,
-    variants: product.variants?.map((v: any) => ({
+    ...rest,
+    variants: rest.variants?.map((v: any) => ({
       ...v,
       images: flattenVariantImages(v),
     })),
-    defaultVariant: product.defaultVariant
-      ? { ...product.defaultVariant, images: flattenVariantImages(product.defaultVariant) }
+    defaultVariant: rest.defaultVariant
+      ? { ...rest.defaultVariant, images: flattenVariantImages(rest.defaultVariant) }
       : null,
-    hoverVariant: product.hoverVariant
-      ? { ...product.hoverVariant, images: flattenVariantImages(product.hoverVariant) }
+    hoverVariant: rest.hoverVariant
+      ? { ...rest.hoverVariant, images: flattenVariantImages(rest.hoverVariant) }
       : null,
+    collections: productCollections?.map((pc: any) => pc.collection) ?? [],
   };
 }
 
@@ -85,21 +90,17 @@ export abstract class ProductService {
         select: { id: true, children: { select: { id: true } } },
       });
       if (collection) {
-        // Get all collection IDs (parent + children)
         const collectionIds = [collection.id, ...collection.children.map((c) => c.id)];
-        where.collectionId = { in: collectionIds };
+        where.productCollections = { some: { collectionId: { in: collectionIds } } };
       }
     } else if (query.collectionId) {
-      // Fetch children for this collection too
       const collection = await prisma.collection.findUnique({
         where: { id: query.collectionId },
         select: { id: true, children: { select: { id: true } } },
       });
       if (collection) {
         const collectionIds = [collection.id, ...collection.children.map((c) => c.id)];
-        where.collectionId = { in: collectionIds };
-      } else {
-        where.collectionId = query.collectionId;
+        where.productCollections = { some: { collectionId: { in: collectionIds } } };
       }
     }
     if (query.isActive !== undefined) where.isActive = query.isActive === "true";
@@ -211,12 +212,20 @@ export abstract class ProductService {
     const existingSlug = await prisma.product.findUnique({ where: { slug } });
     const finalSlug = existingSlug ? `${slug}-${Date.now()}` : slug;
 
-    const { variants, ...productData } = body;
+    const { variants, collectionIds, ...productData } = body;
 
     const product = await prisma.product.create({
       data: {
         ...productData,
         slug: finalSlug,
+        productCollections: collectionIds?.length
+          ? {
+              create: collectionIds.map((id: string, index: number) => ({
+                collectionId: id,
+                position: index,
+              })),
+            }
+          : undefined,
         variants: variants
           ? {
               create: variants.map((v) => ({
@@ -237,9 +246,20 @@ export abstract class ProductService {
     const existing = await prisma.product.findUnique({ where: { id } });
     if (!existing) return null;
 
-    const updateData: Record<string, unknown> = { ...body };
+    const { collectionIds, ...rest } = body;
+    const updateData: Record<string, unknown> = { ...rest };
     if (body.nameEn) {
       updateData.slug = slugify(body.nameEn);
+    }
+
+    if (collectionIds !== undefined) {
+      updateData.productCollections = {
+        deleteMany: {},
+        create: collectionIds.map((cid: string, index: number) => ({
+          collectionId: cid,
+          position: index,
+        })),
+      };
     }
 
     const product = await prisma.product.update({
@@ -368,7 +388,9 @@ export abstract class ProductService {
       // Fetch products from these collections
       const relatedProducts = await prisma.product.findMany({
         where: {
-          collectionId: { in: Array.from(allCollectionIds) },
+          productCollections: {
+            some: { collectionId: { in: Array.from(allCollectionIds) } },
+          },
           id: { notIn: excludeProductIds },
           isActive: true,
         },

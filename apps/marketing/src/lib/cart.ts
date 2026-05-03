@@ -96,9 +96,10 @@ export function getCartTotal(cart: CartItem[]): number {
 
 export function createCartItemFromVariant(
   variant: ProductVariant,
-  product: { id: string; slug: string; nameEn: string; nameAr: string; collectionId?: string | null; collection?: { slug: string } | null },
+  product: { id: string; slug: string; nameEn: string; nameAr: string; collections?: { id: string; slug: string }[] },
   quantity: number = 1
 ): CartItem {
+  const primaryCollection = product.collections?.[0];
   return {
     variantId: variant.id,
     productId: product.id,
@@ -116,7 +117,7 @@ export function createCartItemFromVariant(
     colorNameAr: variant.color?.nameAr,
     sizeNameEn: variant.size?.nameEn,
     sizeNameAr: variant.size?.nameAr,
-    collectionId: product.collectionId ?? undefined,
-    collectionSlug: product.collection?.slug,
+    collectionId: primaryCollection?.id,
+    collectionSlug: primaryCollection?.slug,
   };
 }

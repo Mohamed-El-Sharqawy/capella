@@ -120,7 +120,7 @@ export interface Product {
   badge?: ProductBadge | null;
   isTrending: boolean;
   position: number;
-  collectionId?: string | null;
+  collections: Collection[];
   materialId?: string | null;
   stoneId?: string | null;
   clarityId?: string | null;
@@ -133,15 +133,15 @@ export interface Product {
   hoverVariantId?: string | null;
   hoverVariant?: ProductVariant | null;
   variants: ProductVariant[];
-  images: ProductImage[]; // Product-level images that can be shared across variants
+  images: ProductImage[];
   createdAt: Date;
   updatedAt: Date;
-  collection: Collection;
 }
 
 export interface ProductFilters {
   gender?: Gender;
   collectionId?: string;
+  collectionSlug?: string;
   minPrice?: number;
   maxPrice?: number;
   isActive?: boolean;

@@ -79,7 +79,7 @@ function SortableRow({ product, handleDelete, getLowestPrice, getTotalStock }: S
         </Link>
       </TableCell>
       <TableCell>
-        {(product as any).collection?.nameEn ?? "-"}
+        {(product as any).collections?.[0]?.nameEn ?? (product as any).collections?.length > 1 ? `+${(product as any).collections.length - 1}` : "-"}
       </TableCell>
       <TableCell>
         {product.position}

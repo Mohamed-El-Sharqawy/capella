@@ -14,7 +14,7 @@ export interface CreateProductBody {
   metaDescriptionEn?: string;
   metaDescriptionAr?: string;
   gender: "MEN" | "WOMEN" | "UNISEX";
-  collectionId?: string;
+  collectionIds?: string[];
   isActive?: boolean;
   isFeatured?: boolean;
   isTrending?: boolean;

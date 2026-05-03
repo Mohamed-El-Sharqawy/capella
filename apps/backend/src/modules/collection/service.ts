@@ -6,19 +6,19 @@ import type { CollectionModel } from "./model";
 const COLLECTION_INCLUDE = {
   image: true,
   banner: true,
-  _count: { select: { products: true } },
+  _count: { select: { productCollections: true } },
 } as const;
 
 const COLLECTION_WITH_CHILDREN = {
   image: true,
   banner: true,
-  _count: { select: { products: true } },
+  _count: { select: { productCollections: true } },
   children: {
     where: { isActive: true },
     include: {
       image: true,
       banner: true,
-      _count: { select: { products: true } },
+      _count: { select: { productCollections: true } },
     },
     orderBy: { position: "asc" as const },
   },
@@ -35,13 +35,13 @@ export abstract class CollectionService {
     // Calculate total products for parent (own + children's)
     return collections.map((col) => {
       const childrenProductCount = col.children.reduce(
-        (sum, child) => sum + (child._count?.products ?? 0),
+        (sum, child) => sum + (child._count?.productCollections ?? 0),
         0
       );
       return {
         ...col,
         _count: {
-          products: col._count.products + childrenProductCount,
+          products: col._count.productCollections + childrenProductCount,
         },
       };
     });
@@ -67,10 +67,10 @@ export abstract class CollectionService {
             slug: true,
             nameEn: true,
             nameAr: true,
-            _count: { select: { products: true } },
+            _count: { select: { productCollections: true } },
           },
         },
-        _count: { select: { products: true } },
+        _count: { select: { productCollections: true } },
       },
       orderBy: { position: "asc" },
     });
@@ -78,65 +78,95 @@ export abstract class CollectionService {
     // Calculate total products for parent (own + children's)
     return collections.map((col) => {
       const childrenProductCount = col.children.reduce(
-        (sum, child) => sum + (child._count?.products ?? 0),
+        (sum, child) => sum + (child._count?.productCollections ?? 0),
         0
       );
       return {
         ...col,
         _count: {
-          products: col._count.products + childrenProductCount,
+          products: col._count.productCollections + childrenProductCount,
         },
       };
     });
   }
 
   static async getBySlug(slug: string) {
-    return prisma.collection.findUnique({
+    const result = await prisma.collection.findUnique({
       where: { slug },
       include: {
         ...COLLECTION_INCLUDE,
-        products: {
-          where: { isActive: true },
+        productCollections: {
+          where: { product: { isActive: true } },
           include: {
-            defaultVariant: {
-              include: { images: { orderBy: { position: "asc" } } },
-            },
-            hoverVariant: {
-              include: { images: { orderBy: { position: "asc" } } },
-            },
-            variants: {
-              where: { isActive: true },
-              orderBy: { price: "asc" },
-              take: 1,
+            product: {
+              include: {
+                defaultVariant: {
+                  include: { images: { orderBy: { position: "asc" } } },
+                },
+                hoverVariant: {
+                  include: { images: { orderBy: { position: "asc" } } },
+                },
+                variants: {
+                  where: { isActive: true },
+                  orderBy: { price: "asc" },
+                  take: 1,
+                },
+              },
             },
           },
           take: 20,
         },
       },
     });
+
+    if (!result) return null;
+
+    const { productCollections, ...rest } = result;
+    return {
+      ...rest,
+      products: productCollections.map((pc: any) => pc.product),
+      _count: { products: rest._count.productCollections },
+    };
   }
 
   static async getById(id: string) {
-    return prisma.collection.findUnique({
+    const result = await prisma.collection.findUnique({
       where: { id },
       include: {
         ...COLLECTION_INCLUDE,
         children: {
           include: {
-            _count: { select: { products: true } },
+            _count: { select: { productCollections: true } },
           },
           orderBy: { position: "asc" },
         },
-        products: {
+        productCollections: {
           include: {
-            variants: {
-              select: { id: true, price: true, stock: true },
-              take: 5,
+            product: {
+              include: {
+                variants: {
+                  select: { id: true, price: true, stock: true },
+                  take: 5,
+                },
+              },
             },
           },
         },
       },
     });
+
+    if (!result) return null;
+
+    const { productCollections, children, ...rest } = result;
+    return {
+      ...rest,
+      products: productCollections.map((pc: any) => pc.product),
+      _count: { products: rest._count.productCollections },
+      children: children.map((child: any) => ({
+        ...child,
+        _count: { products: child._count.productCollections },
+      })),
+    };
   }
 
   static async create(body: CollectionModel["createBody"]) {
