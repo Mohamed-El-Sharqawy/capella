@@ -21,7 +21,6 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
     networks:
-      - app-network
       - coolify-network
     labels:
       - "traefik.enable=true"
@@ -51,10 +50,7 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-    links:
-      - "backend:capella-internal-api"
     networks:
-      - app-network
       - coolify-network
     labels:
       - "traefik.enable=true"
@@ -62,8 +58,6 @@ services:
       - "traefik.docker.network=coolify"
 
 networks:
-  app-network:
-    driver: bridge
   coolify-network:
     external: true
     name: ${COOLIFY_DB_NETWORK:-coolify}
