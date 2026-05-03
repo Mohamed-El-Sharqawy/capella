@@ -11,8 +11,9 @@ export async function PromoBanner() {
       <AnimateOnScroll direction="up">
         <div className="relative h-full w-full overflow-hidden rounded-md group" style={{
           minHeight: "700px",
-          background: "url(/promo/promo.png) center / cover no-repeat"
+          // background: "url(/promo/promo.png) center / cover no-repeat"
         }}>
+          <Image loading="lazy" src="/promo/promo.png" alt="Promo" fill className="object-cover" sizes="100vw" quality={100} />
           <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
           <div className="absolute inset-x-0 w-full  text-white text-center p-6 space-y-8" style={{
             bottom: "84px"
