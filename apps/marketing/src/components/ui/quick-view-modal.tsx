@@ -27,7 +27,7 @@ export function QuickViewModal({
   const { addItem } = useCart();
 
   const isArabic = locale === "ar";
-  const name = isArabic ? product.nameAr : product.nameEn;
+  const name = isArabic ? product.nameEn : product.nameEn;
   const description = isArabic
     ? product.shortDescriptionAr || product.descriptionAr
     : product.shortDescriptionEn || product.descriptionEn;

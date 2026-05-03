@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Cairo } from "next/font/google";
+import { Inter, Playfair_Display, Cairo, Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -26,6 +27,11 @@ const cairo = Cairo({
   subsets: ["arabic", "latin"],
   variable: "--font-arabic",
   weight: ["400", "600", "700"],
+  display: "swap",
+});
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
   display: "swap",
 });
 
@@ -93,7 +99,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <head>
         <FacebookPixel />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} ${cairo.variable} font-primary antialiased`} style={isRtl ? { '--font-primary': 'var(--font-arabic)' } as React.CSSProperties : undefined}>
+      <body className={`${inter.variable} ${playfair.variable} ${cairo.variable} ${montserrat.variable} font-primary antialiased`} style={{ '--font-primary': isRtl ? 'var(--font-arabic), sans-serif' : 'var(--font-montserrat), serif' } as React.CSSProperties}>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <Header locale={locale} />

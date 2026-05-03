@@ -41,7 +41,7 @@ export function ProductCardWithVariants({
   }, [cartItems, selectedVariant]);
 
   const isArabic = locale === "ar";
-  const name = isArabic ? product.nameAr : product.nameEn;
+  const name = isArabic ? product.nameEn : product.nameEn;
 
   const price = selectedVariant?.price ?? 0;
   const compareAtPrice = selectedVariant?.compareAtPrice;
@@ -193,34 +193,34 @@ export function ProductCardWithVariants({
             {/* Badges */}
             <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 z-10 pointer-events-none">
               {discountPercent && (
-                <Badge variant="destructive" size="lg" className="shadow-lg border-none">
+                <Badge variant="destructive" size="default" className="shadow-lg border-none">
                   -{discountPercent}%
                 </Badge>
               )}
               {product.isFeatured && (
-                <Badge variant="luxury" size="lg" className="flex gap-1.5 items-center border-none shadow-xl">
+                <Badge variant="luxury" size="default" className="flex gap-1.5 items-center border-none shadow-xl">
                   <Star className="h-2.5 w-2.5 fill-[#B8860B] text-[#B8860B]" />
                   {t("featured")}
                 </Badge>
               )}
               {product.isTrending && (
-                <Badge variant="trending" size="lg" className="flex gap-1.5 items-center border-none shadow-md">
+                <Badge variant="trending" size="default" className="flex gap-1.5 items-center border-none shadow-md">
                   <TrendingUp className="h-2.5 w-2.5" />
                   {t("trending")}
                 </Badge>
               )}
               {product.badge === "NEW" && (
-                <Badge variant="outline" size="lg" className="border-black/5 shadow-sm bg-white/90 backdrop-blur-sm">
+                <Badge variant="outline" size="default" className="border-black/5 shadow-sm bg-white/90 backdrop-blur-sm">
                   {t("badges.new")}
                 </Badge>
               )}
               {product.badge === "BESTSELLER" && (
-                <Badge variant="outline" size="lg" className="border-black/5 shadow-sm bg-white/90 backdrop-blur-sm">
+                <Badge variant="outline" size="default" className="border-black/5 shadow-sm bg-white/90 backdrop-blur-sm">
                   {t("badges.bestseller")}
                 </Badge>
               )}
               {product.badge === "LIMITED_EDITION" && (
-                <Badge variant="luxury" size="lg" className="bg-indigo-950 border-none shadow-xl">
+                <Badge variant="luxury" size="default" className="bg-indigo-950 border-none shadow-xl">
                   {t("badges.limitedEdition")}
                 </Badge>
               )}
@@ -313,7 +313,7 @@ export function ProductCardWithVariants({
           {/* Product Info Section */}
           <Link href={`/products/${product.slug}`} className="block">
             <div className="px-4 pt-3 pb-4 space-y-1.5">
-              <h3 className="font-serif text-sm tracking-wide text-neutral-800 line-clamp-1 transition-colors duration-300 group-hover:text-neutral-950">
+              <h3 className="text-sm tracking-wide text-neutral-800 line-clamp-1 transition-colors duration-300 group-hover:text-neutral-950">
                 {name}
               </h3>
 
