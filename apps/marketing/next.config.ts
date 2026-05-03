@@ -11,8 +11,8 @@ const nextConfig: NextConfig = {
   // Enable static generation with ISR for dynamic pages
   experimental: {
     staleTimes: {
-      dynamic: 30, // 30 seconds for dynamic pages
-      static: 180, // 3 minutes for static pages
+      dynamic: 0,
+      static: 180,
     },
   },
 

@@ -65,9 +65,12 @@ export async function apiClient<T = unknown>(
     fetchOptions.signal = signal;
   }
 
-  // Add a default timeout of 10 seconds to prevent build hangs
+  // Add a default timeout to prevent build hangs
+  // Server-side: 30s (cold starts, ISR revalidation)
+  // Client-side: 10s (snappy UX)
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  const timeout = IS_SERVER ? 30000 : 10000;
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
     const response = await fetch(`${API_URL}${endpoint}`, {

@@ -55,7 +55,8 @@ services:
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
       - INTERNAL_API_URL=http://capella-internal-api:3001
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     links:
       - "backend:capella-internal-api"
     networks:
@@ -65,12 +66,12 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.capella-marketing.loadbalancer.server.port=3000"
       - "traefik.docker.network=coolify"
-    # healthcheck:
-    #   test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/robots.txt"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 30s
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/robots.txt"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   cms:
     build:
@@ -83,7 +84,8 @@ services:
     environment:
       - VITE_API_URL=${VITE_API_URL}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     links:
       - "backend:capella-internal-api"
     networks:
