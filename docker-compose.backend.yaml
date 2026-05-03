@@ -38,41 +38,6 @@ services:
       retries: 5
       start_period: 60s
 
-  marketing:
-    build:
-      context: .
-      dockerfile: apps/marketing/Dockerfile
-      args:
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-        - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-    container_name: capella-marketing
-    restart: unless-stopped
-    expose:
-      - "3000"
-    environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-      - INTERNAL_API_URL=http://capella-internal-api:3001
-    depends_on:
-      backend:
-        condition: service_healthy
-    links:
-      - "backend:capella-internal-api"
-    networks:
-      - app-network
-      - coolify-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.capella-marketing.loadbalancer.server.port=3000"
-      - "traefik.docker.network=coolify"
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/robots.txt"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-
   cms:
     build:
       context: .
@@ -95,17 +60,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.capella-cms.loadbalancer.server.port=80"
       - "traefik.docker.network=coolify"
-
-  # stripe:
-  #   image: stripe/stripe-cli:latest
-  #   container_name: capella-stripe
-  #   command: listen --forward-to http://localhost:3001/api/payments/webhook --api-key ${STRIPE_SECRET_KEY}
-  #   environment:
-  #     - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-  #   profiles:
-  #     - dev
-  #   networks:
-  #     - app-network
 
 networks:
   app-network:
