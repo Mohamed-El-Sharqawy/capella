@@ -53,7 +53,7 @@ function ShoppableVideoCard({
   const product = video.product;
   const variant = product?.variants?.[0];
   const imageUrl = variant?.images?.[0]?.image?.url;
-  const productName = locale === "ar" ? product?.nameAr : product?.nameEn;
+  const productName = locale === "ar" ? product?.nameEn : product?.nameEn;
   const price = variant?.price ?? 0;
   const compareAtPrice = variant?.compareAtPrice;
 
