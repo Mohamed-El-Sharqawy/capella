@@ -33,7 +33,7 @@ export async function PromoBanner() {
           return (
             <AnimateOnScroll key={banner.id} direction="up">
               <div className="relative h-full w-full overflow-hidden rounded-md group" style={{
-                minHeight: "700px",
+                minHeight: "500px",
               }}>
                 <Image
                   loading="lazy"
