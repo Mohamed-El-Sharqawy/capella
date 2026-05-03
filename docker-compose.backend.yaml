@@ -22,10 +22,6 @@ services:
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
     networks:
       - coolify-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.capella-backend.loadbalancer.server.port=3001"
-      - "traefik.docker.network=coolify"
     healthcheck:
       test:
         [
@@ -52,10 +48,6 @@ services:
         condition: service_healthy
     networks:
       - coolify-network
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.capella-cms.loadbalancer.server.port=80"
-      - "traefik.docker.network=coolify"
 
 networks:
   coolify-network:
