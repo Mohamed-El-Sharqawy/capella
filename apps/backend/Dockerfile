@@ -31,4 +31,4 @@ EXPOSE 3001
 
 # Push schema then start from built dist
 # DATABASE_URL is injected by docker-compose/Coolify at runtime
-CMD ["sh", "-c", "pnpm exec prisma db push && bun run dist/index.js"]
+CMD ["sh", "-c", "pnpm exec prisma db push --accept-data-loss && bun run dist/index.js"]
