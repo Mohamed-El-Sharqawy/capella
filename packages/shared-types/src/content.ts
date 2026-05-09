@@ -36,6 +36,8 @@ export interface ShoppableVideo {
       nameEn: string;
       nameAr: string;
     };
+  };
+}
 
 // Customer Review types
 export interface Review {
