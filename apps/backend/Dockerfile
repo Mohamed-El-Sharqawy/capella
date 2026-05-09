@@ -1,6 +1,6 @@
 # Backend Dockerfile - Bun + Elysia + Prisma
 # Build and run from dist for production
-FROM oven/bun:1
+FROM oven/bun:1.2
 WORKDIR /app
 
 # Install pnpm
