@@ -17,13 +17,6 @@ export const CollectionModel = {
     isDisplayedOnCollectionsPage: t.Optional(t.Boolean()),
     position: t.Optional(t.Number()),
     parentId: t.Optional(t.Union([t.String(), t.Null()])),
-    // Banner fields
-    bannerTitleEn: t.Optional(t.String()),
-    bannerTitleAr: t.Optional(t.String()),
-    bannerDescriptionEn: t.Optional(t.String()),
-    bannerDescriptionAr: t.Optional(t.String()),
-    bannerCtaTextEn: t.Optional(t.String()),
-    bannerCtaTextAr: t.Optional(t.String()),
   }),
   updateBody: t.Object({
     nameEn: t.Optional(t.String({ minLength: 1 })),
@@ -41,13 +34,6 @@ export const CollectionModel = {
     isDisplayedOnCollectionsPage: t.Optional(t.Boolean()),
     position: t.Optional(t.Number()),
     parentId: t.Optional(t.Union([t.String(), t.Null()])),
-    // Banner fields
-    bannerTitleEn: t.Optional(t.String()),
-    bannerTitleAr: t.Optional(t.String()),
-    bannerDescriptionEn: t.Optional(t.String()),
-    bannerDescriptionAr: t.Optional(t.String()),
-    bannerCtaTextEn: t.Optional(t.String()),
-    bannerCtaTextAr: t.Optional(t.String()),
   }),
 } as const;
 

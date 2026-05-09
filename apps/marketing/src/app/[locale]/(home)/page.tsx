@@ -54,10 +54,10 @@ export default async function HomePage({ params }: PageProps) {
       <InfiniteMarquee
         text={
           locale === "ar"
-            ? "توصيل مجاني لجميع الطلبات داخل الإمارات فوق <b><i><u>500 درهم</u></i></b>"
-            : "FREE SHIPPING ON ALL UAE ORDERS ABOVE <b><i><u>500 AED</u></i></b>"
+            ? "توصيل مجاني فوق <b><i><u>500 درهم</u></i></b> لجميع الطلبات داخل الإمارات"
+            : "FREE SHIPPING ABOVE <b><i><u>500 AED</u></i></b> ALL OVER UAE"
         }
-        className="bg-black py-6 border-b border-white/10 mt-3"
+        className="bg-black py-3 border-b border-white/10 mt-3"
         textClassName="text-xs md:text-sm font-medium text-white uppercase tracking-[0.2em]"
         separator="•"
         speed="normal"

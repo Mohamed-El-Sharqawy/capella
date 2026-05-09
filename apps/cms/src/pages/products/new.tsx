@@ -11,7 +11,7 @@ import {
   useLinkImageToVariants,
 } from "@/features/products";
 import type { CreateVariantBody } from "@/features/products";
-import { Gender, ProductBadge } from "@ecommerce/shared-types";
+import { Gender } from "@ecommerce/shared-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -89,8 +89,6 @@ export function NewProductPage() {
   const [collectionIds, setCollectionIds] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
   const [isFeatured, setIsFeatured] = useState(false);
-  const [isTrending, setIsTrending] = useState(false);
-  const [badge, setBadge] = useState<ProductBadge | "">("");
   const [materialId, setMaterialId] = useState("");
   const [stoneId, setStoneId] = useState("");
   const [clarityId, setClarityId] = useState("");
@@ -216,8 +214,6 @@ export function NewProductPage() {
         collectionIds: collectionIds.length > 0 ? collectionIds : undefined,
         isActive,
         isFeatured,
-        isTrending,
-        badge: badge || undefined,
         position,
         materialId: materialId || undefined,
         stoneId: stoneId || undefined,
@@ -475,14 +471,6 @@ export function NewProductPage() {
                     />
                     <Label htmlFor="isFeatured">Featured</Label>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      id="isTrending"
-                      checked={isTrending}
-                      onCheckedChange={setIsTrending}
-                    />
-                    <Label htmlFor="isTrending">Trending</Label>
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -499,23 +487,6 @@ export function NewProductPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Badge</Label>
-                    <Select
-                      value={badge || "none"}
-                      onValueChange={(v) => setBadge(v === "none" ? "" : v as ProductBadge)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select badge" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No Badge</SelectItem>
-                        <SelectItem value="NEW">New</SelectItem>
-                        <SelectItem value="BESTSELLER">Bestseller</SelectItem>
-                        <SelectItem value="LIMITED_EDITION">Limited Edition</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                   <div className="space-y-2">
                     <Label>Material</Label>
                     <Select

@@ -28,9 +28,11 @@ export function ShoppableVideos({ videos, locale }: ShoppableVideosProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-12">
           {videos.slice(0, 3).map((video) => (
-            <ShoppableVideoCard key={video.id} video={video} locale={locale} />
+            <div key={video.id} className="max-w-[16rem] md:max-w-none mx-auto w-full">
+              <ShoppableVideoCard video={video} locale={locale} />
+            </div>
           ))}
         </div>
       </div>
@@ -54,6 +56,7 @@ function ShoppableVideoCard({
   const variant = product?.variants?.[0];
   const imageUrl = variant?.images?.[0]?.image?.url;
   const productName = locale === "ar" ? product?.nameEn : product?.nameEn;
+  const material = locale === "ar" ? product?.material?.nameAr : product?.material?.nameEn;
   const price = variant?.price ?? 0;
   const compareAtPrice = variant?.compareAtPrice;
 
@@ -143,10 +146,13 @@ function ShoppableVideoCard({
             )}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium uppercase tracking-widest truncate group-hover/link:opacity-60 transition-opacity">{productName}</p>
-              <div className="flex items-center gap-2 mt-1">
+              {material && (
+                <p className="text-xs text-muted-foreground tracking-wider mt-0.5">{material}</p>
+              )}
+              <div className="flex items-center gap-1.5 mt-1">
                 {compareAtPrice && compareAtPrice > price && (
                   <span className="text-xs text-muted-foreground line-through tracking-wider">
-                    AED {compareAtPrice.toLocaleString()}
+                    {compareAtPrice.toLocaleString()}
                   </span>
                 )}
                 <span className="text-sm font-semibold tracking-wide text-foreground">

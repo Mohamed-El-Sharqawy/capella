@@ -4,11 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Heart } from "lucide-react";
-import type { Product, ProductBadge } from "@ecommerce/shared-types";
+import type { Product } from "@ecommerce/shared-types";
 
 import { useTranslations } from "next-intl";
 import { Badge } from "./badge";
-import { Star, TrendingUp } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
@@ -21,6 +21,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const isArabic = locale === "ar";
   const name = isArabic ? product.nameAr : product.nameEn;
+  const subtitle = isArabic ? product.material?.nameAr : product.material?.nameEn;
 
   const defaultVariant = product.variants?.[0];
   const prices = product.variants?.[0] ? {
@@ -94,34 +95,8 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           )}
 
           {product.isFeatured && (
-            <Badge variant="luxury" size="sm" className="flex gap-1.5 items-center border-none shadow-xl">
-              <Star className="h-2.5 w-2.5 fill-[#B8860B] text-[#B8860B]" />
-              {t("featured")}
-            </Badge>
-          )}
-
-          {product.isTrending && (
-            <Badge variant="trending" size="sm" className="flex gap-1.5 items-center border-none shadow-md">
-              <TrendingUp className="h-2.5 w-2.5" />
-              {t("trending")}
-            </Badge>
-          )}
-
-          {product.badge === "NEW" && (
-            <Badge variant="outline" size="sm" className="border-black/5 shadow-sm">
-              {t("badges.new")}
-            </Badge>
-          )}
-
-          {product.badge === "BESTSELLER" && (
-            <Badge variant="default" size="sm" className="bg-amber-600 border-none shadow-md">
-              {t("badges.bestseller")}
-            </Badge>
-          )}
-
-          {product.badge === "LIMITED_EDITION" && (
-            <Badge variant="luxury" size="sm" className="bg-indigo-950 border-none shadow-xl">
-              {t("badges.limitedEdition")}
+            <Badge variant="secondary" size="sm" className="flex items-center border-none shadow-sm p-1.5 bg-white/90 backdrop-blur-sm">
+              <Star className="h-3 w-3 fill-[#B8860B] text-[#B8860B]" />
             </Badge>
           )}
         </div>
@@ -143,6 +118,11 @@ export function ProductCard({ product, locale }: ProductCardProps) {
         <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.15em] line-clamp-1 group-hover:opacity-60 transition-opacity">
           {name}
         </h3>
+        {subtitle && (
+          <p className="text-xs text-muted-foreground line-clamp-1">
+            {subtitle}
+          </p>
+        )}
         <div className="flex flex-col items-center gap-0.5">
           {compareAtPrice && compareAtPrice > price && (
             <span className="text-xs text-muted-foreground line-through tracking-wider">

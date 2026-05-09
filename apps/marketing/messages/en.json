@@ -8,12 +8,6 @@
     "sale": "Sale",
     "new": "New",
     "featured": "Featured",
-    "trending": "Trending",
-    "badges": {
-      "new": "New",
-      "bestseller": "Bestseller",
-      "limitedEdition": "Limited Edition"
-    },
     "viewFullDetails": "View full product details"
   },
   "header": {
@@ -77,7 +71,11 @@
     "totalForItems": "Total for {count} items",
     "addToCartCount": "Add {count} to Cart",
     "clickToAddRemove": "Click on a product to add or remove it",
-    "checkout": "Checkout"
+    "checkout": "Checkout",
+    "adding": "Adding...",
+    "added": "Added",
+    "quickAdd": "Quick Add",
+    "view": "View"
   },
   "collection": {
     "allProducts": "All Products",
@@ -297,16 +295,7 @@
     },
     "delivery": {
       "title": "Delivery Time",
-      "cairo": "Dubai & Abu Dhabi: 1-2 business days",
-      "alexandria": "Sharjah & Ajman: 1-3 business days",
-      "other": "Other emirates: 2-4 business days"
-    },
-    "costs": {
-      "title": "Shipping Costs",
-      "cairo": "Dubai & Abu Dhabi: 25 AED",
-      "alexandria": "Sharjah & Ajman: 25 AED",
-      "other": "Other emirates: 25 AED",
-      "free": "Free shipping on orders over 500 AED"
+      "description": "All areas within the UAE: 2-5 business days"
     },
     "tracking": {
       "title": "Order Tracking",
@@ -423,18 +412,16 @@
     },
     "returnPeriod": {
       "title": "Return Period",
-      "description": "You may return products within 14 days of receipt. Products must be in their original condition with all tags and packaging intact."
+      "description": "You may return products within 5 days of receipt. Products must be in their original condition with all tags and packaging intact."
     },
     "returnConditions": {
       "title": "Return Conditions",
       "unused": "Products must be unused and in original condition",
-      "tags": "All tags and labels must be attached",
       "receipt": "Original purchase receipt must be included",
       "packaging": "Products must be returned in original packaging"
     },
     "nonReturnable": {
       "title": "Non-Returnable Items",
-      "underwear": "Underwear and swimwear",
       "custom": "Customized or made-to-order products",
       "sale": "Final sale items"
     },
@@ -447,7 +434,7 @@
     },
     "refundEligibility": {
       "title": "Refund Eligibility",
-      "time": "Refund must be requested within 14 days of receipt",
+      "time": "Refund must be requested within 5 days of receipt",
       "condition": "Products must be in original condition",
       "proof": "Proof of purchase must be included"
     },

@@ -63,18 +63,14 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
               <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/15 to-transparent transition-colors duration-700 group-hover:from-black/70 group-hover:via-black/25" />
 
               {/* Content */}
-              <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 md:pb-10 text-white">
+              <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 md:pb-6 text-white">
                 {/* Decorative line */}
-                <span className="block w-6 h-px bg-white/60 mb-3 transition-all duration-700 group-hover:w-10 group-hover:bg-white/90" />
 
                 <h3 className="text-sm md:text-base font-light uppercase tracking-[0.2em] md:tracking-[0.3em] transition-all duration-700 group-hover:-translate-y-1">
                   {isArabic ? collection.nameAr : collection.nameEn}
                 </h3>
 
-                {/* "Shop Now" reveal on hover */}
-                <span className="mt-2 text-xs md:text-sm uppercase tracking-[0.2em] text-white/0 transition-all duration-500 translate-y-2 group-hover:text-white/80 group-hover:translate-y-0">
-                  {isArabic ? "تسوّقي الآن" : "Shop Now"}
-                </span>
+                <span className="block w-6 h-px bg-white/60 mt-3 transition-all duration-700 group-hover:w-10 group-hover:bg-white/90" />
               </div>
             </Link>
           </AnimateOnScroll>

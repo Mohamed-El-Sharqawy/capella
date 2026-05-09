@@ -10,7 +10,7 @@ import { createCartItemFromVariant } from "@/lib/cart";
 import { QuickViewModal } from "./quick-view-modal";
 import { useTranslations } from "next-intl";
 import { Badge } from "./badge";
-import { Star, TrendingUp } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface ProductCardHorizontalProps {
   product: Product;
@@ -106,34 +106,8 @@ export function ProductCardHorizontal({
               )}
 
               {product.isFeatured && (
-                <Badge variant="luxury" size="sm" className="flex gap-1.5 items-center border-none shadow-xl">
-                  <Star className="h-2.5 w-2.5 fill-[#B8860B] text-[#B8860B]" />
-                  {t("featured")}
-                </Badge>
-              )}
-
-              {product.isTrending && (
-                <Badge variant="trending" size="sm" className="flex gap-1.5 items-center border-none shadow-md">
-                  <TrendingUp className="h-2.5 w-2.5" />
-                  {t("trending")}
-                </Badge>
-              )}
-
-              {product.badge === "NEW" && (
-                <Badge variant="outline" size="sm" className="border-black/5 shadow-sm">
-                  {t("badges.new")}
-                </Badge>
-              )}
-
-              {product.badge === "BESTSELLER" && (
-                <Badge variant="outline" size="sm" className="border-black/5 shadow-sm">
-                  {t("badges.bestseller")}
-                </Badge>
-              )}
-
-              {product.badge === "LIMITED_EDITION" && (
-                <Badge variant="luxury" size="sm" className="bg-indigo-950 border-none shadow-xl">
-                  {t("badges.limitedEdition")}
+                <Badge variant="secondary" size="sm" className="flex items-center border-none shadow-sm p-1.5 bg-white/90 backdrop-blur-sm">
+                  <Star className="h-3 w-3 fill-[#B8860B] text-[#B8860B]" />
                 </Badge>
               )}
             </div>

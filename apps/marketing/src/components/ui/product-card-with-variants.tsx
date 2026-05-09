@@ -11,7 +11,7 @@ import { createCartItemFromVariant } from "@/lib/cart";
 import { trackQuickAddToCart } from "@/lib/analytics";
 import { QuickViewModal } from "./quick-view-modal";
 import { Badge } from "./badge";
-import { TrendingUp, Star } from "lucide-react";
+import { Star } from "lucide-react";
 
 interface ProductCardWithVariantsProps {
   product: Product;
@@ -22,7 +22,7 @@ export function ProductCardWithVariants({
   product,
   locale,
 }: ProductCardWithVariantsProps) {
-  const t = useTranslations("common");
+  const t = useTranslations("product");
   const { items: cartItems, addItem, updateQuantity } = useCart();
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
@@ -41,7 +41,8 @@ export function ProductCardWithVariants({
   }, [cartItems, selectedVariant]);
 
   const isArabic = locale === "ar";
-  const name = isArabic ? product.nameEn : product.nameEn;
+  const name = isArabic ? product.nameAr : product.nameEn;
+  const subtitle = isArabic ? product.material?.nameAr : product.material?.nameEn;
 
   const price = selectedVariant?.price ?? 0;
   const compareAtPrice = selectedVariant?.compareAtPrice;
@@ -191,37 +192,16 @@ export function ProductCardWithVariants({
             </Link>
 
             {/* Badges */}
-            <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 z-10 pointer-events-none">
+            <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 z-10 pointer-events-none" dir="ltr">
               {discountPercent && (
                 <Badge variant="destructive" size="default" className="shadow-lg border-none">
                   -{discountPercent}%
                 </Badge>
               )}
+
               {product.isFeatured && (
-                <Badge variant="luxury" size="default" className="flex gap-1.5 items-center border-none shadow-xl">
-                  <Star className="h-2.5 w-2.5 fill-[#B8860B] text-[#B8860B]" />
-                  {t("featured")}
-                </Badge>
-              )}
-              {product.isTrending && (
-                <Badge variant="trending" size="default" className="flex gap-1.5 items-center border-none shadow-md">
-                  <TrendingUp className="h-2.5 w-2.5" />
-                  {t("trending")}
-                </Badge>
-              )}
-              {product.badge === "NEW" && (
-                <Badge variant="outline" size="default" className="border-black/5 shadow-sm bg-white/90 backdrop-blur-sm">
-                  {t("badges.new")}
-                </Badge>
-              )}
-              {product.badge === "BESTSELLER" && (
-                <Badge variant="outline" size="default" className="border-black/5 shadow-sm bg-white/90 backdrop-blur-sm">
-                  {t("badges.bestseller")}
-                </Badge>
-              )}
-              {product.badge === "LIMITED_EDITION" && (
-                <Badge variant="luxury" size="default" className="bg-indigo-950 border-none shadow-xl">
-                  {t("badges.limitedEdition")}
+                <Badge variant="secondary" size="default" className="flex items-center border-none shadow-md p-1.5 bg-white/90 backdrop-blur-sm">
+                  <Star className="h-3 w-3 fill-[#B8860B] text-[#B8860B]" />
                 </Badge>
               )}
             </div>
@@ -234,7 +214,7 @@ export function ProductCardWithVariants({
                 }`}
             >
               <div className="bg-white/95 backdrop-blur-md shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
-                <div className="flex">
+                <div className="flex flex-nowrap">
                   {cartItem ? (
                     <>
                       <div className="flex-1 flex items-center justify-center gap-1 py-3">
@@ -253,12 +233,13 @@ export function ProductCardWithVariants({
                         </button>
                       </div>
                       <div className="border-l border-neutral-200" />
-                      <Link
+                       <Link
                         href="/checkout"
-                        className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold tracking-[0.15em] uppercase cursor-pointer bg-foreground text-background hover:bg-foreground/85 transition-all duration-200 active:scale-[0.98]"
+                        className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold tracking-[0.15em] uppercase cursor-pointer bg-foreground text-background hover:bg-foreground/85 transition-all duration-200 active:scale-[0.98]"
+                        style={{ fontSize: "10px" }}
                       >
                         <ShoppingCart className="h-3.5 w-3.5" />
-                        Checkout
+                        {t("checkout")}
                       </Link>
                     </>
                   ) : (
@@ -266,7 +247,8 @@ export function ProductCardWithVariants({
                       <button
                         onClick={handleQuickAdd}
                         disabled={isAdding}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold tracking-[0.15em] uppercase cursor-pointer bg-background text-foreground hover:bg-black hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                        className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold tracking-[0.15em] uppercase cursor-pointer bg-background text-foreground hover:bg-black hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                        style={{ fontSize: "10px" }}
                       >
                         {isAdding ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -275,16 +257,17 @@ export function ProductCardWithVariants({
                         ) : (
                           <ShoppingBag className="h-3.5 w-3.5" />
                         )}
-                        {isAdding ? "Adding..." : justAdded ? "Added" : "Quick Add"}
+                        {isAdding ? t("adding") : justAdded ? t("added") : t("quickAdd")}
                       </button>
 
                       <div className="border-l border-neutral-200" />
                       <button
                         onClick={() => setIsQuickViewOpen(true)}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 text-xs font-semibold tracking-[0.15em] uppercase cursor-pointer transition-all duration-200 bg-background text-foreground hover:bg-black hover:text-white active:scale-[0.98]"
+                        className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold tracking-[0.15em] uppercase cursor-pointer transition-all duration-200 bg-background text-foreground hover:bg-black hover:text-white active:scale-[0.98]"
+                        style={{ fontSize: "10px" }}
                       >
                         <Eye className="h-3.5 w-3.5" />
-                        View
+                        {t("view")}
                       </button>
                     </>
                   )}
@@ -316,14 +299,19 @@ export function ProductCardWithVariants({
               <h3 className="text-sm tracking-wide text-neutral-800 line-clamp-1 transition-colors duration-300 group-hover:text-neutral-950">
                 {name}
               </h3>
+              {subtitle && (
+                <p className="text-xs text-muted-foreground line-clamp-1">
+                  {subtitle}
+                </p>
+              )}
 
-              <div className="flex items-baseline gap-2">
+              <div className="flex items-baseline gap-1.5">
                 <span className="text-sm font-semibold tracking-wide text-foreground">
                   AED {price.toLocaleString()}
                 </span>
                 {compareAtPrice && compareAtPrice > price && (
                   <span className="text-xs text-muted-foreground line-through">
-                    AED {compareAtPrice.toLocaleString()}
+                    {compareAtPrice.toLocaleString()}
                   </span>
                 )}
               </div>

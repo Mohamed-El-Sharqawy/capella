@@ -4,6 +4,7 @@ import { CloudinaryService } from "../../lib/cloudinary";
 const SHOPPABLE_VIDEO_INCLUDE = {
   product: {
     include: {
+      material: true,
       variants: {
         where: { isActive: true },
         orderBy: { createdAt: "asc" as const },

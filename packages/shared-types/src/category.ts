@@ -6,6 +6,12 @@ export interface CollectionImage {
   altAr?: string | null;
 }
 
+export interface CollectionVideo {
+  id: string;
+  url: string;
+  publicId: string;
+}
+
 export interface Collection {
   id: string;
   slug: string;
@@ -18,6 +24,7 @@ export interface Collection {
   metaDescriptionEn?: string | null;
   metaDescriptionAr?: string | null;
   image?: CollectionImage | null;
+  video?: CollectionVideo | null;
   isActive: boolean;
   inHeader?: boolean;
   isFeaturedOnHome?: boolean;

@@ -6,6 +6,8 @@ import {
   deleteCollection,
   uploadCollectionImage,
   deleteCollectionImage,
+  uploadCollectionVideo,
+  deleteCollectionVideo,
   type CreateCollectionBody,
   type UpdateCollectionBody,
 } from "./mutations";
@@ -96,6 +98,27 @@ export function useDeleteCollectionImage() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (collectionId: string) => deleteCollectionImage(collectionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: collectionKeys.all });
+    },
+  });
+}
+
+export function useUploadCollectionVideo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ collectionId, file }: { collectionId: string; file: File }) =>
+      uploadCollectionVideo(collectionId, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: collectionKeys.all });
+    },
+  });
+}
+
+export function useDeleteCollectionVideo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (collectionId: string) => deleteCollectionVideo(collectionId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: collectionKeys.all });
     },

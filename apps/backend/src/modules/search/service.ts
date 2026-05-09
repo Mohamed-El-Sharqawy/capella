@@ -39,7 +39,6 @@ export abstract class SearchService {
           slug: true,
           nameEn: true,
           nameAr: true,
-          badge: true,
           material: { select: { id: true, nameEn: true, nameAr: true } },
           stone: { select: { id: true, nameEn: true, nameAr: true } },
           clarity: { select: { id: true, nameEn: true, nameAr: true } },
@@ -93,7 +92,6 @@ export abstract class SearchService {
       nameAr: p.nameAr,
       price: p.variants[0]?.price ?? null,
       imageUrl: p.variants[0]?.images[0]?.image?.url ?? null,
-      badge: p.badge,
       material: p.material,
       stone: p.stone,
       clarity: p.clarity,
@@ -163,7 +161,6 @@ export abstract class SearchService {
         slug: true,
         nameEn: true,
         nameAr: true,
-        badge: true,
         material: { select: { id: true, nameEn: true, nameAr: true } },
         stone: { select: { id: true, nameEn: true, nameAr: true } },
         variants: {
@@ -182,21 +179,20 @@ export abstract class SearchService {
       },
     });
 
-    // 2. If fewer than 5, supplement with isTrending products
+    // 2. If fewer than 5, supplement with featured products
     if (trendingProducts.length < 5) {
       const existingIds = new Set(trendingProducts.map((p) => p.id));
       const additionalProducts = await prisma.product.findMany({
         where: {
           id: { notIn: Array.from(existingIds) },
           isActive: true,
-          isTrending: true,
+          isFeatured: true,
         },
         select: {
           id: true,
           slug: true,
           nameEn: true,
           nameAr: true,
-          badge: true,
           material: { select: { id: true, nameEn: true, nameAr: true } },
           stone: { select: { id: true, nameEn: true, nameAr: true } },
           variants: {
@@ -227,7 +223,6 @@ export abstract class SearchService {
       nameAr: p.nameAr,
       price: p.variants[0]?.price ?? null,
       imageUrl: p.variants[0]?.images[0]?.image?.url ?? null,
-      badge: p.badge,
       material: p.material,
       stone: p.stone,
     }));

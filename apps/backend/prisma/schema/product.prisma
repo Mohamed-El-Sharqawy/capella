@@ -4,12 +4,6 @@ enum Gender {
   UNISEX
 }
 
-enum ProductBadge {
-  NEW
-  BESTSELLER
-  LIMITED_EDITION
-}
-
 model Product {
   id   String @id @default(cuid())
   slug String @unique
@@ -29,8 +23,6 @@ model Product {
   gender     Gender
   isActive   Boolean @default(true)
   isFeatured Boolean @default(false)
-  badge      ProductBadge?
-  isTrending Boolean @default(false)
   position   Int     @default(0)
 
   productCollections ProductCollection[]
@@ -62,9 +54,7 @@ model Product {
   @@index([slug])
   @@index([gender])
   @@index([isActive, isFeatured])
-  @@index([isTrending])
   @@index([position])
-  @@index([badge])
   @@index([materialId])
   @@index([stoneId])
   @@index([clarityId])

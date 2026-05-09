@@ -35,6 +35,9 @@ export const ImageModel = {
     altEn: t.Optional(t.String()),
     altAr: t.Optional(t.String()),
   }),
+  uploadCollectionVideo: t.Object({
+    file: t.File({ type: "video", maxSize: "100m" }),
+  }),
   uploadGeneric: t.Object({
     file: t.File({ type: "image", maxSize: "10m" }),
     folder: t.String(),

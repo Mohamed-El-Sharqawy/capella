@@ -17,8 +17,6 @@ export interface CreateProductBody {
   collectionIds?: string[];
   isActive?: boolean;
   isFeatured?: boolean;
-  isTrending?: boolean;
-  badge?: "NEW" | "BESTSELLER" | "LIMITED_EDITION";
   materialId?: string;
   stoneId?: string;
   clarityId?: string;

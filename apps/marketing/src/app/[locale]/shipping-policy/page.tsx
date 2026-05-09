@@ -37,21 +37,7 @@ export default async function ShippingPolicyPage({ params }: PageProps) {
 
         <section>
           <h2 className="text-xl font-semibold mb-4">{t("delivery.title")}</h2>
-          <ul className="list-disc list-inside text-gray-600 space-y-2">
-            <li>{t("delivery.cairo")}</li>
-            <li>{t("delivery.alexandria")}</li>
-            <li>{t("delivery.other")}</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold mb-4">{t("costs.title")}</h2>
-          <ul className="list-disc list-inside text-gray-600 space-y-2">
-            <li>{t("costs.cairo")}</li>
-            <li>{t("costs.alexandria")}</li>
-            <li>{t("costs.other")}</li>
-            <li>{t("costs.free")}</li>
-          </ul>
+          <p className="text-gray-600 leading-relaxed">{t("delivery.description")}</p>
         </section>
 
         <section>

@@ -21,7 +21,7 @@ import {
   useUnlinkImageFromVariant,
 } from "@/features/products";
 import type { UpdateProductBody, CreateVariantBody, UpdateVariantBody } from "@/features/products";
-import { Gender, ProductBadge } from "@ecommerce/shared-types";
+import { Gender } from "@ecommerce/shared-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -101,8 +101,6 @@ export function EditProductPage() {
   const [collectionIds, setCollectionIds] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
   const [isFeatured, setIsFeatured] = useState(false);
-  const [isTrending, setIsTrending] = useState(false);
-  const [badge, setBadge] = useState<ProductBadge | "">("");
   const [materialId, setMaterialId] = useState("");
   const [stoneId, setStoneId] = useState("");
   const [clarityId, setClarityId] = useState("");
@@ -125,8 +123,6 @@ export function EditProductPage() {
       setCollectionIds((product as any).collections?.map((c: any) => c.id) ?? []);
       setIsActive(product.isActive);
       setIsFeatured(product.isFeatured);
-      setIsTrending(product.isTrending ?? false);
-      setBadge((product as any).badge ?? "");
       setMaterialId((product as any).materialId ?? "");
       setStoneId((product as any).stoneId ?? "");
       setClarityId((product as any).clarityId ?? "");
@@ -233,8 +229,6 @@ export function EditProductPage() {
         collectionIds: collectionIds.length > 0 ? collectionIds : undefined,
         isActive,
         isFeatured,
-        isTrending,
-        badge: badge || undefined,
         position,
         materialId: materialId || undefined,
         stoneId: stoneId || undefined,
@@ -482,10 +476,6 @@ export function EditProductPage() {
                     <Switch id="isFeatured" checked={isFeatured} onCheckedChange={setIsFeatured} />
                     <Label htmlFor="isFeatured">Featured</Label>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Switch id="isTrending" checked={isTrending} onCheckedChange={setIsTrending} />
-                    <Label htmlFor="isTrending">Trending</Label>
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -502,23 +492,6 @@ export function EditProductPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Badge</Label>
-                    <Select
-                      value={badge || "none"}
-                      onValueChange={(v) => setBadge(v === "none" ? "" : v as ProductBadge)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select badge" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No Badge</SelectItem>
-                        <SelectItem value="NEW">New</SelectItem>
-                        <SelectItem value="BESTSELLER">Bestseller</SelectItem>
-                        <SelectItem value="LIMITED_EDITION">Limited Edition</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                   <div className="space-y-2">
                     <Label>Material</Label>
                     <Select

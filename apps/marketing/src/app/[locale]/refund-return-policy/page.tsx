@@ -47,7 +47,7 @@ export default async function RefundReturnPolicyPage({ params }: PageProps) {
           <h2 className="text-xl font-semibold mb-4">{t("returnConditions.title")}</h2>
           <ul className="list-disc list-inside text-gray-600 space-y-2">
             <li>{t("returnConditions.unused")}</li>
-            <li>{t("returnConditions.tags")}</li>
+            {/* <li>{t("returnConditions.tags")}</li> */}
             <li>{t("returnConditions.receipt")}</li>
             <li>{t("returnConditions.packaging")}</li>
           </ul>
@@ -57,7 +57,7 @@ export default async function RefundReturnPolicyPage({ params }: PageProps) {
         <section>
           <h2 className="text-xl font-semibold mb-4">{t("nonReturnable.title")}</h2>
           <ul className="list-disc list-inside text-gray-600 space-y-2">
-            <li>{t("nonReturnable.underwear")}</li>
+            {/* <li>{t("nonReturnable.underwear")}</li> */}
             <li>{t("nonReturnable.custom")}</li>
             <li>{t("nonReturnable.sale")}</li>
           </ul>

@@ -116,7 +116,13 @@ export default async function CollectionPage({ params }: PageProps) {
     getInitialProducts(slug),
   ]);
 
-  // Get page title based on slug
+  const currentCollection = slug === "all-products"
+    ? null
+    : collections.find((c: any) => c.slug === slug) ??
+      (await getCollection(slug));
+
+  const videoUrl = (currentCollection as any)?.video?.url ?? null;
+
   const getTitle = () => {
     if (slug === "all-products") return t("allProducts");
     if (slug === "men") return t("men");
@@ -133,6 +139,7 @@ export default async function CollectionPage({ params }: PageProps) {
       collections={collections}
       initialProducts={initialData.data}
       initialMeta={initialData.meta}
+      videoUrl={videoUrl}
     />
   );
 }

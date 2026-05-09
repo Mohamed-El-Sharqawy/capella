@@ -7,6 +7,7 @@ export interface CollectionPageClientProps {
   collections: Collection[];
   initialProducts: Product[];
   initialMeta: ProductMeta;
+  videoUrl?: string | null;
 }
 
 export interface ProductMeta {

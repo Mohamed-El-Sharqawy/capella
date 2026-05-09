@@ -32,8 +32,10 @@ export interface ShoppableVideo {
         };
       }>;
     }>;
-  };
-}
+    material?: {
+      nameEn: string;
+      nameAr: string;
+    };
 
 // Customer Review types
 export interface Review {

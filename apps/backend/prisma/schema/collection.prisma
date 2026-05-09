@@ -12,16 +12,8 @@ model Collection {
   metaDescriptionEn String? @db.Text
   metaDescriptionAr String? @db.Text
 
-  // Banner fields
-  bannerTitleEn       String?
-  bannerTitleAr       String?
-  bannerDescriptionEn String? @db.Text
-  bannerDescriptionAr String? @db.Text
-  bannerCtaTextEn     String?
-  bannerCtaTextAr     String?
-
   image    CollectionImage?
-  banner   CollectionBanner?
+  video    CollectionVideo?
   productCollections ProductCollection[]
   isActive Boolean      @default(true)
   inHeader Boolean      @default(false)
@@ -60,18 +52,16 @@ model CollectionImage {
   @@map("collection_images")
 }
 
-model CollectionBanner {
+model CollectionVideo {
   id           String     @id @default(cuid())
   collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
   collectionId String     @unique
 
   url      String
-  publicId String // Cloudinary public ID
-  altEn    String?
-  altAr    String?
+  publicId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("collection_banners")
+  @@map("collection_videos")
 }

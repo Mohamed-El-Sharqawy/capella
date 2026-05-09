@@ -108,7 +108,22 @@ export const image = new Elysia({ prefix: "/images" })
     return { success: true as const, message: "Image deleted" };
   }, { isEditor: true })
 
-  // Generic upload (for banners, etc.)
+  .post("/collections/:collectionId/video", async ({ params, body }) => {
+    const video = await ImageService.setCollectionVideo(
+      params.collectionId,
+      body.file as File
+    );
+    if (!video) return status(404, { success: false as const, error: "Collection not found" });
+    return status(201, { success: true as const, data: video });
+  }, { isEditor: true, body: ImageModel.uploadCollectionVideo })
+
+  .delete("/collections/:collectionId/video", async ({ params }) => {
+    const result = await ImageService.deleteCollectionVideo(params.collectionId);
+    if (!result) return status(404, { success: false as const, error: "Video not found" });
+    return { success: true as const, message: "Video deleted" };
+  }, { isEditor: true })
+
+  // Generic upload
   .post("/upload", async ({ body }) => {
     const result = await ImageService.uploadGeneric(body.file as File, body.folder);
     return status(201, { success: true as const, data: result });

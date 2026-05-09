@@ -6,12 +6,6 @@ export enum Gender {
   UNISEX = "UNISEX",
 }
 
-export enum ProductBadge {
-  NEW = "NEW",
-  BESTSELLER = "BESTSELLER",
-  LIMITED_EDITION = "LIMITED_EDITION",
-}
-
 export interface Color {
   id: string;
   nameEn: string;
@@ -117,8 +111,6 @@ export interface Product {
   gender: Gender;
   isActive: boolean;
   isFeatured: boolean;
-  badge?: ProductBadge | null;
-  isTrending: boolean;
   position: number;
   collections: Collection[];
   materialId?: string | null;

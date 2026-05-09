@@ -305,7 +305,41 @@ export abstract class ImageService {
     return true;
   }
 
-  // Generic upload (for banners, etc.) - returns URL and publicId without DB storage
+  static async setCollectionVideo(collectionId: string, file: File) {
+    const collection = await prisma.collection.findUnique({
+      where: { id: collectionId },
+      include: { video: true },
+    });
+    if (!collection) return null;
+
+    if (collection.video) {
+      await CloudinaryService.deleteVideo(collection.video.publicId);
+      await prisma.collectionVideo.delete({ where: { id: collection.video.id } });
+    }
+
+    const upload = await CloudinaryService.uploadVideo(file, "collections/videos");
+
+    return prisma.collectionVideo.create({
+      data: {
+        collectionId,
+        url: upload.url,
+        publicId: upload.publicId,
+      },
+    });
+  }
+
+  static async deleteCollectionVideo(collectionId: string) {
+    const video = await prisma.collectionVideo.findUnique({
+      where: { collectionId },
+    });
+    if (!video) return null;
+
+    await CloudinaryService.deleteVideo(video.publicId);
+    await prisma.collectionVideo.delete({ where: { id: video.id } });
+    return true;
+  }
+
+  // Generic upload - returns URL and publicId without DB storage
   static async uploadGeneric(file: File, folder: string) {
     const upload = await CloudinaryService.upload(file, folder);
     return {

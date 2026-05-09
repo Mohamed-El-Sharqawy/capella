@@ -119,7 +119,6 @@ async function clearDatabase() {
   await prisma.productVariant.deleteMany();
   await prisma.product.deleteMany();
   await prisma.collectionImage.deleteMany();
-  await prisma.collectionBanner.deleteMany();
   await prisma.collection.deleteMany();
   await prisma.material.deleteMany();
   await prisma.stone.deleteMany();

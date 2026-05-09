@@ -362,7 +362,7 @@ export function QuickViewModal({
                 onClick={handleAddToCart}
                 className="w-full py-4 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-[0.2em] hover:bg-primary/95 transition-all shadow-sm active:scale-[0.98]"
               >
-                {tCommon("addToCart")} • AED {(price * quantity).toLocaleString()}
+                {tCommon("addToCart")}
               </button>
               <Link
                 href={`/products/${product.slug}`}

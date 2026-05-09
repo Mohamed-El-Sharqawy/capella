@@ -10,6 +10,12 @@ export interface CollectionImage {
   altAr?: string | null;
 }
 
+export interface CollectionVideo {
+  id: string;
+  url: string;
+  publicId: string;
+}
+
 export interface CreateCollectionBody {
   nameEn: string;
   nameAr: string;
@@ -19,10 +25,6 @@ export interface CreateCollectionBody {
   metaTitleAr?: string;
   metaDescriptionEn?: string;
   metaDescriptionAr?: string;
-  bannerTitleEn?: string;
-  bannerTitleAr?: string;
-  bannerSubtitleEn?: string;
-  bannerSubtitleAr?: string;
 }
 
 export type UpdateCollectionBody = Partial<CreateCollectionBody>;
@@ -58,5 +60,20 @@ export function uploadCollectionImage(
 export function deleteCollectionImage(collectionId: string) {
   return api.delete<ApiResponse<{ message: string }>>(
     `/api/images/collections/${collectionId}`
+  );
+}
+
+export function uploadCollectionVideo(collectionId: string, file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  return api.post<ApiResponse<CollectionVideo>>(
+    `/api/images/collections/${collectionId}/video`,
+    formData
+  );
+}
+
+export function deleteCollectionVideo(collectionId: string) {
+  return api.delete<ApiResponse<{ message: string }>>(
+    `/api/images/collections/${collectionId}/video`
   );
 }
