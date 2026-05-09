@@ -24,4 +24,4 @@ ENV PORT=3001
 
 EXPOSE 3001
 
-CMD ["sh", "-c", "pnpm exec prisma db push && bun run dist/index.js"]
+CMD ["sh", "-c", "pnpm exec prisma db push --accept-data-loss && bun run dist/index.js"]
