@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Search, X, Loader2, Package, FolderTree } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { apiGet } from "@/lib/api-client";
 import { trackSearch } from "@/lib/analytics";
@@ -34,6 +34,7 @@ interface SearchResults {
 export function GlobalSearch() {
   const locale = useLocale();
   const isArabic = locale === "ar";
+  const t = useTranslations("search");
 
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -131,7 +132,7 @@ export function GlobalSearch() {
       <button
         onClick={handleOpen}
         className="p-2 hover:opacity-70 transition-opacity"
-        aria-label={isArabic ? "بحث" : "Search"}
+        aria-label={t("ariaLabel")}
       >
         <Search className="h-5 w-5" />
       </button>
@@ -156,7 +157,7 @@ export function GlobalSearch() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder={isArabic ? "ابحث عن منتجات أو مجموعات..." : "Search products or collections..."}
+                  placeholder={t("placeholder")}
                   className="flex-1 outline-none text-base"
                   dir={isArabic ? "rtl" : "ltr"}
                 />
@@ -174,7 +175,7 @@ export function GlobalSearch() {
                 <div className="max-h-[60vh] overflow-y-auto">
                   {query.length >= 2 && !isLoading && !hasResults && (
                     <div className="p-8 text-center text-gray-500 text-sm">
-                      {isArabic ? "لا توجد نتائج" : "No results found"}
+                      {t("noResults")}
                     </div>
                   )}
 
@@ -183,7 +184,7 @@ export function GlobalSearch() {
                     <div className="p-2">
                       <div className="flex items-center gap-2 px-2 py-1 text-xs font-medium text-gray-500 uppercase">
                         <Package className="h-3 w-3" />
-                        {isArabic ? "المنتجات" : "Products"}
+                        {t("products")}
                       </div>
                       {results.products.map((product) => (
                         <Link
@@ -223,7 +224,7 @@ export function GlobalSearch() {
                     <div className="p-2 border-t">
                       <div className="flex items-center gap-2 px-2 py-1 text-xs font-medium text-gray-500 uppercase">
                         <FolderTree className="h-3 w-3" />
-                        {isArabic ? "المجموعات" : "Collections"}
+                        {t("collections")}
                       </div>
                       {results.collections.map((collection) => (
                         <Link
@@ -259,7 +260,7 @@ export function GlobalSearch() {
                         onClick={handleResultClick}
                         className="block text-center text-sm text-gray-600 hover:text-black transition"
                       >
-                        {isArabic ? "عرض جميع النتائج" : "View all results"}
+                        {t("viewAllResults")}
                       </Link>
                     </div>
                   )}

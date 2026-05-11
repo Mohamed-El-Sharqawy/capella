@@ -22,7 +22,6 @@ import {
   FixedBottomBar,
   ProductPageSkeleton,
 } from "./components";
-import { ProductSlider } from "@/components/ui";
 import type { ProductPageClientProps } from "./types";
 
 function ProductPageContent({ product, relatedProducts, locale }: ProductPageClientProps) {

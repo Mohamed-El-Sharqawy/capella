@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 
 interface InfiniteMarqueeProps {
-  text: string;
+  text: React.ReactNode;
   className?: string;
   textClassName?: string;
   separator?: string;
@@ -25,32 +25,34 @@ export function InfiniteMarquee({
     fast: "animate-marquee-fast",
   }[speed];
 
-  const items = Array(20).fill(`${text} ${separator} `);
+  const items = Array(20).fill(null);
 
   return (
     <div className={cn("overflow-hidden", className)}>
       <div className={cn("flex", speedClass)} dir="ltr">
         {/* GROUP 1 */}
         <div className="flex shrink-0">
-          {items.map((item, i) => (
+          {items.map((_, i) => (
             <span
               key={i}
               className={cn("mx-4 shrink-0 whitespace-nowrap", textClassName)}
               dir={isArabic ? "rtl" : "ltr"}
-              dangerouslySetInnerHTML={{ __html: item }}
-            />
+            >
+              {text} {separator}
+            </span>
           ))}
         </div>
 
         {/* GROUP 2 (duplicate) */}
         <div className="flex shrink-0">
-          {items.map((item, i) => (
+          {items.map((_, i) => (
             <span
               key={`dup-${i}`}
               className={cn("mx-4 shrink-0 whitespace-nowrap", textClassName)}
               dir={isArabic ? "rtl" : "ltr"}
-              dangerouslySetInnerHTML={{ __html: item }}
-            />
+            >
+              {text} {separator}
+            </span>
           ))}
         </div>
       </div>

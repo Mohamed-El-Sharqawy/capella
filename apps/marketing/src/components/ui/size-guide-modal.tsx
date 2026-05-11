@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface SizeGuideModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface SizeGuideModalProps {
 
 export function SizeGuideModal({ isOpen, onClose, imageUrl, locale }: SizeGuideModalProps) {
   const isArabic = locale === "ar";
+  const t = useTranslations("product");
 
   if (!isOpen) return null;
 
@@ -35,7 +37,7 @@ export function SizeGuideModal({ isOpen, onClose, imageUrl, locale }: SizeGuideM
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
             <h2 className="text-lg font-semibold">
-              {isArabic ? "دليل المقاسات" : "Size Guide"}
+              {t("sizeGuide")}
             </h2>
             <button
               onClick={onClose}
@@ -50,7 +52,7 @@ export function SizeGuideModal({ isOpen, onClose, imageUrl, locale }: SizeGuideM
             <div className="relative w-full">
               <Image
                 src={imageUrl}
-                alt={isArabic ? "دليل المقاسات" : "Size Guide"}
+                alt={t("sizeGuide")}
                 width={800}
                 height={600}
                 className="w-full h-auto object-contain rounded-lg"

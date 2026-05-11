@@ -94,7 +94,7 @@ export function ReviewsSection({
                     )}
                     {isPending && isOwnReview && (
                       <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-medium">
-                        {isArabic ? "قيد المراجعة" : "Pending Approval"}
+                        {t("pendingApproval")}
                       </span>
                     )}
                   </div>

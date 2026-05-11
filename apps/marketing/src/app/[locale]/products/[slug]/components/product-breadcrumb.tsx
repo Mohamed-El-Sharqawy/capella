@@ -1,5 +1,8 @@
+"use client";
+
 import { ChevronRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 interface ProductBreadcrumbProps {
   productName: string;
@@ -9,20 +12,19 @@ interface ProductBreadcrumbProps {
 }
 
 export function ProductBreadcrumb({ productName, collectionName, collectionSlug, locale }: ProductBreadcrumbProps) {
+  const t = useTranslations("product");
   const isArabic = locale === "ar";
-  const homeText = isArabic ? "الرئيسية" : "HOME";
-  const productsText = isArabic ? "المنتجات" : "PRODUCTS";
 
   return (
     <div className="container mx-auto px-4 py-8">
       <nav className={`flex items-center gap-2 text-xs md:text-sm font-light tracking-[0.15em] text-gray-400 uppercase ${isArabic ? "flex-row-reverse" : "flex-row"}`}>
         <Link href="/" className="hover:text-black transition-colors">
-          {homeText}
+          {t("home")}
         </Link>
         <ChevronRight className={`h-3 w-3 ${isArabic ? "rotate-180" : ""}`} />
 
         <Link href="/collections/all-products" className="hover:text-black transition-colors">
-          {productsText}
+          {t("products")}
         </Link>
         <ChevronRight className={`h-3 w-3 ${isArabic ? "rotate-180" : ""}`} />
 

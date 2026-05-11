@@ -1,6 +1,5 @@
 import {
   Truck,
-  RotateCcw,
   ShieldCheck,
   Gift,
   Phone
@@ -10,6 +9,7 @@ import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import { Accordion, AccordionItem, Checkbox, SocialShare } from "@/components/ui";
 import type { UniqueColor, UniqueSize, SizeAvailability } from "../types";
 import { useState } from "react";
+import Link from "next/link";
 
 interface CartItemInfo {
   variantId: string;
@@ -53,22 +53,12 @@ export function ProductInfo({
   product,
   name,
   price,
-  compareAtPrice,
-  discountPercent,
   locale,
   uniqueColors,
-  uniqueSizes,
   selectedVariant,
   onColorSelect,
-  onSizeSelect,
-  getSizeAvailability,
-  hasSizeGuide,
-  onOpenSizeGuide,
   onAddToCart,
-  onBuyNow,
-  isFavourite,
   isInWishlist,
-  onToggleFavourite,
   onToggleWishlist,
 }: ProductInfoProps) {
   const t = useTranslations("product");
@@ -82,11 +72,9 @@ export function ProductInfo({
   ].filter(Boolean).join(', ');
 
   const benefits = [
-    { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني خلال 2-5 أيام في الإمارات" : "Complimentary 1-2 days shipping in UAE" },
-    // { icon: <Truck className="h-4 w-4" />, text: isArabic ? "شحن مجاني في جميع أنحاء العالم" : "Complimentary worldwide shipping" },
-    { icon: <RotateCcw className="h-4 w-4" />, text: isArabic ? "إرجاع سهل خلال 14 أيام" : "No questions asked 5 days easy returns" },
-    { icon: <ShieldCheck className="h-4 w-4" />, text: isArabic ? "بطاقة أصالة المجوهرات" : "Jewellery authenticity card" },
-    { icon: <Gift className="h-4 w-4" />, text: isArabic ? "تغليف هدايا كابيلا الفاخر" : "Signature Capella gift wrapping" },
+    { icon: <Truck className="h-4 w-4" />, text: t("freeShipping") },
+    { icon: <ShieldCheck className="h-4 w-4" />, text: t("authenticityCard") },
+    { icon: <Gift className="h-4 w-4" />, text: t("giftWrapping") },
   ];
 
   return (
@@ -108,7 +96,7 @@ export function ProductInfo({
       <div className="py-4 border-t border-gray-100">
         <Checkbox
           id="gift-message"
-          label={isArabic ? "أضف رسالة هدية" : "ADD A GIFT MESSAGE"}
+          label={t("addGiftMessage")}
           checked={addGiftMessage}
           onChange={setAddGiftMessage}
         />
@@ -120,7 +108,7 @@ export function ProductInfo({
           onClick={onAddToCart}
           className="w-full bg-black text-white py-4 text-sm font-medium uppercase tracking-[0.2em] hover:bg-neutral-800 transition-colors shadow-sm"
         >
-          {isArabic ? "أضف إلى الحقيبة" : "ADD TO BAG"}
+          {t("addToBag")}
         </button>
 
         {/* Benefits List */}
@@ -138,7 +126,7 @@ export function ProductInfo({
       <div className="space-y-6">
         {uniqueColors.length > 0 && (
           <div>
-            <p className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] mb-3">{isArabic ? "اللون" : "Color"}</p>
+            <p className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] mb-3">{t("color")}</p>
             <div className="flex gap-2">
               {uniqueColors.map((color) => (
                 <button
@@ -166,7 +154,7 @@ export function ProductInfo({
       {/* Accordions */}
       <div className="pt-4 border-t border-gray-100">
         <Accordion>
-          <AccordionItem title={isArabic ? "الوصف" : "Description"}>
+          <AccordionItem title={t("description")}>
             <div className="space-y-4">
               <p>{isArabic ? product.shortDescriptionAr : product.shortDescriptionEn}</p>
               <ul className="list-disc pl-4 space-y-1">
@@ -175,35 +163,29 @@ export function ProductInfo({
               </ul>
             </div>
           </AccordionItem>
-          <AccordionItem title={isArabic ? "الاستبدال والإرجاع" : "Exchange & Return"}>
+          <AccordionItem title={t("exchangeReturn")}>
             <div className="space-y-4 text-xs md:text-sm font-light leading-relaxed text-gray-600">
               <p className="font-medium text-gray-900">
-                {isArabic ? "رضا عملائنا هو أولويتنا القصوى." : "The satisfaction of our customers is our priority."}
+                {t("exchangePriority")}
               </p>
               <p>
-                {isArabic
-                  ? "يمكن استبدال أو إرجاع المنتجات التي تم شراؤها ولم تُستخدم خلال 5 أيام من تاريخ التوصيل. نقبل المنتجات غير الملبوسة، غير المستخدمة، وغير التالفة، والمرفقة بتغليف كابيلا الأصلي."
-                  : "Products purchased and not used can be exchanged or returned up to 5 days from the delivery date. We accept products unworn, unused and undamaged, accompanied by the original CAPELLA packaging."}
+                {t("exchangePolicy")}
               </p>
               <p>
-                {isArabic
-                  ? "يرجى ملاحظة أن رسوم الشحن والرسوم البنكية من طلبك الأصلي لن يتم استردادها، وسيتم خصم رسوم شحن ثابتة من المبلغ المسترد عند الإرجاع."
-                  : "Please note that shipping and bank handling fees from your original order will not be refunded. For returns, a fixed shipping fee will be deducted from your refund."}
+                {t("exchangeFees")}
               </p>
               <p>
-                {isArabic
-                  ? "كابيلا لن تكون مسؤولة عن أي فقدان أثناء النقل خارج دولة الإمارات العربية المتحدة."
-                  : "CAPELLA will not be responsible for any loss during transportation outside the UAE."}
+                {t("exchangeUae")}
               </p>
               <div className="pt-2 border-t border-gray-50 space-y-1">
-                <p>{isArabic ? "لأي استفسارات، يسعدنا تواصلكم معنا:" : "For any questions, please contact us:"}</p>
+                <p>{t("contactUsAny")}</p>
                 <p className="text-gray-900">Capellaaae@hotmail.com</p>
                 <p className="text-gray-900" dir="ltr">+971 52 451 4147</p>
               </div>
             </div>
           </AccordionItem>
-          <AccordionItem title={isArabic ? "تغليف الطلبات وتقديم الهدايا" : "Order Wrapping & Gifting"}>
-            <p>{isArabic ? "يصل كل طلب من كابيلا مغلفًا بذوق رفيع في صندوق هدايا مميز." : "Every Capella order arrives exquisitely wrapped in our signature gift box."}</p>
+          <AccordionItem title={t("orderWrapping")}>
+            <p>{t("orderWrappingDesc")}</p>
           </AccordionItem>
         </Accordion>
       </div>
@@ -217,14 +199,16 @@ export function ProductInfo({
           onClick={onToggleWishlist}
           className="w-full py-3 border border-gray-900 text-xs font-medium uppercase tracking-widest hover:bg-gray-50 transition-colors"
         >
-          {isArabic ? (isInWishlist ? "حذف من قائمة الأمنيات" : "إضافة إلى قائمة الأمنيات") : (isInWishlist ? "REMOVE FROM WISHLIST" : "ADD TO WISHLIST")}
+          {isInWishlist ? t("removeFromWishlist") : t("addToWishlist")}
         </button>
       </div>
 
       {/* Info & SKU */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pt-6 border-t border-gray-100">
         <div className="flex items-center gap-6">
-          <a href="#" className="text-gray-400 hover:text-black transition-colors"><Phone className="h-4 w-4" /></a>
+          <Link href="https://wa.me/971524514147" target="_blank" className="text-gray-400 hover:text-black transition-colors">
+            <Phone className="h-4 w-4" />
+          </Link>
           <SocialShare
             title={name}
             image={product.variants?.[0]?.images?.[0]?.url}

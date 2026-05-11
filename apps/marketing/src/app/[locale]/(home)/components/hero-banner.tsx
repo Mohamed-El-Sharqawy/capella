@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { Banner } from "@ecommerce/shared-types";
+import { useTranslations } from "next-intl";
 
 interface HeroBannerProps {
   banners: Banner[];
@@ -16,6 +17,7 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isArabic = locale === "ar";
+  const t = useTranslations("home");
 
   const activeBanners = banners.filter((b) => b.isActive);
 
@@ -178,7 +180,7 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
           </Link>
         ) : (
           <p className="text-sm md:text-base font-medium uppercase tracking-[0.2em]">
-            {isArabic ? "اكتشف" : "Discover"}
+            {t("discover")}
           </p>
         )}
       </div>

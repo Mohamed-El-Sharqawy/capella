@@ -1,33 +1,26 @@
+"use client";
+
 import { CreditCard, RotateCcw, Headphones } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-interface FeaturesProps {
-  locale: string;
-}
-
-export function Features({ locale }: FeaturesProps) {
-  const isArabic = locale === "ar";
+export function Features({ locale }: { locale: string }) {
+  const t = useTranslations("features");
 
   const features = [
     {
       icon: CreditCard,
-      title: isArabic ? "دفع مرن" : "Flexible Payment",
-      description: isArabic
-        ? "ادفع ببطاقات ائتمان متعددة"
-        : "Pay with Multiple Credit Cards",
+      title: t("flexiblePayment"),
+      description: t("flexiblePaymentDesc"),
     },
     {
       icon: RotateCcw,
-      title: isArabic ? "إرجاع سهل وسريع" : "Fast and Easy Returns",
-      description: isArabic
-        ? "خلال يومين للاستبدال"
-        : "Within 2 days for an exchange",
+      title: t("fastReturns"),
+      description: t("fastReturnsDesc"),
     },
     {
       icon: Headphones,
-      title: isArabic ? "دعم متميز" : "Premium Support",
-      description: isArabic
-        ? "دعم متميز متواصل"
-        : "Outstanding premium support",
+      title: t("premiumSupport"),
+      description: t("premiumSupportDesc"),
     },
   ];
 

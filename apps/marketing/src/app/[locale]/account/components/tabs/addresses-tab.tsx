@@ -28,9 +28,7 @@ export function AddressesTab({ locale, addresses, isLoading }: AddressesTabProps
             {t("noAddresses")}
           </p>
           <p className="text-sm text-muted-foreground mt-1">
-            {isArabic
-              ? "ستُحفظ العناوين تلقائياً عند إتمام طلبك"
-              : "Addresses will be saved automatically when you checkout"}
+            {t("addressesAutoSaved")}
           </p>
         </div>
       </div>

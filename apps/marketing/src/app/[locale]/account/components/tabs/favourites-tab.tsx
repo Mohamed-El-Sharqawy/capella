@@ -90,7 +90,7 @@ export function FavouritesTab({ locale, products, isLoading, onRemove }: Favouri
                     className="flex items-center gap-1 text-xs px-3 py-1.5 bg-black text-white rounded hover:bg-gray-800 transition"
                   >
                     <Eye className="h-3 w-3" />
-                    {isArabic ? "عرض" : "View"}
+                    {t("view")}
                   </Link>
                   <button
                     onClick={() => onRemove(product.id)}

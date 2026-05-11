@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface ProductImage {
   id: string;
@@ -27,6 +28,7 @@ export function ImageGallery({
   locale,
 }: ImageGalleryProps) {
   const isArabic = locale === "ar";
+  const t = useTranslations("product");
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [isDragStart, setIsDragStart] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
@@ -133,7 +135,7 @@ export function ImageGallery({
             ))
           ) : (
             <div className="flex items-center justify-center h-full text-gray-300 font-light uppercase tracking-widest text-xs">
-              Preview Not Available
+              {t("previewNotAvailable")}
             </div>
           )}
 

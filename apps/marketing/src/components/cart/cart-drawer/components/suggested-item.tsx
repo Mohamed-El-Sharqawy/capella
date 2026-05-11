@@ -4,9 +4,11 @@ import Image from "next/image";
 import { Eye } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { SuggestedItemProps } from "../types";
+import { useTranslations } from "next-intl";
 
 export function SuggestedItem({ product, locale, onClose }: SuggestedItemProps) {
   const isArabic = locale === "ar";
+  const t = useTranslations("product");
   const variant = product.variants?.[0];
   const imageUrl = variant?.images?.[0]?.url;
 
@@ -48,7 +50,7 @@ export function SuggestedItem({ product, locale, onClose }: SuggestedItemProps) 
         className="mt-2 w-full py-1.5 border border-black text-black text-xs rounded hover:bg-black hover:text-white transition flex items-center justify-center gap-1"
       >
         <Eye className="h-3 w-3" />
-        {isArabic ? "عرض" : "View"}
+        {t("view")}
       </Link>
     </div>
   );

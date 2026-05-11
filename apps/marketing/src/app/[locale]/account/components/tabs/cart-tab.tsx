@@ -44,8 +44,8 @@ export function CartTab({ locale }: CartTabProps) {
           <thead className="bg-gray-50 text-sm">
             <tr>
               <th className="text-left px-4 py-3">{t("product")}</th>
-              <th className="text-center px-4 py-3">{isArabic ? "اللون" : "Color"}</th>
-              <th className="text-center px-4 py-3">{isArabic ? "المقاس" : "Size"}</th>
+              <th className="text-center px-4 py-3">{t("color")}</th>
+              <th className="text-center px-4 py-3">{t("size")}</th>
               <th className="text-center px-4 py-3">{t("price")}</th>
               <th className="text-center px-4 py-3">{t("quantity")}</th>
               <th className="text-right px-4 py-3">{t("total")}</th>

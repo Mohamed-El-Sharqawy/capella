@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { SocialShare } from "@/components/ui";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 interface FooterProps {
   locale: string;
@@ -8,19 +9,20 @@ interface FooterProps {
 
 export function Footer({ locale }: FooterProps) {
   const isArabic = locale === "ar";
+  const t = useTranslations("footer");
 
   const shopLinks = [
-    { href: "/about", label: isArabic ? "عن كابيلا" : "About Us" },
-    { href: "/collections/all-products", label: isArabic ? "تسوق الكل" : "Shop All" },
-    { href: "/collections", label: isArabic ? "تسوق حسب المجموعة" : "Shop by Collection" },
-    { href: "/contact", label: isArabic ? "اتصل بنا" : "Contact Us" },
+    { href: "/about", label: t("aboutUs") },
+    { href: "/collections/all-products", label: t("shopAll") },
+    { href: "/collections", label: t("shopByCollection") },
+    { href: "/contact", label: t("contactUs") },
   ];
 
   const policyLinks = [
-    { href: "/privacy-policy", label: isArabic ? "سياسة الخصوصية" : "Privacy Policy" },
-    { href: "/refund-return-policy", label: isArabic ? "سياسة الاسترداد والإرجاع" : "Refund & Return Policy" },
-    { href: "/shipping-policy", label: isArabic ? "سياسة الشحن" : "Shipping Policy" },
-    { href: "/terms-of-service", label: isArabic ? "شروط الخدمة" : "Terms of Service" },
+    { href: "/privacy-policy", label: t("privacyPolicy") },
+    { href: "/refund-return-policy", label: t("refundReturnPolicy") },
+    { href: "/shipping-policy", label: t("shippingPolicy") },
+    { href: "/terms-of-service", label: t("termsOfService") },
   ];
 
   return (
@@ -34,12 +36,12 @@ export function Footer({ locale }: FooterProps) {
             </Link>
             <div className="max-w-md space-y-4">
               <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
-                {isArabic ? "اشترك للحصول على التحديثات" : "Subscribe for Updates"}
+                {t("subscribeForUpdates")}
               </h3>
               <form className="relative">
                 <input
                   type="email"
-                  placeholder={isArabic ? "أدخل بريدك الإلكتروني" : "Enter your email"}
+                  placeholder={t("enterEmail")}
                   className="w-full bg-transparent border-b border-gray-800 py-3 text-sm focus:outline-none focus:border-white transition-colors"
                 />
                 <button
@@ -50,7 +52,7 @@ export function Footer({ locale }: FooterProps) {
                     right: isArabic ? undefined : 0
                   }}
                 >
-                  {isArabic ? "إرسال" : "Submit"}
+                  {t("submit")}
                 </button>
               </form>
             </div>
@@ -60,7 +62,7 @@ export function Footer({ locale }: FooterProps) {
           {/* Shop Links */}
           <div className="space-y-6">
             <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
-              {isArabic ? "تسوق" : "Shop"}
+              {t("shop")}
             </h3>
             <ul className="space-y-3">
               {shopLinks.map((link) => (
@@ -79,7 +81,7 @@ export function Footer({ locale }: FooterProps) {
           {/* Policy Links */}
           <div className="space-y-6">
             <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
-              {isArabic ? "السياسات" : "Policies"}
+              {t("policies")}
             </h3>
             <ul className="space-y-3">
               {policyLinks.map((link) => (
@@ -99,7 +101,7 @@ export function Footer({ locale }: FooterProps) {
         {/* Bottom Bar */}
         <div className="mt-20 pt-8 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-xs uppercase tracking-widest text-gray-500">
-            © 2026 capella. {isArabic ? "جميع الحقوق محفوظة." : "All rights reserved."}
+            © 2026 capella. {t("allRightsReserved")}
           </p>
           <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
             <img src="/footer-icons/visa.svg" alt="Visa" className="h-5" />

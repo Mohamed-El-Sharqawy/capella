@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import {
   Facebook,
+  Instagram,
   Linkedin,
   Send,
 } from "lucide-react";
@@ -61,29 +62,29 @@ export function SocialShare({
       aria: "Facebook social link",
     },
     {
-      name: "X",
-      icon: <XIcon className="w-3.5 h-3.5" />,
-      href: `https://x.com/share?url=${encodedUrl}`,
-      aria: "X social link",
+      name: "Instagram",
+      icon: <Instagram className="w-3.5 h-3.5" />,
+      href: `https://www.instagram.com/capella.uae/`,
+      aria: "Instagram social link",
     },
-    {
-      name: "Pinterest",
-      icon: <PinterestIcon className="w-3.5 h-3.5" />,
-      href: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&media=${encodedImage}&description=${encodedTitle}`,
-      aria: "Pinterest social link",
-    },
-    {
-      name: "Linkedin",
-      icon: <Linkedin className="w-4 h-4" strokeWidth={1.5} />,
-      href: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}`,
-      aria: "Linkedin social link",
-    },
-    {
-      name: "Telegram",
-      icon: <Send className="w-3.5 h-3.5" strokeWidth={1.5} />,
-      href: `https://telegram.me/share/url?url=${encodedUrl}`,
-      aria: "Telegram social link",
-    },
+    // {
+    //   name: "Pinterest",
+    //   icon: <PinterestIcon className="w-3.5 h-3.5" />,
+    //   href: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&media=${encodedImage}&description=${encodedTitle}`,
+    //   aria: "Pinterest social link",
+    // },
+    // {
+    //   name: "Linkedin",
+    //   icon: <Linkedin className="w-4 h-4" strokeWidth={1.5} />,
+    //   href: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}`,
+    //   aria: "Linkedin social link",
+    // },
+    // {
+    //   name: "Telegram",
+    //   icon: <Send className="w-3.5 h-3.5" strokeWidth={1.5} />,
+    //   href: `https://telegram.me/share/url?url=${encodedUrl}`,
+    //   aria: "Telegram social link",
+    // },
   ];
 
   if (variant === "footer") {

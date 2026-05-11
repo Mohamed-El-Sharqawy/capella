@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import type { ShoppableVideo, Product } from "@ecommerce/shared-types";
 import { Play, Eye } from "lucide-react";
 import { QuickViewModal } from "@/components/ui/quick-view-modal";
+import { useTranslations } from "next-intl";
 
 interface ShoppableVideosProps {
   videos: ShoppableVideo[];
@@ -14,17 +15,18 @@ interface ShoppableVideosProps {
 
 export function ShoppableVideos({ videos, locale }: ShoppableVideosProps) {
   if (videos.length === 0) return null;
+  const t = useTranslations("product");
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
       <div>
         <div className="text-center mb-16 space-y-4">
           <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.25em]">
-            {locale === "ar" ? "تسوق عبر الفيديو" : "Shoppable Videos"}
+            {t("shoppableVideos")}
           </h2>
           <div className="w-16 h-px bg-black/20 mx-auto" />
           <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground">
-            {locale === "ar" ? "شاهد. تحرك. تسوق." : "See it. Move in it. Shop it."}
+            {t("shoppableVideosDesc")}
           </p>
         </div>
 

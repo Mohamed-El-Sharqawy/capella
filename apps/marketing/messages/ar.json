@@ -24,7 +24,13 @@
     "theJourney": "الرحلة",
     "instagram": "إنستقرام",
     "bookConsultation": "احجزي استشارتك الخاصة",
-    "terms": "الشروط والأحكام"
+    "terms": "الشروط والأحكام",
+    "back": "العودة",
+    "home": "الرئيسية",
+    "aboutUs": "من نحن",
+    "language": "اللغة",
+    "viewAllCollections": "عرض الكل",
+    "shopAllIn": "عرض الكل في {name}"
   },
   "home": {
     "heroMen": "رجال",
@@ -39,7 +45,10 @@
       "title": "في كابيلا",
       "description": "الفضة ليست مجرد معدن—إنها انعكاس لأناقة خالدة، وتعبير هادئ عن الفرادة، وقصة صُنعت لتُشرق معك في كل لحظة، تلتقط جمالاً لا يزول بل يتطور مع رحلتك.",
       "cta": "تسوق الآن"
-    }
+    },
+    "discover": "اكتشف",
+    "freeShippingMarquee": "توصيل مجاني فوق <b><i><u>500 درهم</u></i></b> لجميع الطلبات داخل الإمارات",
+    "customersFeedback": "آراء العملاء"
   },
   "product": {
     "price": "السعر",
@@ -75,7 +84,38 @@
     "adding": "جاري الإضافة...",
     "added": "تمت الإضافة",
     "quickAdd": "إضافة سريعة",
-    "view": "عرض"
+    "view": "عرض",
+    "products": "المنتجات",
+    "freeShipping": "شحن مجاني خلال 2-5 أيام في الإمارات",
+    "authenticityCard": "بطاقة أصالة المجوهرات",
+    "giftWrapping": "تغليف هدايا كابيلا الفاخر",
+    "addGiftMessage": "أضف بطاقة هدية",
+    "addToBag": "أضف إلى الحقيبة",
+    "exchangeReturn": "الاستبدال والإرجاع",
+    "exchangePriority": "رضا عملائنا هو أولويتنا القصوى.",
+    "exchangePolicy": "يمكن استبدال أو إرجاع المنتجات التي تم شراؤها ولم تُستخدم خلال 5 أيام من تاريخ التوصيل. نقبل المنتجات غير الملبوسة، غير المستخدمة، وغير التالفة، والمرفقة بتغليف كابيلا الأصلي.",
+    "exchangeFees": "يرجى ملاحظة أن رسوم الشحن والرسوم البنكية من طلبك الأصلي لن يتم استردادها، وسيتم خصم رسوم شحن ثابتة من المبلغ المسترد عند الإرجاع.",
+    "exchangeUae": "كابيلا لن تكون مسؤولة عن أي فقدان أثناء النقل خارج دولة الإمارات العربية المتحدة.",
+    "contactUsAny": "لأي استفسارات، يسعدنا تواصلكم معنا:",
+    "orderWrapping": "تغليف الطلبات وتقديم الهدايا",
+    "orderWrappingDesc": "يصل كل طلب من كابيلا مغلفًا بذوق رفيع في صندوق هدايا مميز.",
+    "bookAppointment": "حجز موعد",
+    "removeFromWishlist": "حذف من قائمة الأمنيات",
+    "addToWishlist": "إضافة إلى قائمة الأمنيات",
+    "complimentaryShipping": "شحن مجاني",
+    "complimentaryShippingDesc": "شحن مجاني في جميع أنحاء العالم - يشمل الرسوم والضرائب التقديرية",
+    "hassleFreeReturns": "إرجاع سهل وبدون مشاكل",
+    "hassleFreeReturnsDesc": "نحن متواجدون من الاثنين إلى الجمعة للإجابة على جميع تساؤلاتكم",
+    "securePayment": "دفع آمن",
+    "securePaymentDesc": "يتم معالجة معلومات الدفع الخاصة بك بشكل آمن",
+    "contactUs": "اتصل بنا",
+    "contactUsDesc": "هل تحتاج إلى المساعدة؟ أرسل بريدًا إلكترونيًا أو عبر الواتساب",
+    "whatsapp": "الواتساب",
+    "pendingApproval": "قيد المراجعة",
+    "youMayAlsoLike": "قد يعجبك أيضاً",
+    "previewNotAvailable": "المعاينة غير متوفرة",
+    "shoppableVideos": "تسوق عبر الفيديو",
+    "shoppableVideosDesc": "شاهد. تحرك. تسوق."
   },
   "collection": {
     "allProducts": "جميع المنتجات",
@@ -108,12 +148,21 @@
       "dateAsc": "التاريخ، من الأقدم للأحدث",
       "dateDesc": "التاريخ، من الأحدث للأقدم",
       "manualOrder": "ترتيب يدوي"
-    }
+    },
+    "allProductsTitle": "جميع المنتجات - إن زد إن ستوديو",
+    "allProductsDesc": "تصفح جميع منتجاتنا من الأزياء والملابس. اكتشف أحدث الصيحات في إن زد إن ستوديو.",
+    "notFound": "المجموعة غير موجودة"
   },
   "search": {
     "trending": "الأكثر رواجاً",
     "recentSearches": "عمليات البحث الأخيرة",
-    "noResults": "لا توجد نتائج"
+    "noResults": "لا توجد نتائج",
+    "ariaLabel": "بحث",
+    "placeholder": "ابحث عن منتجات أو مجموعات...",
+    "products": "المنتجات",
+    "collections": "المجموعات",
+    "viewAllResults": "عرض جميع النتائج",
+    "overlayPlaceholder": "ابحث هنا..."
   },
   "checkout": {
     "title": "إتمام الطلب",
@@ -180,7 +229,44 @@
       "message": "لم يتم إكمال دفعتك. يمكنك المحاولة مرة أخرى أو اختيار طريقة دفع مختلفة.",
       "retry": "حاول مرة أخرى",
       "backToCart": "العودة للسلة"
-    }
+    },
+    "reviewOrder": "مراجعة الطلب",
+    "items": "منتجات",
+    "aed": "درهم",
+    "moreItems": "منتجات أخرى في سلتك",
+    "shippingDetails": "تفاصيل الشحن",
+    "creditCard": "بطاقة ائتمان",
+    "cashOnDelivery": "دفع عند الاستلام",
+    "back": "رجوع",
+    "confirmOrder": "تأكيد الطلب",
+    "sessionId": "معرف الجلسة: "
+  },
+  "reviewModal": {
+    "errorSubmit": "حدث خطأ أثناء إرسال المراجعة",
+    "signIn": "تسجيل الدخول",
+    "title": "اكتب مراجعة",
+    "loading": "جاري التحميل...",
+    "signInPrompt": "سجل دخولك لكتابة مراجعة",
+    "signUp": "إنشاء حساب",
+    "firstName": "الاسم الأول",
+    "lastName": "الاسم الأخير",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "signInBtn": "تسجيل الدخول",
+    "createAccount": "إنشاء حساب",
+    "notPurchased": "لا يمكنك كتابة مراجعة لمنتج لم تشتريه بعد",
+    "buyPrompt": "هل تريد شراء هذا المنتج؟",
+    "addToCart": "أضف إلى السلة",
+    "maybeLater": "ربما لاحقاً",
+    "thankYou": "شكراً لك!",
+    "successMessage": "تم إرسال مراجعتك بنجاح",
+    "greeting": "مرحباً {name}، شاركنا رأيك",
+    "rating": "التقييم",
+    "reviewTitle": "عنوان المراجعة",
+    "titlePlaceholder": "اكتب عنوان مختصر...",
+    "yourReview": "مراجعتك",
+    "reviewPlaceholder": "شاركنا تجربتك مع هذا المنتج...",
+    "submitReview": "إرسال المراجعة"
   },
   "cart": {
     "title": "سلة التسوق",
@@ -208,7 +294,29 @@
       "placeholder": "أدخل بريدك الإلكتروني",
       "button": "اشترك"
     },
-    "copyright": "© 2026 كابيلا. جميع الحقوق محفوظة."
+    "copyright": "© 2026 كابيلا. جميع الحقوق محفوظة.",
+    "aboutUs": "عن كابيلا",
+    "shopAll": "تسوق الكل",
+    "shopByCollection": "تسوق حسب المجموعة",
+    "contactUs": "اتصل بنا",
+    "privacyPolicy": "سياسة الخصوصية",
+    "refundReturnPolicy": "سياسة الاسترداد والإرجاع",
+    "shippingPolicy": "سياسة الشحن",
+    "termsOfService": "شروط الخدمة",
+    "subscribeForUpdates": "اشترك للحصول على التحديثات",
+    "enterEmail": "أدخل بريدك الإلكتروني",
+    "submit": "إرسال",
+    "shop": "تسوق",
+    "policies": "السياسات",
+    "allRightsReserved": "جميع الحقوق محفوظة."
+  },
+  "features": {
+    "flexiblePayment": "دفع مرن",
+    "flexiblePaymentDesc": "ادفع ببطاقات ائتمان متعددة",
+    "fastReturns": "إرجاع سهل وسريع",
+    "fastReturnsDesc": "خلال يومين للاستبدال",
+    "premiumSupport": "دعم متميز",
+    "premiumSupportDesc": "دعم متميز متواصل"
   },
   "contact": {
     "title": "تواصل معنا",
@@ -248,7 +356,7 @@
     "error": "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.",
     "info": {
       "phone": "الهاتف",
-      "phoneValue": "+971 50 123 4567",
+      "phoneValue": "+971 52 451 4147",
       "email": "البريد الإلكتروني",
       "emailValue": "support@nznstudio.com",
       "address": "العنوان",
@@ -442,7 +550,7 @@
     }
   },
   "account": {
-    "greeting": "مرحباً",
+    "greeting": "مرحباً، {name}",
     "profile": "الملف الشخصي",
     "orders": "طلباتي",
     "favourites": "المفضلة",
@@ -458,7 +566,10 @@
       "edit": "تعديل",
       "save": "حفظ",
       "cancel": "إلغاء",
-      "createdAt": "عضو منذ"
+      "createdAt": "عضو منذ",
+      "firstName": "الاسم الأول",
+      "lastName": "الاسم الأخير",
+      "role": "الدور"
     },
     "ordersTab": {
       "title": "طلباتي",
@@ -480,7 +591,8 @@
       "startShopping": "تسوق الآن",
       "inStock": "متوفر",
       "outOfStock": "غير متوفر",
-      "remove": "إزالة"
+      "remove": "إزالة",
+      "view": "عرض"
     },
     "wishlistTab": {
       "title": "قائمة الأمنيات",
@@ -489,7 +601,8 @@
       "note": "ملاحظة",
       "inStock": "متوفر",
       "outOfStock": "غير متوفر",
-      "remove": "إزالة"
+      "remove": "إزالة",
+      "view": "عرض"
     },
     "cartTab": {
       "title": "السلة",
@@ -501,13 +614,16 @@
       "subtotal": "المجموع الفرعي",
       "total": "الإجمالي",
       "checkout": "إتمام الطلب",
-      "remove": "إزالة"
+      "remove": "إزالة",
+      "color": "اللون",
+      "size": "المقاس"
     },
     "addressesTab": {
       "title": "العناوين",
       "noAddresses": "لا توجد عناوين محفوظة بعد",
       "default": "افتراضي",
-      "phone": "الهاتف"
+      "phone": "الهاتف",
+      "addressesAutoSaved": "ستُحفظ العناوين تلقائياً عند إتمام طلبك"
     }
   },
   "cartDrawer": {
@@ -582,6 +698,8 @@
       "craftsmanshipDesc": "كل تصميم هو عمل مليء بالحب، يجمع بين التقنيات العريقة والابتكار الحديث.",
       "innovation": "ابتكار حديث",
       "innovationDesc": "نحن ندفع الحدود في التصميم باستمرار، ونبتكر أنماطاً هندسية فريدة تحدد ملامح الفخامة الحديثة."
-    }
+    },
+    "exploreCollection": "اكتشف مجموعتنا",
+    "shopNow": "تسوق الآن"
   }
 }

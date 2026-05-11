@@ -22,12 +22,12 @@ export function useContactData() {
         value: t("info.emailValue"),
         href: `mailto:${t("info.emailValue")}`,
       },
-      {
-        icon: MapPin,
-        title: t("info.address"),
-        value: t("info.addressValue"),
-        href: null,
-      },
+      // {
+      //   icon: MapPin,
+      //   title: t("info.address"),
+      //   value: t("info.addressValue"),
+      //   href: null,
+      // },
       {
         icon: Clock,
         title: t("info.hours"),

@@ -95,7 +95,7 @@ function AccountPageContent({ locale }: AccountPageClientProps) {
     { id: "addresses" as const, count: addresses.length },
   ];
 
-  const greeting = `${t("greeting")}، ${user?.firstName}`;
+  const greeting = t("greeting", { name: user?.firstName || "" });
 
   return (
     <AccountLayout

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale, getTranslations } from "next-intl/server";
 import {
   AnimateOnScroll,
   InfiniteMarquee,
@@ -34,6 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function HomePage({ params }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "home" });
 
 
   const [featuredProducts, shoppableVideos, instagramPosts, banners, heroCollections] = await Promise.all([
@@ -52,12 +53,11 @@ export default async function HomePage({ params }: PageProps) {
         <HeroBanner banners={banners} locale={locale} />
       )}
       <InfiniteMarquee
-        text={
-          locale === "ar"
-            ? "توصيل مجاني فوق <b><i><u>500 درهم</u></i></b> لجميع الطلبات داخل الإمارات"
-            : "FREE SHIPPING ABOVE <b><i><u>500 AED</u></i></b> ALL OVER UAE"
-        }
-        className="bg-black py-3 border-b border-white/10 mt-3"
+        text={t.rich("freeShippingMarquee", {
+          b: (chunks) => <b>{chunks}</b>,
+          i: (chunks) => <i>{chunks}</i>,
+          u: (chunks) => <u>{chunks}</u>,
+        })} className="bg-black py-3 border-b border-white/10 mt-3"
         textClassName="text-xs md:text-sm font-medium text-white uppercase tracking-[0.2em]"
         separator="•"
         speed="normal"

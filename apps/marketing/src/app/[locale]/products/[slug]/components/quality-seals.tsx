@@ -1,4 +1,7 @@
+"use client";
+
 import { Truck, RotateCcw, ShieldCheck, Mail } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface SealProps {
   icon: React.ReactNode;
@@ -21,37 +24,36 @@ function Seal({ icon, title, description }: SealProps) {
 }
 
 export function QualitySeals({ locale }: { locale: string }) {
-  const isArabic = locale === "ar";
+  const t = useTranslations("product");
 
   const seals = [
     {
       icon: <Truck className="h-6 w-6 stroke-1" />,
-      title: isArabic ? "شحن مجاني" : "Complimentary Shipping",
-      description: isArabic 
-        ? "شحن مجاني في جميع أنحاء العالم - يشمل الرسوم والضرائب التقديرية" 
-        : "Free worldwide shipping - estimated customs and duties taxes included"
+      title: t("complimentaryShipping"),
+      description: t("complimentaryShippingDesc"),
     },
     {
       icon: <RotateCcw className="h-6 w-6 stroke-1" />,
-      title: isArabic ? "إرجاع سهل وبدون مشاكل" : "Hassle Free Returns",
-      description: isArabic
-        ? "نحن متواجدون من الاثنين إلى الجمعة للإجابة على جميع تساؤلاتكم"
-        : <>We are available from Monday to Friday to answer your questions</>
+      title: t("hassleFreeReturns"),
+      description: t("hassleFreeReturnsDesc"),
     },
     {
       icon: <ShieldCheck className="h-6 w-6 stroke-1" />,
-      title: isArabic ? "دفع آمن" : "Secure Payment",
-      description: isArabic
-        ? "يتم معالجة معلومات الدفع الخاصة بك بشكل آمن"
-        : "Your payment information is processed securely"
+      title: t("securePayment"),
+      description: t("securePaymentDesc"),
     },
     {
       icon: <Mail className="h-6 w-6 stroke-1" />,
-      title: isArabic ? "اتصل بنا" : "Contact us",
-      description: isArabic
-        ? <>هل تحتاج إلى المساعدة؟ أرسل بريدًا إلكترونيًا أو عبر <a href="#" className="underline text-red-700">الواتساب</a></>
-        : <>Need to contact us? Just send us an email or via <a href="#" className="underline text-red-700">WhatsApp</a></>
-    }
+      title: t("contactUs"),
+      description: (
+        <>
+          {t("contactUsDesc")}{" "}
+          <a href="#" className="underline text-red-700">
+            {t("whatsapp")}
+          </a>
+        </>
+      ),
+    },
   ];
 
   return (

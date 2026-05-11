@@ -90,7 +90,7 @@ export function HeaderNav() {
                   href="/collections"
                   className="block px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 transition"
                 >
-                  {isArabic ? "عرض الكل" : "View All Collections"}
+                  {t("viewAllCollections")}
                 </Link>
               </div>
             </div>
@@ -116,7 +116,7 @@ export function HeaderNav() {
           fontSize: isArabic ? "14px" : "13px",
         }}
       >
-        {isArabic ? "من نحن" : "About Us"}
+        {t("aboutUs")}
       </Link>
     </nav>
   );

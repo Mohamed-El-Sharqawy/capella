@@ -84,13 +84,13 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
         <div className={`max-w-7xl mx-auto px-4 ${locale === "ar" ? "text-right" : "text-left"}`}>
           <AnimateOnScroll direction="up">
             <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.3em] mb-12">
-              {locale === "ar" ? "اكتشف مجموعتنا" : "Explore Our Collection"}
+              {t("exploreCollection")}
             </h2>
             <a
               href="/collections/all-products"
               className={`inline-block px-12 py-4 border border-white text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500`}
             >
-              {locale === "ar" ? "تسوق الآن" : "Shop Now"}
+              {t("shopNow")}
             </a>
           </AnimateOnScroll>
         </div>

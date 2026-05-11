@@ -9,7 +9,6 @@ interface PageProps {
 export default async function CheckoutCancelPage({ params }: PageProps) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "checkout" });
-  const isArabic = locale === "ar";
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center py-16 pt-32 md:pt-36">
@@ -19,13 +18,11 @@ export default async function CheckoutCancelPage({ params }: PageProps) {
         </div>
         
         <h1 className="text-2xl md:text-3xl font-serif font-bold mb-4">
-          {isArabic ? "تم إلغاء الدفع" : "Payment Cancelled"}
+          {t("cancel.title")}
         </h1>
         
         <p className="text-gray-600 mb-6">
-          {isArabic
-            ? "لم تتم عملية الدفع. يمكنك المحاولة مرة أخرى أو المتابعة للتسوق."
-            : "Your payment was not completed. You can try again or continue shopping."}
+          {t("cancel.message")}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -33,13 +30,13 @@ export default async function CheckoutCancelPage({ params }: PageProps) {
             href="/cart"
             className="inline-flex items-center justify-center px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition"
           >
-            {isArabic ? "العودة إلى السلة" : "Return to Cart"}
+            {t("cancel.backToCart")}
           </Link>
           <Link
             href="/"
             className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
           >
-            {isArabic ? "متابعة التسوق" : "Continue Shopping"}
+            {t("continueShopping")}
           </Link>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Search, X, Loader2, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { apiGet } from "@/lib/api-client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,6 +34,7 @@ interface SearchResults {
 export function SearchOverlay() {
   const locale = useLocale();
   const isArabic = locale === "ar";
+  const t = useTranslations("search");
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -111,7 +112,7 @@ export function SearchOverlay() {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder={isArabic ? "ابحث هنا..." : "Search product..."}
+                  placeholder={t("overlayPlaceholder")}
                   className="flex-1 bg-transparent border-none outline-none text-sm uppercase tracking-wider text-gray-900 placeholder:text-gray-300"
                   dir={isArabic ? "rtl" : "ltr"}
                 />

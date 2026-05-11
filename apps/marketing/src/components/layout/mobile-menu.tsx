@@ -102,11 +102,11 @@ export function MobileMenu() {
               className="flex items-center gap-2 p-6 text-sm uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
             >
               <ChevronLeft className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} />
-              {isArabic ? "العودة" : "Back"}
+              {t("back")}
             </button>
             <div className="px-6 py-4 space-y-8">
               <Link href="/collections" className="block text-2xl font-light tracking-widest hover:opacity-60 transition-opacity">
-                {isArabic ? "عرض الكل" : "Shop All"}
+                {t("shopAll")}
               </Link>
               {headerCollections.map((collection) => (
                 <div key={collection.id} className="space-y-4">
@@ -143,14 +143,14 @@ export function MobileMenu() {
               className="flex items-center gap-2 p-6 text-sm uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
             >
               <ChevronLeft className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} />
-              {isArabic ? "العودة" : "Back"}
+              {t("back")}
             </button>
             <div className="px-6 py-4 space-y-8">
               <Link
                 href={`/collections/${activeCollection?.slug}`}
                 className="block text-2xl border-b border-black/5 pb-4 font-light tracking-widest hover:opacity-60 transition-opacity"
               >
-                {isArabic ? `عرض الكل في ${activeCollection?.nameAr}` : `Shop All ${activeCollection?.nameEn}`}
+                {t("shopAllIn", { name: isArabic ? activeCollection?.nameAr! : activeCollection?.nameEn! })}
               </Link>
               {activeCollection?.children?.map((child) => (
                 <Link
@@ -187,7 +187,7 @@ export function MobileMenu() {
                   href={`/collections`}
                   className="flex items-center justify-between text-xl font-light tracking-widest opacity-60 hover:opacity-100 transition-opacity pl-2"
                 >
-                  {isArabic ? "تسوق الكل" : "Shop All"}
+                  {t("shopAll")}
                   <ChevronRight className={`h-4 w-4 text-black/15 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
                 </Link>
                 <div className="space-y-4">
@@ -219,15 +219,15 @@ export function MobileMenu() {
               </div>
 
               <Link href="/" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
-                {isArabic ? "الرئيسية" : "Home"}
+                {t("home")}
               </Link>
 
               <Link href="/about" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
-                {isArabic ? "من نحن" : "About Us"}
+                {t("aboutUs")}
               </Link>
 
               <Link href="/contact" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
-                {isArabic ? "اتصل بنا" : "Contact Us"}
+                {t("contactUs")}
               </Link>
             </div>
 
@@ -240,7 +240,7 @@ export function MobileMenu() {
                     <SearchOverlay />
                   </div>
                   <span className="text-xs uppercase tracking-[0.15em] text-black/40 font-medium">
-                    {isArabic ? "بحث" : "SEARCH"}
+                    {t("search")}
                   </span>
                 </div>
 
@@ -260,7 +260,7 @@ export function MobileMenu() {
                     }
                   />
                   <span className="text-xs uppercase tracking-[0.15em] text-black/40 font-medium">
-                    {isArabic ? "اللغة" : "LANGUAGE"}
+                    {t("language")}
                   </span>
                 </div>
 
@@ -273,7 +273,7 @@ export function MobileMenu() {
                     <User className="h-5 w-5 stroke-[1.5] text-black/70" />
                   </Link>
                   <span className="text-xs uppercase tracking-[0.15em] text-black/40 font-medium">
-                    {isArabic ? "الحساب" : "ACCOUNT"}
+                    {t("account")}
                   </span>
                 </div>
               </div>

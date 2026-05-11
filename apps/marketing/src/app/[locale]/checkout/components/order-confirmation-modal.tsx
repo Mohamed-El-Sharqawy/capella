@@ -56,7 +56,7 @@ export function OrderConfirmationModal({
           {/* Header */}
           <div className="p-6 border-b flex items-center justify-between bg-gray-50">
             <h2 className="text-xl font-serif font-bold text-gray-900">
-              {isArabic ? "مراجعة الطلب" : "Review Order"}
+              {t("reviewOrder")}
             </h2>
             <button
               onClick={onClose}
@@ -72,7 +72,7 @@ export function OrderConfirmationModal({
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
                 <ShoppingBag className="w-4 h-4" />
-                {t("orderSummary")} ({items.length} {isArabic ? "منتجات" : "items"})
+                {t("orderSummary")} ({items.length} {t("items")})
               </div>
               <div className="space-y-2">
                 {items.slice(0, 4).map((item) => (
@@ -95,17 +95,17 @@ export function OrderConfirmationModal({
                         {isArabic ? item.productNameAr : item.productNameEn}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {item.quantity}x {item.price} {isArabic ? "درهم" : "AED"}
+                        {item.quantity}x {item.price} {t("aed")}
                       </p>
                     </div>
                     <div className="text-sm font-semibold text-gray-900">
-                      {item.price * item.quantity} {isArabic ? "درهم" : "AED"}
+                      {item.price * item.quantity} {t("aed")}
                     </div>
                   </div>
                 ))}
                 {items.length > 4 && (
                   <p className="text-xs text-blue-600 font-medium py-1">
-                    + {items.length - 4} {isArabic ? "منتجات أخرى في سلتك" : "more items in your cart"}
+                    + {items.length - 4} {t("moreItems")}
                   </p>
                 )}
               </div>
@@ -115,7 +115,7 @@ export function OrderConfirmationModal({
             <div className="p-4 bg-gray-50 rounded-lg space-y-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 mb-2">
                 <Truck className="w-4 h-4" />
-                {isArabic ? "تفاصيل الشحن" : "Shipping Details"}
+                {t("shippingDetails")}
               </div>
               <p className="text-sm text-gray-700">
                 {formState.firstName} {formState.lastName}
@@ -132,12 +132,12 @@ export function OrderConfirmationModal({
             <div className="flex justify-between items-center p-4 border rounded-lg">
               <div className="flex items-center gap-2 text-sm text-gray-700">
                 <CreditCard className="w-4 h-4 text-gray-400" />
-                <span>{isArabic ? "طريقة الدفع" : "Payment Method"}</span>
+                <span>{t("paymentMethod")}</span>
               </div>
               <span className="text-sm font-semibold text-gray-900">
-                {formState.paymentMethod === "STRIPE" ? (isArabic ? "بطاقة ائتمان" : "Credit Card") :
+                {formState.paymentMethod === "STRIPE" ? t("creditCard") :
                   formState.paymentMethod === "TABBY" ? "Tabby" :
-                    (isArabic ? "دفع عند الاستلام" : "Cash on Delivery")}
+                    t("cashOnDelivery")}
               </span>
             </div>
 
@@ -145,21 +145,21 @@ export function OrderConfirmationModal({
             <div className="pt-4 border-t border-dashed space-y-2">
               <div className="flex justify-between text-sm text-gray-600">
                 <span>{t("subtotal")}</span>
-                <span>{total} {isArabic ? "درهم" : "AED"}</span>
+                <span>{total} {t("aed")}</span>
               </div>
               {discountAmount > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>{t("discount")}</span>
-                  <span>-{discountAmount} {isArabic ? "درهم" : "AED"}</span>
+                  <span>-{discountAmount} {t("aed")}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm text-gray-600">
                 <span>{t("shipping")}</span>
-                <span>{shippingCost} {isArabic ? "درهم" : "AED"}</span>
+                <span>{shippingCost} {t("aed")}</span>
               </div>
               <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
                 <span>{t("total")}</span>
-                <span>{finalTotal} {isArabic ? "درهم" : "AED"}</span>
+                <span>{finalTotal} {t("aed")}</span>
               </div>
             </div>
           </div>
@@ -170,13 +170,13 @@ export function OrderConfirmationModal({
               onClick={onClose}
               className="flex-1 py-3 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              {isArabic ? "رجوع" : "Back"}
+              {t("back")}
             </button>
             <button
               onClick={onConfirm}
               className="flex-1 py-3 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
             >
-              {isArabic ? "تأكيد الطلب" : "Confirm Order"}
+              {t("confirmOrder")}
               <ChevronRight className={`w-4 h-4 ${isArabic ? "rotate-180" : ""}`} />
             </button>
           </div>

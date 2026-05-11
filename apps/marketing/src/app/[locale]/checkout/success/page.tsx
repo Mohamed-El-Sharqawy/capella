@@ -19,7 +19,6 @@ export default function CheckoutSuccessPage({ params, searchParams }: PageProps)
   const t = useTranslations("checkout");
   const { clearCart } = useCart();
   const { isAuthenticated } = useAuth();
-  const isArabic = locale === "ar";
 
   // Clear the cart on success
   useEffect(() => {
@@ -43,7 +42,7 @@ export default function CheckoutSuccessPage({ params, searchParams }: PageProps)
 
         {session_id && (
           <p className="text-sm text-gray-400 mb-8 overflow-hidden text-ellipsis whitespace-nowrap">
-            {isArabic ? "معرف الجلسة: " : "Session ID: "}
+            {t("sessionId")}
             <span className="font-sans text-[10px]">{session_id}</span>
           </p>
         )}

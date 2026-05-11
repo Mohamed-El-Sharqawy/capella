@@ -24,7 +24,13 @@
     "theJourney": "The Journey",
     "instagram": "Instagram",
     "bookConsultation": "Book Your Private Consultation",
-    "terms": "Terms & Conditions"
+    "terms": "Terms & Conditions",
+    "back": "Back",
+    "home": "Home",
+    "aboutUs": "About Us",
+    "language": "Language",
+    "viewAllCollections": "View All Collections",
+    "shopAllIn": "Shop All {name}"
   },
   "home": {
     "heroMen": "Men",
@@ -39,7 +45,10 @@
       "title": "At Capella",
       "description": "Silver is not just a metal—it is a reflection of timeless elegance, a quiet expression of individuality, and a story crafted to shine with you in every moment, capturing beauty that doesn't fade, but evolves with your journey.",
       "cta": "Shop Now"
-    }
+    },
+    "discover": "Discover",
+    "freeShippingMarquee": "FREE SHIPPING ABOVE <b><i><u>500 AED</u></i></b> ALL OVER UAE",
+    "customersFeedback": "Customers Feedback"
   },
   "product": {
     "price": "Price",
@@ -75,7 +84,38 @@
     "adding": "Adding...",
     "added": "Added",
     "quickAdd": "Quick Add",
-    "view": "View"
+    "view": "View",
+    "products": "PRODUCTS",
+    "freeShipping": "Complimentary 2-5 days shipping in UAE",
+    "authenticityCard": "Jewellery authenticity card",
+    "giftWrapping": "Signature Capella gift wrapping",
+    "addGiftMessage": "ADD A GIFT CARD",
+    "addToBag": "ADD TO BAG",
+    "exchangeReturn": "Exchange & Return",
+    "exchangePriority": "The satisfaction of our customers is our priority.",
+    "exchangePolicy": "Products purchased and not used can be exchanged or returned up to 5 days from the delivery date. We accept products unworn, unused and undamaged, accompanied by the original CAPELLA packaging.",
+    "exchangeFees": "Please note that shipping and bank handling fees from your original order will not be refunded. For returns, a fixed shipping fee will be deducted from your refund.",
+    "exchangeUae": "CAPELLA will not be responsible for any loss during transportation outside the UAE.",
+    "contactUsAny": "For any questions, please contact us:",
+    "orderWrapping": "Order Wrapping & Gifting",
+    "orderWrappingDesc": "Every Capella order arrives exquisitely wrapped in our signature gift box.",
+    "bookAppointment": "BOOK AN APPOINTMENT",
+    "removeFromWishlist": "REMOVE FROM WISHLIST",
+    "addToWishlist": "ADD TO WISHLIST",
+    "complimentaryShipping": "Complimentary Shipping",
+    "complimentaryShippingDesc": "Free worldwide shipping - estimated customs and duties taxes included",
+    "hassleFreeReturns": "Hassle Free Returns",
+    "hassleFreeReturnsDesc": "We are available from Monday to Friday to answer your questions",
+    "securePayment": "Secure Payment",
+    "securePaymentDesc": "Your payment information is processed securely",
+    "contactUs": "Contact us",
+    "contactUsDesc": "Need to contact us? Just send us an email or via WhatsApp",
+    "whatsapp": "WhatsApp",
+    "pendingApproval": "Pending Approval",
+    "youMayAlsoLike": "You may also like",
+    "previewNotAvailable": "Preview Not Available",
+    "shoppableVideos": "Shoppable Videos",
+    "shoppableVideosDesc": "See it. Move in it. Shop it."
   },
   "collection": {
     "allProducts": "All Products",
@@ -108,12 +148,21 @@
       "dateAsc": "Date, old to new",
       "dateDesc": "Date, new to old",
       "manualOrder": "Manual order"
-    }
+    },
+    "allProductsTitle": "All Products - NZN Studio",
+    "allProductsDesc": "Browse all our fashion and clothing products. Discover the latest trends at NZN Studio.",
+    "notFound": "Collection Not Found"
   },
   "search": {
     "trending": "Trending Now",
     "recentSearches": "Recent Searches",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "ariaLabel": "Search",
+    "placeholder": "Search products or collections...",
+    "products": "Products",
+    "collections": "Collections",
+    "viewAllResults": "View all results",
+    "overlayPlaceholder": "Search product..."
   },
   "checkout": {
     "title": "Checkout",
@@ -191,7 +240,44 @@
       "message": "Your payment was not completed. You can try again or choose a different payment method.",
       "retry": "Try Again",
       "backToCart": "Back to Cart"
-    }
+    },
+    "reviewOrder": "Review Order",
+    "items": "items",
+    "aed": "AED",
+    "moreItems": "more items in your cart",
+    "shippingDetails": "Shipping Details",
+    "creditCard": "Credit Card",
+    "cashOnDelivery": "Cash on Delivery",
+    "back": "Back",
+    "confirmOrder": "Confirm Order",
+    "sessionId": "Session ID: "
+  },
+  "reviewModal": {
+    "errorSubmit": "Failed to submit review",
+    "signIn": "Sign In",
+    "title": "Write a Review",
+    "loading": "Loading...",
+    "signInPrompt": "Sign in to write a review",
+    "signUp": "Sign Up",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "password": "Password",
+    "signInBtn": "Sign In",
+    "createAccount": "Create Account",
+    "notPurchased": "You can only review products you've purchased",
+    "buyPrompt": "Would you like to buy this product?",
+    "addToCart": "Add to Cart",
+    "maybeLater": "Maybe Later",
+    "thankYou": "Thank You!",
+    "successMessage": "Your review has been submitted successfully",
+    "greeting": "Hi {name}, share your thoughts",
+    "rating": "Rating",
+    "reviewTitle": "Review Title",
+    "titlePlaceholder": "Write a brief title...",
+    "yourReview": "Your Review",
+    "reviewPlaceholder": "Share your experience with this product...",
+    "submitReview": "Submit Review"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -219,7 +305,29 @@
       "placeholder": "Enter your email",
       "button": "Subscribe"
     },
-    "copyright": "© 2026 Capella. All rights reserved."
+    "copyright": "© 2026 Capella. All rights reserved.",
+    "aboutUs": "About Us",
+    "shopAll": "Shop All",
+    "shopByCollection": "Shop by Collection",
+    "contactUs": "Contact Us",
+    "privacyPolicy": "Privacy Policy",
+    "refundReturnPolicy": "Refund & Return Policy",
+    "shippingPolicy": "Shipping Policy",
+    "termsOfService": "Terms of Service",
+    "subscribeForUpdates": "Subscribe for Updates",
+    "enterEmail": "Enter your email",
+    "submit": "Submit",
+    "shop": "Shop",
+    "policies": "Policies",
+    "allRightsReserved": "All rights reserved."
+  },
+  "features": {
+    "flexiblePayment": "Flexible Payment",
+    "flexiblePaymentDesc": "Pay with Multiple Credit Cards",
+    "fastReturns": "Fast and Easy Returns",
+    "fastReturnsDesc": "Within 2 days for an exchange",
+    "premiumSupport": "Premium Support",
+    "premiumSupportDesc": "Outstanding premium support"
   },
   "contact": {
     "title": "Contact Us",
@@ -259,7 +367,7 @@
     "error": "An error occurred while sending your message. Please try again.",
     "info": {
       "phone": "Phone",
-      "phoneValue": "+971 50 123 4567",
+      "phoneValue": "+971 52 451 4147",
       "email": "Email",
       "emailValue": "support@nznstudio.com",
       "address": "Address",
@@ -453,7 +561,7 @@
     }
   },
   "account": {
-    "greeting": "Hello",
+    "greeting": "Hello, {name}",
     "profile": "Profile",
     "orders": "My Orders",
     "favourites": "Favourites",
@@ -469,7 +577,10 @@
       "edit": "Edit",
       "save": "Save",
       "cancel": "Cancel",
-      "createdAt": "Member since"
+      "createdAt": "Member since",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "role": "Role"
     },
     "ordersTab": {
       "title": "My Orders",
@@ -491,7 +602,8 @@
       "startShopping": "Start Shopping",
       "inStock": "In Stock",
       "outOfStock": "Out of Stock",
-      "remove": "Remove"
+      "remove": "Remove",
+      "view": "View"
     },
     "wishlistTab": {
       "title": "Wishlist",
@@ -500,7 +612,8 @@
       "note": "Note",
       "inStock": "In Stock",
       "outOfStock": "Out of Stock",
-      "remove": "Remove"
+      "remove": "Remove",
+      "view": "View"
     },
     "cartTab": {
       "title": "Cart",
@@ -512,13 +625,16 @@
       "subtotal": "Subtotal",
       "total": "Total",
       "checkout": "Checkout",
-      "remove": "Remove"
+      "remove": "Remove",
+      "color": "Color",
+      "size": "Size"
     },
     "addressesTab": {
       "title": "Addresses",
       "noAddresses": "No saved addresses yet",
       "default": "Default",
-      "phone": "Phone"
+      "phone": "Phone",
+      "addressesAutoSaved": "Addresses will be saved automatically when you checkout"
     }
   },
   "cartDrawer": {
@@ -593,6 +709,8 @@
       "craftsmanshipDesc": "Each design is a labor of love, combining age-old techniques with modern innovation.",
       "innovation": "Modern Innovation",
       "innovationDesc": "We continuously push boundaries in design, creating unique geometric patterns that define modern luxury."
-    }
+    },
+    "exploreCollection": "Explore Our Collection",
+    "shopNow": "Shop Now"
   }
 }

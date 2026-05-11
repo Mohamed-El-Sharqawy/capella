@@ -20,13 +20,13 @@ export function ProfileTab({ locale, phoneEdit }: ProfileTabProps) {
         <div className="space-y-4">
           <div>
             <label className="text-sm text-muted-foreground">
-              {isArabic ? "الاسم الأول" : "First Name"}
+              {t("firstName")}
             </label>
             <p className="font-medium">{user?.firstName || "-"}</p>
           </div>
           <div>
             <label className="text-sm text-muted-foreground">
-              {isArabic ? "الاسم الأخير" : "Last Name"}
+              {t("lastName")}
             </label>
             <p className="font-medium">{user?.lastName || "-"}</p>
           </div>
@@ -90,7 +90,7 @@ export function ProfileTab({ locale, phoneEdit }: ProfileTabProps) {
         <div className="space-y-4">
           <div>
             <label className="text-sm text-muted-foreground">
-              {isArabic ? "الدور" : "Role"}
+              {t("role")}
             </label>
             <p className="font-medium capitalize">{user?.role?.toLowerCase() || "customer"}</p>
           </div>

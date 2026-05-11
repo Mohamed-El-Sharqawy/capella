@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useContactForm, useContactData } from "./hooks";
-import { ContactInfoCard, LocationMap, ContactForm, FaqSection } from "./components";
+import { ContactInfoCard, LocationMap, ContactForm } from "./components";
 import type { ContactPageClientProps } from "./types";
 
 export function ContactPageClient({ locale }: ContactPageClientProps) {
@@ -40,7 +40,7 @@ export function ContactPageClient({ locale }: ContactPageClientProps) {
         </div>
 
         {/* FAQ Section */}
-        <FaqSection faqs={faqs} />
+        {/* <FaqSection faqs={faqs} /> */}
       </div>
     </div>
   );

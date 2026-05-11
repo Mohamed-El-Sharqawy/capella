@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Star } from "lucide-react";
 import type { Review } from "@ecommerce/shared-types";
+import { useTranslations } from "next-intl";
 
 interface CustomersFeedbackProps {
   reviews: Review[];
@@ -14,12 +15,13 @@ export function CustomersFeedback({ reviews, locale }: CustomersFeedbackProps) {
   if (reviews.length === 0) return null;
 
   const isArabic = locale === "ar";
+  const t = useTranslations("home");
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
       <div>
         <h2 className="text-2xl font-bold tracking-tight mb-8">
-          {isArabic ? "آراء العملاء" : "Customers Feedback"}
+          {t("customersFeedback")}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

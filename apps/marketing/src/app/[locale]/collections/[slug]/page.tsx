@@ -84,14 +84,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
   const isArabic = locale === "ar";
+  const tc = await getTranslations({ locale, namespace: "collection" });
 
   // Handle special slugs
   if (slug === "all-products") {
     return generatePageMetadata({
-      title: isArabic ? "جميع المنتجات - إن زد إن ستوديو" : "All Products - NZN Studio",
-      description: isArabic
-        ? "تصفح جميع منتجاتنا من الأزياء والملابس. اكتشف أحدث الصيحات في إن زد إن ستوديو."
-        : "Browse all our fashion and clothing products. Discover the latest trends at NZN Studio.",
+      title: tc("allProductsTitle"),
+      description: tc("allProductsDesc"),
       locale,
       path: `/collections/${slug}`,
     });
@@ -100,7 +99,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const collection = await getCollection(slug);
   
   if (!collection) {
-    return { title: isArabic ? "المجموعة غير موجودة" : "Collection Not Found" };
+    return { title: tc("notFound") };
   }
 
   return generateCollectionMetadata({ collection, locale });

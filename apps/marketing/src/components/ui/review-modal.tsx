@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, Star, ShoppingBag, LogIn, UserPlus, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
 import { createCartItemFromVariant } from "@/lib/cart";
@@ -22,11 +23,12 @@ type ModalState = "loading" | "auth" | "not-purchased" | "review";
 export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitted }: ReviewModalProps) {
   const { user, isAuthenticated, isLoading: authLoading, signIn, signUp, getAccessToken } = useAuth();
   const { addItem } = useCart();
+  const t = useTranslations("reviewModal");
   const isArabic = locale === "ar";
 
   const [modalState, setModalState] = useState<ModalState>("loading");
   const [isCheckingPurchase, setIsCheckingPurchase] = useState(false);
-  
+
   // Auth form state
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -67,10 +69,10 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
         const token = getAccessToken();
         const response = await apiGet<{ data: { data: any[] } }>("/api/orders", { token: token || undefined });
         const orders = response.data?.data || [];
-        
+
         // Get all variant IDs for this product
         const productVariantIds = product.variants?.map((v) => v.id) || [];
-        
+
         // Check if any order contains a variant of this product
         const hasPurchased = orders.some((order: any) =>
           order.items?.some((item: any) => productVariantIds.includes(item.variantId))
@@ -148,12 +150,12 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
       }
 
       setReviewSuccess(true);
-      
+
       // Invalidate reviews cache to refetch
       if (onReviewSubmitted) {
         onReviewSubmitted();
       }
-      
+
       setTimeout(() => {
         onClose();
         setReviewSuccess(false);
@@ -163,7 +165,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
         setAuthError("");
       }, 2000);
     } catch (error) {
-      setAuthError(isArabic ? "حدث خطأ أثناء إرسال المراجعة" : "Failed to submit review");
+      setAuthError(t("errorSubmit"));
     } finally {
       setIsSubmittingReview(false);
     }
@@ -189,10 +191,8 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
           <div className="flex items-center justify-between p-4 border-b">
             <h2 className="text-lg font-semibold">
               {modalState === "auth"
-                ? isArabic ? "تسجيل الدخول" : "Sign In"
-                : modalState === "not-purchased"
-                ? isArabic ? "اكتب مراجعة" : "Write a Review"
-                : isArabic ? "اكتب مراجعة" : "Write a Review"}
+                ? t("signIn")
+                : t("title")}
             </h2>
             <button
               onClick={onClose}
@@ -209,7 +209,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
               <div className="flex flex-col items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
                 <p className="mt-4 text-sm text-muted-foreground">
-                  {isArabic ? "جاري التحميل..." : "Loading..."}
+                  {t("loading")}
                 </p>
               </div>
             )}
@@ -233,9 +233,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                   <div>
                     <p className="font-medium text-sm">{name}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {isArabic
-                        ? "سجل دخولك لكتابة مراجعة"
-                        : "Sign in to write a review"}
+                      {t("signInPrompt")}
                     </p>
                   </div>
                 </div>
@@ -244,25 +242,23 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                 <div className="flex border-b">
                   <button
                     onClick={() => setAuthMode("signin")}
-                    className={`flex-1 py-2 text-sm font-medium border-b-2 transition ${
-                      authMode === "signin"
-                        ? "border-black text-black"
-                        : "border-transparent text-gray-500"
-                    }`}
+                    className={`flex-1 py-2 text-sm font-medium border-b-2 transition ${authMode === "signin"
+                      ? "border-black text-black"
+                      : "border-transparent text-gray-500"
+                      }`}
                   >
                     <LogIn className="h-4 w-4 inline mr-2" />
-                    {isArabic ? "تسجيل الدخول" : "Sign In"}
+                    {t("signIn")}
                   </button>
                   <button
                     onClick={() => setAuthMode("signup")}
-                    className={`flex-1 py-2 text-sm font-medium border-b-2 transition ${
-                      authMode === "signup"
-                        ? "border-black text-black"
-                        : "border-transparent text-gray-500"
-                    }`}
+                    className={`flex-1 py-2 text-sm font-medium border-b-2 transition ${authMode === "signup"
+                      ? "border-black text-black"
+                      : "border-transparent text-gray-500"
+                      }`}
                   >
                     <UserPlus className="h-4 w-4 inline mr-2" />
-                    {isArabic ? "إنشاء حساب" : "Sign Up"}
+                    {t("signUp")}
                   </button>
                 </div>
 
@@ -272,7 +268,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                     <div className="grid grid-cols-2 gap-3">
                       <input
                         type="text"
-                        placeholder={isArabic ? "الاسم الأول" : "First Name"}
+                        placeholder={t("firstName")}
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         required
@@ -280,7 +276,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                       />
                       <input
                         type="text"
-                        placeholder={isArabic ? "الاسم الأخير" : "Last Name"}
+                        placeholder={t("lastName")}
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         required
@@ -290,7 +286,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                   )}
                   <input
                     type="email"
-                    placeholder={isArabic ? "البريد الإلكتروني" : "Email"}
+                    placeholder={t("email")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -298,7 +294,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                   />
                   <input
                     type="password"
-                    placeholder={isArabic ? "كلمة المرور" : "Password"}
+                    placeholder={t("password")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -317,9 +313,9 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                     {isSubmitting ? (
                       <Loader2 className="h-4 w-4 animate-spin mx-auto" />
                     ) : authMode === "signin" ? (
-                      isArabic ? "تسجيل الدخول" : "Sign In"
+                      t("signInBtn")
                     ) : (
-                      isArabic ? "إنشاء حساب" : "Create Account"
+                      t("createAccount")
                     )}
                   </button>
                 </form>
@@ -348,31 +344,27 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                 {/* Message */}
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                   <p className="text-amber-800 text-sm">
-                    {isArabic
-                      ? "لا يمكنك كتابة مراجعة لمنتج لم تشتريه بعد"
-                      : "You can only review products you've purchased"}
+                    {t("notPurchased")}
                   </p>
                 </div>
 
                 {/* Suggestion */}
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">
-                    {isArabic
-                      ? "هل تريد شراء هذا المنتج؟"
-                      : "Would you like to buy this product?"}
+                    {t("buyPrompt")}
                   </p>
                   <button
                     onClick={handleAddToCart}
                     className="w-full py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition flex items-center justify-center gap-2"
                   >
                     <ShoppingBag className="h-4 w-4" />
-                    {isArabic ? "أضف إلى السلة" : "Add to Cart"}
+                    {t("addToCart")}
                   </button>
                   <button
                     onClick={onClose}
                     className="w-full py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
                   >
-                    {isArabic ? "ربما لاحقاً" : "Maybe Later"}
+                    {t("maybeLater")}
                   </button>
                 </div>
               </div>
@@ -387,12 +379,10 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                       <Star className="h-8 w-8 text-green-600 fill-green-600" />
                     </div>
                     <h3 className="font-semibold text-lg">
-                      {isArabic ? "شكراً لك!" : "Thank You!"}
+                      {t("thankYou")}
                     </h3>
                     <p className="text-sm text-muted-foreground mt-2">
-                      {isArabic
-                        ? "تم إرسال مراجعتك بنجاح"
-                        : "Your review has been submitted successfully"}
+                      {t("successMessage")}
                     </p>
                   </div>
                 ) : (
@@ -413,9 +403,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                       <div>
                         <p className="font-medium text-sm">{name}</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {isArabic
-                            ? `مرحباً ${user?.firstName}، شاركنا رأيك`
-                            : `Hi ${user?.firstName}, share your thoughts`}
+                          {t("greeting", { name: user?.firstName || 'User' })}
                         </p>
                       </div>
                     </div>
@@ -425,7 +413,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                       {/* Rating */}
                       <div>
                         <label className="block text-sm font-medium mb-2">
-                          {isArabic ? "التقييم" : "Rating"}
+                          {t("rating")}
                         </label>
                         <div className="flex gap-1">
                           {[1, 2, 3, 4, 5].map((star) => (
@@ -436,11 +424,10 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                               className="p-1 hover:scale-110 transition-transform"
                             >
                               <Star
-                                className={`h-8 w-8 ${
-                                  star <= rating
-                                    ? "fill-yellow-400 text-yellow-400"
-                                    : "text-gray-300"
-                                }`}
+                                className={`h-8 w-8 ${star <= rating
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                                  }`}
                               />
                             </button>
                           ))}
@@ -450,17 +437,13 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                       {/* Review Title */}
                       <div>
                         <label className="block text-sm font-medium mb-2">
-                          {isArabic ? "عنوان المراجعة" : "Review Title"}
+                          {t("reviewTitle")}
                         </label>
                         <input
                           type="text"
                           value={reviewTitle}
                           onChange={(e) => setReviewTitle(e.target.value)}
-                          placeholder={
-                            isArabic
-                              ? "اكتب عنوان مختصر..."
-                              : "Write a brief title..."
-                          }
+                          placeholder={t("titlePlaceholder")}
                           required
                           className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
                         />
@@ -469,16 +452,12 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                       {/* Review Content */}
                       <div>
                         <label className="block text-sm font-medium mb-2">
-                          {isArabic ? "مراجعتك" : "Your Review"}
+                          {t("yourReview")}
                         </label>
                         <textarea
                           value={reviewContent}
                           onChange={(e) => setReviewContent(e.target.value)}
-                          placeholder={
-                            isArabic
-                              ? "شاركنا تجربتك مع هذا المنتج..."
-                              : "Share your experience with this product..."
-                          }
+                          placeholder={t("reviewPlaceholder")}
                           rows={4}
                           required
                           className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black resize-none"
@@ -499,7 +478,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
                         {isSubmittingReview ? (
                           <Loader2 className="h-4 w-4 animate-spin mx-auto" />
                         ) : (
-                          isArabic ? "إرسال المراجعة" : "Submit Review"
+                          t("submitReview")
                         )}
                       </button>
                     </form>
