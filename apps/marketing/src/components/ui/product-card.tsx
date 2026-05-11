@@ -115,7 +115,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
       </div>
 
       <div className="mt-6 text-center space-y-1.5 px-2">
-        <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.15em] line-clamp-1 group-hover:opacity-60 transition-opacity">
+        <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.15em] group-hover:opacity-60 transition-opacity">
           {name}
         </h3>
         {subtitle && (
@@ -124,14 +124,14 @@ export function ProductCard({ product, locale }: ProductCardProps) {
           </p>
         )}
         <div className="flex flex-col items-center gap-0.5">
+          <span className="text-xs font-semibold tracking-wide text-foreground">
+            AED {price.toLocaleString()}
+          </span>
           {compareAtPrice && compareAtPrice > price && (
-            <span className="text-xs text-muted-foreground line-through tracking-wider">
+            <span className="text-[10px] text-muted-foreground line-through tracking-wider">
               AED {compareAtPrice.toLocaleString()}
             </span>
           )}
-          <span className="text-sm font-semibold tracking-wide text-foreground">
-            AED {price.toLocaleString()}
-          </span>
         </div>
       </div>
     </Link>

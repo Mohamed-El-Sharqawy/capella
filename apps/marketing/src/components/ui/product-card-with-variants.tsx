@@ -233,7 +233,7 @@ export function ProductCardWithVariants({
                         </button>
                       </div>
                       <div className="border-l border-neutral-200" />
-                       <Link
+                      <Link
                         href="/checkout"
                         className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold tracking-[0.15em] uppercase cursor-pointer bg-foreground text-background hover:bg-foreground/85 transition-all duration-200 active:scale-[0.98]"
                         style={{ fontSize: "10px" }}
@@ -296,21 +296,21 @@ export function ProductCardWithVariants({
           {/* Product Info Section */}
           <Link href={`/products/${product.slug}`} className="block">
             <div className="px-4 pt-3 pb-4 space-y-1.5">
-              <h3 className="text-sm tracking-wide text-neutral-800 line-clamp-1 transition-colors duration-300 group-hover:text-neutral-950">
+              <h3 className="text-sm tracking-wide text-neutral-800 transition-colors duration-300 group-hover:text-neutral-950">
                 {name}
               </h3>
               {subtitle && (
-                <p className="text-xs text-muted-foreground line-clamp-1">
+                <p className="text-xs text-muted-foreground">
                   {subtitle}
                 </p>
               )}
 
               <div className="flex items-baseline gap-1.5">
-                <span className="text-sm font-semibold tracking-wide text-foreground">
+                <span className="text-xs font-semibold tracking-wide text-foreground">
                   AED {price.toLocaleString()}
                 </span>
                 {compareAtPrice && compareAtPrice > price && (
-                  <span className="text-xs text-muted-foreground line-through">
+                  <span className="text-[10px] text-muted-foreground line-through">
                     {compareAtPrice.toLocaleString()}
                   </span>
                 )}

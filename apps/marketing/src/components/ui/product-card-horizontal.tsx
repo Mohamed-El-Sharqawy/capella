@@ -122,14 +122,14 @@ export function ProductCardHorizontal({
 
           {/* Price */}
           <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs font-semibold tracking-wide text-foreground">
+              AED {price.toLocaleString()}
+            </span>
             {compareAtPrice && compareAtPrice > price && (
-              <span className="text-xs text-muted-foreground line-through">
+              <span className="text-[10px] text-muted-foreground line-through">
                 AED {compareAtPrice.toLocaleString()}
               </span>
             )}
-            <span className="text-sm font-semibold tracking-wide text-foreground">
-              AED {price.toLocaleString()}
-            </span>
           </div>
 
           {/* Description */}
