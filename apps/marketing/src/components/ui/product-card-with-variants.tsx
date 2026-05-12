@@ -235,8 +235,8 @@ export function ProductCardWithVariants({
                       <div className="border-l border-neutral-200" />
                       <Link
                         href="/checkout"
-                        className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold tracking-[0.15em] uppercase cursor-pointer bg-foreground text-background hover:bg-foreground/85 transition-all duration-200 active:scale-[0.98]"
-                        style={{ fontSize: "10px" }}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold uppercase cursor-pointer bg-foreground text-background hover:bg-foreground/85 transition-all duration-200 active:scale-[0.98]"
+                        style={{ fontSize: "10px", letterSpacing: isArabic ? "0em" : "0.15em" }}
                       >
                         <ShoppingCart className="h-3.5 w-3.5" />
                         {t("checkout")}
@@ -247,8 +247,8 @@ export function ProductCardWithVariants({
                       <button
                         onClick={handleQuickAdd}
                         disabled={isAdding}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold tracking-[0.15em] uppercase cursor-pointer bg-background text-foreground hover:bg-black hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
-                        style={{ fontSize: "10px" }}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold uppercase cursor-pointer bg-background text-foreground hover:bg-black hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                        style={{ fontSize: "10px", letterSpacing: isArabic ? "0em" : "0.15em" }}
                       >
                         {isAdding ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -263,8 +263,8 @@ export function ProductCardWithVariants({
                       <div className="border-l border-neutral-200" />
                       <button
                         onClick={() => setIsQuickViewOpen(true)}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold tracking-[0.15em] uppercase cursor-pointer transition-all duration-200 bg-background text-foreground hover:bg-black hover:text-white active:scale-[0.98]"
-                        style={{ fontSize: "10px" }}
+                        className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold uppercase cursor-pointer transition-all duration-200 bg-background text-foreground hover:bg-black hover:text-white active:scale-[0.98]"
+                        style={{ fontSize: "10px", letterSpacing: isArabic ? "0em" : "0.15em" }}
                       >
                         <Eye className="h-3.5 w-3.5" />
                         {t("view")}
@@ -279,10 +279,11 @@ export function ProductCardWithVariants({
                       <button
                         key={size.id}
                         onClick={() => handleSizeSelect(size.id)}
-                        className={`min-w-[32px] px-2 py-1 text-xs font-medium tracking-wider uppercase border rounded-md cursor-pointer transition-all duration-200 ${selectedSizeId === size.id
+                        className={`min-w-[32px] px-2 py-1 text-xs font-medium uppercase border rounded-md cursor-pointer transition-all duration-200 ${selectedSizeId === size.id
                           ? "bg-foreground text-background border-foreground"
                           : "border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50"
                           }`}
+                        style={{ letterSpacing: isArabic ? "0em" : "0.05em" }}
                       >
                         {isArabic ? size.nameAr : size.nameEn}
                       </button>
@@ -296,7 +297,7 @@ export function ProductCardWithVariants({
           {/* Product Info Section */}
           <Link href={`/products/${product.slug}`} className="block">
             <div className="px-4 pt-3 pb-4 space-y-1.5">
-              <h3 className="text-sm tracking-wide text-neutral-800 transition-colors duration-300 group-hover:text-neutral-950">
+              <h3 className="text-sm text-neutral-800 transition-colors duration-300 group-hover:text-neutral-950" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>
                 {name}
               </h3>
               {subtitle && (
@@ -306,7 +307,7 @@ export function ProductCardWithVariants({
               )}
 
               <div className="flex items-baseline gap-1.5">
-                <span className="text-xs font-semibold tracking-wide text-foreground">
+                <span className="text-xs font-semibold text-foreground" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>
                   AED {price.toLocaleString()}
                 </span>
                 {compareAtPrice && compareAtPrice > price && (

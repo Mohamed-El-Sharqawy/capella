@@ -81,9 +81,9 @@ export function ProductInfo({
     <div className="space-y-8 flex flex-col">
       {/* Title & Price */}
       <div className="space-y-3">
-        <h1 className="text-xl md:text-2xl font-medium tracking-tight text-gray-900">{name}</h1>
+        <h1 className="text-xl md:text-2xl font-medium text-gray-900" style={{ letterSpacing: isArabic ? "0em" : "-0.025em" }}>{name}</h1>
         {composition && (
-          <p className="text-sm md:text-base text-gray-500 font-light tracking-wide italic">
+          <p className="text-sm md:text-base text-gray-500 font-light italic" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>
             {composition}
           </p>
         )}
@@ -109,7 +109,7 @@ export function ProductInfo({
           style={{
             letterSpacing: isArabic ? "0em" : "0.2em",
           }}
-          className="w-full bg-black text-white py-4 text-sm uppercase hover:bg-neutral-800 transition-colors shadow-sm"
+          className="w-full bg-black text-white py-4 text-sm font-medium uppercase hover:bg-neutral-800 transition-colors shadow-sm"
         >
           {t("addToBag")}
         </button>
@@ -119,7 +119,7 @@ export function ProductInfo({
           {benefits.map((benefit, idx) => (
             <div key={idx} className="flex items-center gap-4 text-gray-600">
               <span className="text-gray-400">{benefit.icon}</span>
-              <span className="text-xs md:text-sm font-light tracking-wider">{benefit.text}</span>
+              <span className="text-xs md:text-sm font-light" style={{ letterSpacing: isArabic ? "0em" : "0.05em" }}>{benefit.text}</span>
             </div>
           ))}
         </div>
@@ -129,7 +129,7 @@ export function ProductInfo({
       <div className="space-y-6">
         {uniqueColors.length > 0 && (
           <div>
-            <p className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] mb-3">{t("color")}</p>
+            <p className="text-xs md:text-sm font-medium uppercase mb-3" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>{t("color")}</p>
             <div className="flex gap-2">
               {uniqueColors.map((color) => (
                 <button
@@ -200,7 +200,8 @@ export function ProductInfo({
         </button> */}
         <button
           onClick={onToggleWishlist}
-          className="w-full py-3 border border-gray-900 text-xs font-medium uppercase tracking-widest hover:bg-gray-50 transition-colors"
+          className="w-full py-3 border border-gray-900 text-xs font-medium uppercase hover:bg-gray-50 transition-colors"
+          style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
         >
           {isInWishlist ? t("removeFromWishlist") : t("addToWishlist")}
         </button>
@@ -217,7 +218,7 @@ export function ProductInfo({
             image={product.variants?.[0]?.images?.[0]?.url}
           />
         </div>
-        <div className="text-xs text-gray-400 uppercase tracking-widest font-light">
+        <div className="text-xs text-gray-400 uppercase font-light" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
           SKU: {selectedVariant?.sku || "N/A"}
         </div>
       </div>

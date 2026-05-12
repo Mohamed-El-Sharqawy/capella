@@ -31,7 +31,7 @@ export function CollectionCard({ slug, nameEn, nameAr, imageUrl, locale }: Colle
       )}
       <div className="absolute inset-0 bg-black/30 transition-opacity group-hover:bg-black/40" />
       <div className="absolute inset-0 flex items-center justify-center">
-        <h2 className="text-white text-2xl font-bold tracking-wide text-center px-4">
+        <h2 className="text-white text-2xl font-bold text-center px-4" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>
           {isArabic ? nameAr : nameEn}
         </h2>
       </div>

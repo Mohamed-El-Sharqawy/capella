@@ -15,17 +15,18 @@ interface ShoppableVideosProps {
 
 export function ShoppableVideos({ videos, locale }: ShoppableVideosProps) {
   if (videos.length === 0) return null;
+  const isArabic = locale === "ar";
   const t = useTranslations("product");
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
       <div>
         <div className="text-center mb-16 space-y-4">
-          <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.25em]">
+          <h2 className="text-2xl md:text-3xl font-light uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.25em" }}>
             {t("shoppableVideos")}
           </h2>
           <div className="w-16 h-px bg-black/20 mx-auto" />
-          <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground">
+          <p className="text-xs md:text-sm uppercase text-muted-foreground" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
             {t("shoppableVideosDesc")}
           </p>
         </div>
@@ -53,6 +54,7 @@ function ShoppableVideoCard({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showQuickView, setShowQuickView] = useState(false);
+  const isArabic = locale === "ar";
 
   const product = video.product;
   const variant = product?.variants?.[0];
@@ -147,17 +149,17 @@ function ShoppableVideoCard({
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium uppercase tracking-widest truncate group-hover/link:opacity-60 transition-opacity">{productName}</p>
+              <p className="text-sm font-medium uppercase truncate group-hover/link:opacity-60 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>{productName}</p>
               {material && (
-                <p className="text-xs text-muted-foreground tracking-wider mt-0.5">{material}</p>
+                <p className="text-xs text-muted-foreground mt-0.5" style={{ letterSpacing: isArabic ? "0em" : "0.05em" }}>{material}</p>
               )}
               <div className="flex items-center gap-1.5 mt-1">
                 {compareAtPrice && compareAtPrice > price && (
-                  <span className="text-xs text-muted-foreground line-through tracking-wider">
+                  <span className="text-xs text-muted-foreground line-through" style={{ letterSpacing: isArabic ? "0em" : "0.05em" }}>
                     {compareAtPrice.toLocaleString()}
                   </span>
                 )}
-                <span className="text-sm font-semibold tracking-wide text-foreground">
+                <span className="text-sm font-semibold text-foreground" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>
                   AED {price.toLocaleString()}
                 </span>
               </div>

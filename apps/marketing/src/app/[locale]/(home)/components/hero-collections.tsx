@@ -66,7 +66,7 @@ export function HeroCollections({ collections, locale }: HeroCollectionsProps) {
               <div className="absolute inset-0 flex flex-col items-center justify-end pb-3 md:pb-3 text-white">
                 {/* Decorative line */}
 
-                <h3 className="text-sm md:text-base font-light uppercase tracking-[0.2em] md:tracking-[0.3em] transition-all duration-700 group-hover:-translate-y-1">
+                <h3 className="text-sm md:text-base font-light uppercase transition-all duration-700 group-hover:-translate-y-1" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>
                   {isArabic ? collection.nameAr : collection.nameEn}
                 </h3>
 

@@ -326,10 +326,11 @@ export function QuickViewModal({
                     <button
                       key={size.id}
                       onClick={() => handleSizeSelect(size.id)}
-                      className={`px-5 py-2.5 text-xs font-semibold border transition-all duration-300 uppercase tracking-widest ${selectedVariant?.size?.id === size.id
+                      className={`px-5 py-2.5 text-xs font-semibold border transition-all duration-300 uppercase ${selectedVariant?.size?.id === size.id
                         ? "bg-primary text-primary-foreground border-primary shadow-md"
                         : "border-border hover:border-black"
                         }`}
+                      style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                     >
                       {isArabic ? size.nameAr : size.nameEn}
                     </button>
@@ -360,13 +361,13 @@ export function QuickViewModal({
             <div className="space-y-3 pt-4">
               <button
                 onClick={handleAddToCart}
-                className="w-full py-4 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-[0.2em] hover:bg-primary/95 transition-all shadow-sm active:scale-[0.98]"
+                className="w-full py-4 bg-primary text-primary-foreground text-xs font-bold uppercase hover:bg-primary/95 transition-all shadow-sm active:scale-[0.98]" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}
               >
                 {tCommon("addToCart")}
               </button>
               <Link
                 href={`/products/${product.slug}`}
-                className="block w-full py-4 text-center text-xs font-bold uppercase tracking-[0.2em] border border-transparent hover:border-black/10 transition-all"
+                className="block w-full py-4 text-center text-xs font-bold uppercase border border-transparent hover:border-black/10 transition-all" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}
                 onClick={onClose}
               >
                 {tCommon("viewFullDetails")}

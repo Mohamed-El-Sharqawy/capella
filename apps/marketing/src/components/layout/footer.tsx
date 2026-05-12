@@ -31,12 +31,12 @@ export function Footer({ locale }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
           {/* Brand & Newsletter */}
           <div className="md:col-span-2 space-y-8">
-            <Link href="/" className="text-2xl font-light uppercase tracking-[0.3em]">
+            <Link href="/" className="text-2xl font-light uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.3em" }}>
               <Image src="/logo_capella_light.webp" alt="Logo" width={200} height={200} />
             </Link>
             <div className="max-w-md space-y-4">
-              <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
-                {t("subscribeForUpdates")}
+<h3 className="text-xs md:text-sm font-medium uppercase text-gray-400" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>
+              {t("subscribeForUpdates")}
               </h3>
               <form className="relative">
                 <input
@@ -46,10 +46,11 @@ export function Footer({ locale }: FooterProps) {
                 />
                 <button
                   type="submit"
-                  className="absolute top-1/2 -translate-y-1/2 text-xs uppercase tracking-widest px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black transition-all cursor-pointer"
+                  className="absolute top-1/2 -translate-y-1/2 text-xs uppercase px-3 py-1.5 border border-white/20 hover:bg-white hover:text-black transition-all cursor-pointer"
                   style={{
                     left: isArabic ? 0 : undefined,
-                    right: isArabic ? undefined : 0
+                    right: isArabic ? undefined : 0,
+                    letterSpacing: isArabic ? "0em" : "0.1em"
                   }}
                 >
                   {t("submit")}
@@ -61,7 +62,7 @@ export function Footer({ locale }: FooterProps) {
 
           {/* Shop Links */}
           <div className="space-y-6">
-            <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
+            <h3 className="text-xs md:text-sm font-medium uppercase text-gray-400" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>
               {t("shop")}
             </h3>
             <ul className="space-y-3">
@@ -69,7 +70,8 @@ export function Footer({ locale }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs md:text-sm uppercase tracking-widest hover:text-gray-400 transition"
+                    className="text-xs md:text-sm uppercase hover:text-gray-400 transition"
+                    style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                   >
                     {link.label}
                   </Link>
@@ -80,7 +82,7 @@ export function Footer({ locale }: FooterProps) {
 
           {/* Policy Links */}
           <div className="space-y-6">
-            <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
+            <h3 className="text-xs md:text-sm font-medium uppercase text-gray-400" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>
               {t("policies")}
             </h3>
             <ul className="space-y-3">
@@ -88,7 +90,8 @@ export function Footer({ locale }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs md:text-sm uppercase tracking-widest hover:text-gray-400 transition"
+                    className="text-xs md:text-sm uppercase hover:text-gray-400 transition"
+                    style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                   >
                     {link.label}
                   </Link>
@@ -100,7 +103,7 @@ export function Footer({ locale }: FooterProps) {
 
         {/* Bottom Bar */}
         <div className="mt-20 pt-8 border-t border-gray-900 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-xs uppercase tracking-widest text-gray-500">
+          <p className="text-xs uppercase text-gray-500" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
             © 2026 capella. {t("allRightsReserved")}
           </p>
           <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">

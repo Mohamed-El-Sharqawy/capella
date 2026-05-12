@@ -7,6 +7,7 @@ import {
   Instagram,
 } from "lucide-react";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 interface SocialShareProps {
   url?: string;
@@ -24,6 +25,8 @@ export function SocialShare({
   variant = "default",
 }: SocialShareProps) {
   const [shareUrl, setShareUrl] = useState(url || "");
+  const locale = useLocale();
+  const isArabic = locale === "ar";
 
   useEffect(() => {
     if (!url && typeof window !== "undefined") {
@@ -56,7 +59,7 @@ export function SocialShare({
   if (variant === "footer") {
     return (
       <div className={cn("space-y-4", className)}>
-        <h3 className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-400">
+        <h3 className="text-xs md:text-sm font-medium uppercase text-gray-400" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>
           Share
         </h3>
         <div className="flex flex-wrap gap-3">
@@ -80,7 +83,7 @@ export function SocialShare({
   return (
     <div className={cn("flex items-center gap-4", className)}>
       {variant === "default" && (
-        <span className="text-xs font-medium uppercase tracking-[0.2em] text-gray-400">
+        <span className="text-xs font-medium uppercase text-gray-400" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>
           Share:
         </span>
       )}

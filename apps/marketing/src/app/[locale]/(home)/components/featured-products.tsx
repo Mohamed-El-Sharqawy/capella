@@ -13,6 +13,7 @@ export async function FeaturedProducts({
   products: initialProducts,
 }: FeaturedProductsProps) {
   const t = await getTranslations("home.featured");
+  const isArabic = locale === "ar";
 
   const products = initialProducts ?? (await getFeaturedProducts());
 
@@ -20,9 +21,9 @@ export async function FeaturedProducts({
     <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
       <AnimateOnScroll direction="up">
         <div className="text-center mb-16 space-y-4">
-          <h2 className="text-2xl md:text-3xl font-light uppercase tracking-[0.25em]">{t("title")}</h2>
+          <h2 className="text-2xl md:text-3xl font-light uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.25em" }}>{t("title")}</h2>
           <div className="w-16 h-px bg-black/20 mx-auto" />
-          <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground">{t("subtitle")}</p>
+          <p className="text-xs md:text-sm uppercase text-muted-foreground" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>{t("subtitle")}</p>
         </div>
       </AnimateOnScroll>
 

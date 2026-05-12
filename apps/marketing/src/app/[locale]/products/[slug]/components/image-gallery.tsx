@@ -134,7 +134,7 @@ export function ImageGallery({
               </div>
             ))
           ) : (
-            <div className="flex items-center justify-center h-full text-gray-300 font-light uppercase tracking-widest text-xs">
+            <div className="flex items-center justify-center h-full text-gray-300 font-light uppercase text-xs" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
               {t("previewNotAvailable")}
             </div>
           )}

@@ -9,6 +9,7 @@ interface InfiniteMarqueeProps {
   separator?: string;
   speed?: "slow" | "normal" | "fast";
   isArabic?: boolean;
+  letterSpacing?: string;
 }
 
 export function InfiniteMarquee({
@@ -18,6 +19,7 @@ export function InfiniteMarquee({
   separator = "—",
   speed = "normal",
   isArabic = false,
+  letterSpacing,
 }: InfiniteMarqueeProps) {
   const speedClass = {
     slow: "animate-marquee-slow",
@@ -37,6 +39,7 @@ export function InfiniteMarquee({
               key={i}
               className={cn("mx-4 shrink-0 whitespace-nowrap", textClassName)}
               dir={isArabic ? "rtl" : "ltr"}
+              style={{ letterSpacing: isArabic ? "0em" : letterSpacing }}
             >
               {text} {separator}
             </span>
@@ -50,6 +53,7 @@ export function InfiniteMarquee({
               key={`dup-${i}`}
               className={cn("mx-4 shrink-0 whitespace-nowrap", textClassName)}
               dir={isArabic ? "rtl" : "ltr"}
+              style={{ letterSpacing: isArabic ? "0em" : letterSpacing }}
             >
               {text} {separator}
             </span>

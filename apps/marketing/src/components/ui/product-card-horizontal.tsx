@@ -117,12 +117,12 @@ export function ProductCardHorizontal({
         {/* Product Info */}
         <div className={`flex-1 ${isArabic ? "text-right" : ""}`}>
           <Link href={`/products/${product.slug}`}>
-            <h3 className="text-sm font-medium uppercase tracking-wide hover:underline">{name}</h3>
+            <h3 className="text-sm font-medium uppercase hover:underline" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>{name}</h3>
           </Link>
 
           {/* Price */}
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs font-semibold tracking-wide text-foreground">
+            <span className="text-xs font-semibold text-foreground" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>
               AED {price.toLocaleString()}
             </span>
             {compareAtPrice && compareAtPrice > price && (

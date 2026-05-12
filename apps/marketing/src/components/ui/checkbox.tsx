@@ -1,6 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { useLocale } from "next-intl";
 
 interface CheckboxProps {
   id: string;
@@ -11,6 +12,8 @@ interface CheckboxProps {
 }
 
 export function Checkbox({ id, label, checked, onChange, className = "" }: CheckboxProps) {
+  const locale = useLocale();
+  const isArabic = locale === "ar";
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       <button
@@ -24,7 +27,7 @@ export function Checkbox({ id, label, checked, onChange, className = "" }: Check
       </button>
       <label
         htmlFor={id}
-        className="text-xs uppercase tracking-[0.2em] cursor-pointer select-none"
+        className="text-xs font-medium uppercase cursor-pointer select-none" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}
       >
         {label}
       </label>

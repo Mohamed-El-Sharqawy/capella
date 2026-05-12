@@ -113,7 +113,7 @@ export function SearchOverlay() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={t("overlayPlaceholder")}
-                  className="flex-1 bg-transparent border-none outline-none text-sm uppercase tracking-wider text-gray-900 placeholder:text-gray-300"
+                  className="flex-1 bg-transparent border-none outline-none text-sm uppercase text-gray-900 placeholder:text-gray-300" style={{ letterSpacing: isArabic ? "0em" : "0.05em" }}
                   dir={isArabic ? "rtl" : "ltr"}
                 />
                 {isLoading && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}
@@ -130,7 +130,7 @@ export function SearchOverlay() {
                   {/* Products Results */}
                   {results?.products && results.products.length > 0 && (
                     <div className="space-y-6">
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Products</p>
+                      <p className="text-xs font-semibold uppercase text-gray-400" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>Products</p>
                       <div className="grid gap-6">
                         {results.products.map((product) => (
                           <Link
@@ -150,7 +150,7 @@ export function SearchOverlay() {
                               )}
                             </div>
                             <div className="flex-1 flex flex-col justify-center">
-                              <h4 className="text-sm uppercase tracking-wider font-medium text-gray-900 truncate">
+                              <h4 className="text-sm uppercase font-medium text-gray-900 truncate" style={{ letterSpacing: isArabic ? "0em" : "0.05em" }}>
                                 {isArabic ? product.nameAr : product.nameEn}
                               </h4>
                               <p className="text-xs text-gray-500 mt-1">AED {product.price?.toLocaleString()}</p>
@@ -167,14 +167,14 @@ export function SearchOverlay() {
                   {/* Collections Results */}
                   {results?.collections && results.collections.length > 0 && (
                     <div className="space-y-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Collections</p>
+                      <p className="text-xs font-semibold uppercase text-gray-400" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>Collections</p>
                       <div className="flex flex-col gap-2">
                         {results.collections.map((coll) => (
                           <Link
                             key={coll.id}
                             href={`/collections/${coll.slug}`}
                             onClick={handleClose}
-                            className="text-sm uppercase tracking-widest text-gray-600 hover:text-black hover:pl-2 transition-all"
+                            className="text-sm uppercase text-gray-600 hover:text-black hover:pl-2 transition-all" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                           >
                             {isArabic ? coll.nameAr : coll.nameEn}
                           </Link>
@@ -185,7 +185,7 @@ export function SearchOverlay() {
 
                   {!isLoading && results?.products.length === 0 && results?.collections.length === 0 && (
                     <div className="text-center py-12">
-                      <p className="text-xs uppercase tracking-widest text-gray-400">No results found for "{debouncedQuery}"</p>
+                      <p className="text-xs uppercase text-gray-400" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>No results found for "{debouncedQuery}"</p>
                     </div>
                   )}
                 </div>
@@ -195,7 +195,7 @@ export function SearchOverlay() {
                     <div className="inline-flex items-center justify-center p-6 bg-gray-50 rounded-full mb-6">
                       <Search className="h-8 w-8 text-gray-200 stroke-1" />
                     </div>
-                    <p className="text-sm uppercase tracking-[0.2em] text-gray-400 font-light">Start typing to search Products...</p>
+                    <p className="text-sm uppercase text-gray-400 font-light" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>Start typing to search Products...</p>
                   </div>
                 </div>
               )}

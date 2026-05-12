@@ -7,15 +7,17 @@ interface SealProps {
   icon: React.ReactNode;
   title: string;
   description: string | React.ReactNode;
+  locale?: string;
 }
 
-function Seal({ icon, title, description }: SealProps) {
+function Seal({ icon, title, description, locale }: SealProps) {
+  const isArabic = locale === "ar";
   return (
     <div className="flex flex-col items-center text-center space-y-3 px-4">
       <div className="text-gray-900 border border-gray-100 p-3 rounded-full bg-gray-50 mb-2">
         {icon}
       </div>
-      <h3 className="text-xs md:text-sm font-semibold uppercase tracking-[0.2em]">{title}</h3>
+      <h3 className="text-xs md:text-sm font-semibold uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>{title}</h3>
       <div className="text-xs md:text-sm font-light text-gray-500 leading-relaxed max-w-[250px]">
         {description}
       </div>
@@ -61,7 +63,7 @@ export function QualitySeals({ locale }: { locale: string }) {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {seals.map((seal, idx) => (
-            <Seal key={idx} {...seal} />
+            <Seal key={idx} {...seal} locale={locale} />
           ))}
         </div>
       </div>

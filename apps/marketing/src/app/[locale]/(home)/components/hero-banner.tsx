@@ -174,12 +174,12 @@ export function HeroBanner({ banners, locale }: HeroBannerProps) {
         {buttonText && currentBanner.linkUrl ? (
           <Link
             href={currentBanner.linkUrl}
-            className="text-sm md:text-base font-medium uppercase tracking-[0.2em] hover:opacity-60 transition-opacity"
+            className="text-sm md:text-base font-medium uppercase hover:opacity-60 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}
           >
             {buttonText}
           </Link>
         ) : (
-          <p className="text-sm md:text-base font-medium uppercase tracking-[0.2em]">
+          <p className="text-sm md:text-base font-medium uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>
             {t("discover")}
           </p>
         )}

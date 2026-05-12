@@ -58,7 +58,8 @@ export default async function HomePage({ params }: PageProps) {
           i: (chunks) => <i>{chunks}</i>,
           u: (chunks) => <u>{chunks}</u>,
         })} className="bg-black py-3 border-b border-white/10 mt-3"
-        textClassName="text-xs md:text-sm font-medium text-white uppercase tracking-[0.2em]"
+        textClassName="text-xs md:text-sm font-medium text-white uppercase"
+        letterSpacing="0.2em"
         separator="•"
         speed="normal"
         isArabic={locale === "ar"}

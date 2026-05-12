@@ -20,7 +20,7 @@ export function CustomersFeedback({ reviews, locale }: CustomersFeedbackProps) {
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 md:py-24">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight mb-8">
+        <h2 className="text-2xl font-bold mb-8" style={{ letterSpacing: isArabic ? "0em" : "-0.025em" }}>
           {t("customersFeedback")}
         </h2>
 
@@ -59,7 +59,7 @@ function ReviewCard({ review, locale }: { review: Review; locale: string }) {
       </div>
 
       {/* Review Title */}
-      <h3 className="font-semibold text-sm uppercase tracking-wide">
+      <h3 className="font-semibold text-sm uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>
         {review.title}
       </h3>
 

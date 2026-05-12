@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface CollectionCardProps {
   title: string;
@@ -18,6 +18,8 @@ export function CollectionCard({
   imageAlt,
 }: CollectionCardProps) {
   const t = useTranslations("common");
+  const locale = useLocale();
+  const isArabic = locale === "ar";
 
   return (
     <Link
@@ -34,8 +36,8 @@ export function CollectionCard({
       />
       <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
       <div className="absolute bottom-8 md:bottom-12 left-0 right-0 text-center text-white">
-        <h2 className="text-2xl md:text-4xl font-bold tracking-wide">{title}</h2>
-        <p className="mt-2 text-xs md:text-sm font-medium tracking-wider">{t("shopNow")}</p>
+        <h2 className="text-2xl md:text-4xl font-bold" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>{title}</h2>
+        <p className="mt-2 text-xs md:text-sm font-medium" style={{ letterSpacing: isArabic ? "0em" : "0.05em" }}>{t("shopNow")}</p>
       </div>
     </Link>
   );

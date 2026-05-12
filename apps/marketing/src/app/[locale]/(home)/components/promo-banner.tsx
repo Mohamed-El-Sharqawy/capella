@@ -19,6 +19,7 @@ async function getPromoBanners() {
 
 export async function PromoBanner() {
   const locale = await getLocale();
+  const isArabic = locale === "ar";
   const banners = await getPromoBanners();
 
   if (banners.length === 0) return null;
@@ -51,7 +52,7 @@ export async function PromoBanner() {
                   <h1 className="text-3xl font-light italic">{title}</h1>
                   <Link
                     href={banner.linkUrl}
-                    className="px-10 py-4 bg-white text-black text-sm md:text-lg font-medium uppercase tracking-[0.3em] hover:bg-black hover:text-white transition-all duration-300"
+                    className="px-10 py-4 bg-white text-black text-sm md:text-lg font-medium uppercase hover:bg-black hover:text-white transition-all duration-300" style={{ letterSpacing: isArabic ? "0em" : "0.3em" }}
                   >
                     {buttonText}
                   </Link>

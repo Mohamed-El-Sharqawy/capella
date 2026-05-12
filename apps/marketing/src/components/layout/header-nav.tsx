@@ -47,9 +47,10 @@ export function HeaderNav() {
       >
         <Link
           href="/collections"
-          className="flex items-center gap-1.5 font-medium uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
+          className="flex items-center gap-1.5 font-medium uppercase opacity-90 hover:opacity-100 transition-opacity"
           style={{
             fontSize: isArabic ? "14px" : "13px",
+            letterSpacing: isArabic ? "0em" : "0.15em",
           }}
         >
           {t("shopByCollection")}
@@ -100,9 +101,10 @@ export function HeaderNav() {
 
       <Link
         href="/contact"
-        className="font-medium uppercase tracking-[0.15em] opacity-90 hover:opacity-100 transition-opacity"
+        className="font-medium uppercase opacity-90 hover:opacity-100 transition-opacity"
         style={{
           fontSize: isArabic ? "14px" : "13px",
+          letterSpacing: isArabic ? "0em" : "0.15em",
         }}
       >
         {t("contactUs")}
@@ -111,9 +113,10 @@ export function HeaderNav() {
       {/* About */}
       <Link
         href="/about"
-        className="font-medium uppercase tracking-[0.15em] hover:opacity-100 transition-opacity"
+        className="font-medium uppercase hover:opacity-100 transition-opacity"
         style={{
           fontSize: isArabic ? "14px" : "13px",
+          letterSpacing: isArabic ? "0em" : "0.15em",
         }}
       >
         {t("aboutUs")}

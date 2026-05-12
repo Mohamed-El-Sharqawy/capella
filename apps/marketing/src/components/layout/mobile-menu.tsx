@@ -99,13 +99,14 @@ export function MobileMenu() {
           <div className="flex flex-col h-full bg-[#F2F2F2]">
             <button
               onClick={() => setLevel("main")}
-              className="flex items-center gap-2 p-6 text-sm uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
+              className="flex items-center gap-2 p-6 text-sm uppercase font-medium text-black/60 hover:text-black transition-colors"
+              style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}
             >
               <ChevronLeft className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} />
               {t("back")}
             </button>
             <div className="px-6 py-4 space-y-8">
-              <Link href="/collections" className="block text-2xl font-light tracking-widest hover:opacity-60 transition-opacity">
+              <Link href="/collections" className="block text-2xl font-light hover:opacity-60 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
                 {t("shopAll")}
               </Link>
               {headerCollections.map((collection) => (
@@ -116,7 +117,7 @@ export function MobileMenu() {
                         setActiveCollection(collection);
                         setLevel("singleCollection");
                       }}
-                      className="w-full flex items-center justify-between text-2xl font-light tracking-widest hover:opacity-60 transition-all group text-start"
+                      className="w-full flex items-center justify-between text-2xl font-light hover:opacity-60 transition-all group text-start" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                     >
                       <span>{isArabic ? collection.nameAr : collection.nameEn}</span>
                       <ChevronRight className={`h-5 w-5 text-black/20 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
@@ -124,7 +125,8 @@ export function MobileMenu() {
                   ) : (
                     <Link
                       href={`/collections/${collection.slug}`}
-                      className="block text-2xl font-light tracking-widest hover:opacity-60 transition-opacity"
+                      className="block text-2xl font-light hover:opacity-60 transition-opacity"
+                      style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                     >
                       {isArabic ? collection.nameAr : collection.nameEn}
                     </Link>
@@ -140,7 +142,8 @@ export function MobileMenu() {
           <div className="flex flex-col h-full bg-[#F2F2F2]">
             <button
               onClick={() => setLevel("collectionsSub")}
-              className="flex items-center gap-2 p-6 text-sm uppercase tracking-[0.2em] font-medium text-black/60 hover:text-black transition-colors"
+              className="flex items-center gap-2 p-6 text-sm uppercase font-medium text-black/60 hover:text-black transition-colors"
+              style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}
             >
               <ChevronLeft className={`h-4 w-4 ${isArabic ? "rotate-180" : ""}`} />
               {t("back")}
@@ -148,7 +151,7 @@ export function MobileMenu() {
             <div className="px-6 py-4 space-y-8">
               <Link
                 href={`/collections/${activeCollection?.slug}`}
-                className="block text-2xl border-b border-black/5 pb-4 font-light tracking-widest hover:opacity-60 transition-opacity"
+                className="block text-2xl border-b border-black/5 pb-4 font-light hover:opacity-60 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
               >
                 {t("shopAllIn", { name: isArabic ? activeCollection?.nameAr! : activeCollection?.nameEn! })}
               </Link>
@@ -156,7 +159,7 @@ export function MobileMenu() {
                 <Link
                   key={child.id}
                   href={`/collections/${child.slug}`}
-                  className="block text-2xl font-light tracking-widest hover:opacity-100 transition-opacity"
+                  className="block text-2xl font-light hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                 >
                   {isArabic ? child.nameAr : child.nameEn}
                 </Link>
@@ -185,7 +188,7 @@ export function MobileMenu() {
                 {/* shop all */}
                 <Link
                   href={`/collections`}
-                  className="flex items-center justify-between text-xl font-light tracking-widest opacity-60 hover:opacity-100 transition-opacity pl-2"
+                  className="flex items-center justify-between text-xl font-light opacity-60 hover:opacity-100 transition-opacity pl-2" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                 >
                   {t("shopAll")}
                   <ChevronRight className={`h-4 w-4 text-black/15 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
@@ -199,7 +202,7 @@ export function MobileMenu() {
                             setActiveCollection(collection);
                             setLevel("singleCollection");
                           }}
-                          className="w-full flex items-center justify-between text-2xl font-medium tracking-widest hover:opacity-100 transition-all opacity-90 group text-start"
+                          className="w-full flex items-center justify-between text-2xl font-medium hover:opacity-100 transition-all opacity-90 group text-start" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                         >
                           <span>{isArabic ? collection.nameAr : collection.nameEn}</span>
                           <ChevronRight className={`h-5 w-5 text-black/30 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
@@ -207,7 +210,7 @@ export function MobileMenu() {
                       ) : (
                         <Link
                           href={`/collections/${collection.slug}`}
-                          className="flex items-center justify-between text-xl font-light tracking-widest opacity-60 hover:opacity-100 transition-opacity pl-2"
+                          className="flex items-center justify-between text-xl font-light opacity-60 hover:opacity-100 transition-opacity pl-2" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                         >
                           {isArabic ? collection.nameAr : collection.nameEn}
                           <ChevronRight className={`h-4 w-4 text-black/15 group-hover:text-black transition-colors ${isArabic ? "rotate-180" : ""}`} />
@@ -218,15 +221,15 @@ export function MobileMenu() {
                 </div>
               </div>
 
-              <Link href="/" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
+              <Link href="/" className="block text-3xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
                 {t("home")}
               </Link>
 
-              <Link href="/about" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
+              <Link href="/about" className="block text-3xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
                 {t("aboutUs")}
               </Link>
 
-              <Link href="/contact" className="block text-3xl font-light tracking-widest opacity-80 hover:opacity-100 transition-opacity">
+              <Link href="/contact" className="block text-3xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
                 {t("contactUs")}
               </Link>
             </div>
@@ -239,7 +242,7 @@ export function MobileMenu() {
                   <div className="w-14 h-14 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] border border-black/6 flex items-center justify-center group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)] transition-all duration-300">
                     <SearchOverlay />
                   </div>
-                  <span className="text-xs uppercase tracking-[0.15em] text-black/40 font-medium">
+                  <span className="text-xs uppercase text-black/40 font-medium" style={{ letterSpacing: isArabic ? "0em" : "0.15em" }}>
                     {t("search")}
                   </span>
                 </div>
@@ -259,7 +262,7 @@ export function MobileMenu() {
                       </div>
                     }
                   />
-                  <span className="text-xs uppercase tracking-[0.15em] text-black/40 font-medium">
+                  <span className="text-xs uppercase text-black/40 font-medium" style={{ letterSpacing: isArabic ? "0em" : "0.15em" }}>
                     {t("language")}
                   </span>
                 </div>
@@ -272,7 +275,7 @@ export function MobileMenu() {
                   >
                     <User className="h-5 w-5 stroke-[1.5] text-black/70" />
                   </Link>
-                  <span className="text-xs uppercase tracking-[0.15em] text-black/40 font-medium">
+                  <span className="text-xs uppercase text-black/40 font-medium" style={{ letterSpacing: isArabic ? "0em" : "0.15em" }}>
                     {t("account")}
                   </span>
                 </div>

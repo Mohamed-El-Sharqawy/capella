@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { useLocale } from "next-intl";
 
 const badgeVariants = cva(
   "inline-flex items-center border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
@@ -25,9 +26,9 @@ const badgeVariants = cva(
           "border-white/20 bg-black/10 text-white backdrop-blur-md",
       },
       size: {
-        sm: "px-1.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em]",
-        default: "px-2 py-1 text-[11px] font-bold uppercase tracking-[0.15em]",
-        lg: "px-3 py-1.5 text-xs font-black uppercase tracking-[0.2em]",
+        sm: "px-1.5 py-0.5 text-[10px] font-black uppercase",
+        default: "px-2 py-1 text-[11px] font-bold uppercase",
+        lg: "px-3 py-1.5 text-xs font-black uppercase",
       }
     },
     defaultVariants: {
@@ -42,8 +43,11 @@ export interface BadgeProps
   VariantProps<typeof badgeVariants> { }
 
 function Badge({ className, variant, size, ...props }: BadgeProps) {
+  const locale = useLocale();
+  const isArabic = locale === "ar";
+  const letterSpacing = isArabic ? "0em" : size === "default" ? "0.15em" : "0.2em";
   return (
-    <div className={cn(badgeVariants({ variant, size }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant, size }), className)} style={{ letterSpacing }} {...props} />
   );
 }
 

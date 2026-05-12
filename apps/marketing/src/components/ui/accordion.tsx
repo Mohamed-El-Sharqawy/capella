@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
+import { useLocale } from "next-intl";
 
 interface AccordionProps {
   children: React.ReactNode;
@@ -21,6 +22,8 @@ export function AccordionItem({ title, children, isOpen, onToggle, className = "
   const [internalIsOpen, setInternalIsOpen] = React.useState(false);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const isControlled = isOpen !== undefined;
+  const locale = useLocale();
+  const isArabic = locale === "ar";
   const active = isControlled ? isOpen : internalIsOpen;
 
   const toggle = (e: React.MouseEvent) => {
@@ -40,7 +43,7 @@ export function AccordionItem({ title, children, isOpen, onToggle, className = "
         aria-expanded={active}
         className="flex w-full items-center justify-between py-6 text-left transition-all group"
       >
-        <span className="text-xs md:text-sm font-medium uppercase tracking-[0.2em] text-gray-900 group-hover:text-black transition-colors">
+        <span className="text-xs md:text-sm font-medium uppercase text-gray-900 group-hover:text-black transition-colors" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>
           {title}
         </span>
         <ChevronDown
@@ -56,7 +59,7 @@ export function AccordionItem({ title, children, isOpen, onToggle, className = "
           visibility: active ? "visible" : "hidden",
         }}
       >
-        <div ref={contentRef} className="pt-2 pb-8 text-xs md:text-sm leading-relaxed text-gray-500 font-light tracking-wide space-y-4 pr-4">
+        <div ref={contentRef} className="pt-2 pb-8 text-xs md:text-sm leading-relaxed text-gray-500 font-light space-y-4 pr-4" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>
           {children}
         </div>
       </div>

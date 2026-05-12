@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 export function Features({ locale }: { locale: string }) {
   const t = useTranslations("features");
+  const isArabic = locale === "ar";
 
   const features = [
     {
@@ -33,8 +34,8 @@ export function Features({ locale }: { locale: string }) {
                 <feature.icon className="h-5 w-5 text-black" strokeWidth={1} />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm md:text-base font-medium uppercase tracking-[0.2em]">{feature.title}</h3>
-                <p className="text-xs md:text-sm uppercase tracking-widest text-muted-foreground font-light italic">
+                <h3 className="text-sm md:text-base font-medium uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>{feature.title}</h3>
+                <p className="text-xs md:text-sm uppercase text-muted-foreground font-light italic" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
                   {feature.description}
                 </p>
               </div>
