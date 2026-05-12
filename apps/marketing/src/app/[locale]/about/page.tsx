@@ -1,15 +1,15 @@
-import { useTranslations } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
 import { AnimateOnScroll } from "@/components/ui/animate-on-scroll";
 
 interface AboutPageProps {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }
 
-export default function AboutPage({ params: { locale } }: AboutPageProps) {
+export default async function AboutPage({ params }: AboutPageProps) {
+  const { locale } = await params;
   setRequestLocale(locale);
-  const t = useTranslations("about");
+  const t = await getTranslations("about");
   const isArabic = locale === "ar";
 
   return (
@@ -63,11 +63,11 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
               }
             ].map((p, i) => (
               <AnimateOnScroll key={i} direction="up" delay={i * 0.1}>
-                <div className="space-y-6">
+                <div className={`space-y-6`}>
                   <div className="relative overflow-hidden aspect-square rounded-md">
                     <Image src={p.img} alt={p.title} width={400} height={400} className="w-full h-full object-cover" />
                   </div>
-                  <h3 className="text-sm md:text-base font-medium uppercase" {...(!isArabic && { style: { letterSpacing: "0.2em" } })}>
+                  <h3 className={`text-sm md:text-base font-medium uppercase ${isArabic ? "text-right" : "text-left"}`} {...(!isArabic && { style: { letterSpacing: "0.2em" } })}>
                     {p.title}
                   </h3>
                   <p className="text-xs md:text-sm text-muted-foreground leading-relaxed font-light">
