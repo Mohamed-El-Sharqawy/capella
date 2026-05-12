@@ -109,7 +109,7 @@ export function ProductInfo({
           style={{
             letterSpacing: isArabic ? "0em" : "0.2em",
           }}
-          className="w-full bg-black text-white py-4 text-sm font-medium uppercase hover:bg-neutral-800 transition-colors shadow-sm"
+          className="w-full bg-black text-white py-4 text-sm uppercase hover:bg-neutral-800 transition-colors shadow-sm"
         >
           {t("addToBag")}
         </button>
