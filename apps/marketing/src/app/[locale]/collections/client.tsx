@@ -28,32 +28,39 @@ function CollectionsPageContent({ collections, locale }: CollectionsPageClientPr
   } = useCollectionSearch(collections);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12 pt-32 md:pt-36">
-      <h1 className="text-3xl font-bold mb-6 text-center">{t("shopByCollection")}</h1>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 md:pt-40 pb-16 md:pb-24">
+        <div className="text-center mb-10 md:mb-14">
+          <h1
+            className="text-2xl md:text-3xl font-light uppercase"
+            style={{ letterSpacing: locale === "ar" ? "0em" : "0.2em" }}
+          >
+            {t("shopByCollection")}
+          </h1>
+          <div className="w-12 h-px bg-black/20 mx-auto mt-5" />
+        </div>
 
-      <SearchInput
-        value={searchQuery}
-        onChange={setSearchQuery}
-        isSearching={isSearching}
-        locale={locale}
-      />
+        <SearchInput
+          value={searchQuery}
+          onChange={setSearchQuery}
+          isSearching={isSearching}
+          locale={locale}
+        />
 
-      {/* No Results */}
-      {isSearchActive && !isSearching && !hasResults && (
-        <NoResults query={debouncedQuery} onClear={() => setSearchQuery("")} />
-      )}
+        {isSearchActive && !isSearching && !hasResults && (
+          <NoResults query={debouncedQuery} onClear={() => setSearchQuery("")} />
+        )}
 
-      {/* Product Results (when searching) */}
-      {isSearchActive && <ProductResults products={searchResults} locale={locale} />}
+        {isSearchActive && <ProductResults products={searchResults} locale={locale} />}
 
-      {/* Collections Grid */}
-      <CollectionsGrid
-        staticCollections={filteredStaticCollections}
-        collections={filteredCollections}
-        locale={locale}
-        isSearchActive={isSearchActive}
-        debouncedQuery={debouncedQuery}
-      />
+        <CollectionsGrid
+          staticCollections={filteredStaticCollections}
+          collections={filteredCollections}
+          locale={locale}
+          isSearchActive={isSearchActive}
+          debouncedQuery={debouncedQuery}
+        />
+      </div>
     </div>
   );
 }

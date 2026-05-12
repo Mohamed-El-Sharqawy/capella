@@ -17,23 +17,28 @@ export function CollectionCard({ slug, nameEn, nameAr, imageUrl, locale }: Colle
   return (
     <Link
       href={`/collections/${slug}`}
-      className="group relative aspect-3/4 overflow-hidden bg-neutral-100"
+      className="group block"
     >
-      {imageUrl ? (
-        <Image
-          src={imageUrl}
-          alt={isArabic ? nameAr : nameEn}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-      ) : (
-        <div className="absolute inset-0 bg-linear-to-br from-gray-200 to-gray-300" />
-      )}
-      <div className="absolute inset-0 bg-black/30 transition-opacity group-hover:bg-black/40" />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <h2 className="text-white text-2xl font-bold text-center px-4" style={{ letterSpacing: isArabic ? "0em" : "0.025em" }}>
+      <div className="relative aspect-3/4 overflow-hidden bg-neutral-50">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={isArabic ? nameAr : nameEn}
+            fill
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 33vw"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-linear-to-br from-neutral-200 to-neutral-300" />
+        )}
+      </div>
+      <div className="mt-3 md:mt-4">
+        <h3
+          className="text-xs md:text-sm font-medium uppercase text-neutral-800 group-hover:text-black transition-colors"
+          style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
+        >
           {isArabic ? nameAr : nameEn}
-        </h2>
+        </h3>
       </div>
     </Link>
   );

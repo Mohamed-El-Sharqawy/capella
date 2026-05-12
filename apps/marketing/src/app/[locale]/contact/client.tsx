@@ -19,7 +19,7 @@ export function ContactPageClient({ locale }: ContactPageClientProps) {
           {/* Contact Information */}
           <div className="lg:col-span-1">
             <ContactInfoCard contactInfo={contactInfo} />
-            <LocationMap />
+            {/* <LocationMap /> */}
           </div>
 
           {/* Contact Form */}

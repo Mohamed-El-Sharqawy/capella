@@ -15,30 +15,30 @@ export function SearchInput({ value, onChange, isSearching, locale }: SearchInpu
   const isArabic = locale === "ar";
 
   return (
-    <div className="max-w-md mx-auto mb-8">
+    <div className="max-w-md mx-auto mb-10 md:mb-14">
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <Search className={`absolute ${isArabic ? "right-4" : "left-4"} top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400`} />
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={t("searchPlaceholder")}
-          className="w-full pl-12 pr-12 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-black text-sm"
+          className={`w-full ${isArabic ? "pr-11 pl-4" : "pl-11 pr-4"} py-3 border-b border-neutral-300 bg-transparent focus:outline-none focus:border-black text-sm transition-colors`}
           dir={isArabic ? "rtl" : "ltr"}
         />
         {value && (
           <button
             onClick={() => onChange("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition"
+            className={`absolute ${isArabic ? "left-4" : "right-4"} top-1/2 -translate-y-1/2 p-1 hover:bg-neutral-100 rounded-full transition`}
           >
-            <X className="h-4 w-4 text-gray-400" />
+            <X className="h-3.5 w-3.5 text-neutral-400" />
           </button>
         )}
       </div>
       {isSearching && (
-        <div className="flex items-center justify-center mt-2">
-          <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-          <span className="ml-2 text-sm text-gray-500">{t("searching")}</span>
+        <div className="flex items-center justify-center mt-3">
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-neutral-400" />
+          <span className="ml-2 text-xs text-neutral-500">{t("searching")}</span>
         </div>
       )}
     </div>

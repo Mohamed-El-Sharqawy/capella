@@ -24,7 +24,7 @@ export function ContactInfoCard({ contactInfo }: ContactInfoCardProps) {
             <div>
               <p className="text-sm text-gray-500">{item.title}</p>
               {item.href ? (
-                <a href={item.href} className="font-medium hover:text-orange-500 transition">
+                <a dir="ltr" href={item.href} className="font-medium hover:text-orange-500 transition">
                   {item.value}
                 </a>
               ) : (

@@ -273,14 +273,14 @@ export function QuickViewModal({
             <div>
               <h2 className="text-2xl font-bold">{name}</h2>
               <div className="flex items-center gap-2 mt-2">
-                {compareAtPrice && compareAtPrice > price && (
-                  <span className="text-lg text-muted-foreground line-through">
-                    AED {compareAtPrice.toLocaleString()}
-                  </span>
-                )}
                 <span className="text-xl font-bold text-neutral-500">
                   AED {price.toLocaleString()}
                 </span>
+                {compareAtPrice && compareAtPrice > price && (
+                  <span className="text-lg text-muted-foreground line-through">
+                    {compareAtPrice.toLocaleString()}
+                  </span>
+                )}
                 {discountPercent && (
                   <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
                     -{discountPercent}%
