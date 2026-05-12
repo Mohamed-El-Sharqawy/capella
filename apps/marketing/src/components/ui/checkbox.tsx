@@ -24,7 +24,7 @@ export function Checkbox({ id, label, checked, onChange, className = "" }: Check
       </button>
       <label
         htmlFor={id}
-        className="text-xs font-medium uppercase tracking-[0.2em] cursor-pointer select-none"
+        className="text-xs uppercase tracking-[0.2em] cursor-pointer select-none"
       >
         {label}
       </label>
