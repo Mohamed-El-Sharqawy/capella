@@ -19,7 +19,7 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <AnimateOnScroll direction="up">
             <div className={`space-y-8`}>
-              <h2 className="text-2xl md:text-3xl font-light uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.25em" }}>
+              <h2 className="text-2xl md:text-3xl font-light uppercase" {...(!isArabic && { style: { letterSpacing: "0.25em" } })}>
                 {t("story.title")}
               </h2>
               <div className={`w-16 h-px bg-black/20`}
@@ -37,7 +37,7 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <AnimateOnScroll direction="up">
             <div className={`mb-16 space-y-4`}>
-              <h2 className="text-2xl md:text-3xl font-light uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.25em" }}>
+              <h2 className="text-2xl md:text-3xl font-light uppercase" {...(!isArabic && { style: { letterSpacing: "0.25em" } })}>
                 {t("philosophy.title")}
               </h2>
               <div className={`w-16 h-px bg-black/20`} />
@@ -67,7 +67,7 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
                   <div className="relative overflow-hidden aspect-square rounded-md">
                     <Image src={p.img} alt={p.title} width={400} height={400} className="w-full h-full object-cover" />
                   </div>
-                  <h3 className="text-sm md:text-base font-medium uppercase" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>
+                  <h3 className="text-sm md:text-base font-medium uppercase" {...(!isArabic && { style: { letterSpacing: "0.2em" } })}>
                     {p.title}
                   </h3>
                   <p className="text-xs md:text-sm text-muted-foreground leading-relaxed font-light">
@@ -84,12 +84,12 @@ export default function AboutPage({ params: { locale } }: AboutPageProps) {
       <section className="py-24 md:py-32 bg-black text-white">
         <div className={`max-w-7xl mx-auto px-4 ${locale === "ar" ? "text-right" : "text-left"}`}>
           <AnimateOnScroll direction="up">
-            <h2 className="text-2xl md:text-3xl font-light uppercase mb-12" style={{ letterSpacing: isArabic ? "0em" : "0.3em" }}>
+            <h2 className="text-2xl md:text-3xl font-light uppercase mb-12" {...(!isArabic && { style: { letterSpacing: "0.3em" } })}>
               {t("exploreCollection")}
             </h2>
             <a
               href="/collections/all-products"
-              className={`inline-block px-12 py-4 border border-white text-xs uppercase hover:bg-white hover:text-black transition-all duration-500`} style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
+              className={`inline-block px-12 py-4 border border-white text-xs uppercase hover:bg-white hover:text-black transition-all duration-500`} {...(!isArabic && { style: { letterSpacing: "0.1em" } })}
             >
               {t("shopNow")}
             </a>

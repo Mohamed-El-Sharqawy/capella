@@ -36,7 +36,7 @@ export function CollectionsGrid({
           {t("collections")}
         </h2>
       )}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
         {/* Static Collections */}
         {staticCollections.map((collection) => (
           <CollectionCard

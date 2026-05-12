@@ -8,6 +8,6 @@ export const STATIC_COLLECTIONS: StaticCollection[] = [
     slug: "all-products",
     nameEn: "All Products",
     nameAr: "جميع المنتجات",
-    imageUrl: "/static-collections/assets/all-products.jpeg",
+    imageUrl: "/static-collections/assets/all-products.png",
   },
 ];
