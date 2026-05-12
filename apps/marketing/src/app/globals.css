@@ -53,7 +53,9 @@
   --font-serif: "Playfair Display", Georgia, serif;
 }
 
+
 @layer base {
+
   * {
     @apply border-border;
     margin: 0;
@@ -80,10 +82,22 @@
     }
   }
 
+  html {
+    text-rendering: optimizeSpeed;
+  }
+
   body {
     @apply bg-background text-foreground;
     margin: 0;
     padding: 0;
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+  }
+
+  [lang="ar"] {
+    font-feature-settings: "kern" 1;
+    text-rendering: geometricPrecision;
+    letter-spacing: normal;
   }
 }
 

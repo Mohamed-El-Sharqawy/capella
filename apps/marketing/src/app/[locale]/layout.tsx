@@ -98,7 +98,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <head>
         <FacebookPixel />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} ${cairo.variable} ${montserrat.variable} font-primary antialiased`} style={{ '--font-primary': isRtl ? 'var(--font-arabic), sans-serif' : 'var(--font-montserrat), serif' } as React.CSSProperties}>
+      <body className={`${inter.variable} ${playfair.variable} ${cairo.variable} ${montserrat.variable} font-primary`} style={{ '--font-primary': isRtl ? 'var(--font-arabic), sans-serif' : 'var(--font-montserrat), serif' } as React.CSSProperties}>
         <NextIntlClientProvider messages={messages}>
           <Providers>
             <Header locale={locale} />
