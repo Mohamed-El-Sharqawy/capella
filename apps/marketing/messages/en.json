@@ -20,7 +20,6 @@
     "search": "Search",
     "account": "Account",
     "cart": "Cart",
-    "virtualTailor": "Virtual Tailor",
     "theJourney": "The Journey",
     "instagram": "Instagram",
     "bookConsultation": "Book Your Private Consultation",
@@ -39,7 +38,7 @@
     "pricesStartingFrom": "PRICES STARTING FROM 350 AED",
     "featured": {
       "title": "Featured",
-      "subtitle": "Street-approved Favorites For Everyday Movement."
+      "subtitle": "Timeless Silver & Gold-Plated Jewellery, Crafted to Shine With You."
     },
     "promoBanner": {
       "title": "At Capella",
@@ -149,8 +148,8 @@
       "dateDesc": "Date, new to old",
       "manualOrder": "Manual order"
     },
-    "allProductsTitle": "All Products - NZN Studio",
-    "allProductsDesc": "Browse all our fashion and clothing products. Discover the latest trends at NZN Studio.",
+    "allProductsTitle": "All Products - Capella",
+    "allProductsDesc": "Browse our collection of silver and gold-plated jewellery. Discover rings, necklaces, bracelets, and earrings at Capella.",
     "notFound": "Collection Not Found"
   },
   "search": {
