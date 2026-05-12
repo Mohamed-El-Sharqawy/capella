@@ -28,7 +28,7 @@ function CollectionsPageContent({ collections, locale }: CollectionsPageClientPr
   } = useCollectionSearch(collections);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-32 md:pt-40 pb-16 md:pb-24">
         <div className="text-center mb-10 md:mb-14">
           <h1
