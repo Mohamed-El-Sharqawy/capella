@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://nznstudio.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://capellaae.com";
 
 const locales = ["en", "ar"];
 
@@ -8,7 +8,7 @@ function generateSitemapIndex(): string {
   for (const locale of locales) {
     // Main locale sitemap (pages, products, collections combined)
     sitemaps.push(`${BASE_URL}/${locale}/sitemap.xml`);
-    
+
     // Individual sitemaps for better organization
     sitemaps.push(`${BASE_URL}/${locale}/sitemap-pages.xml`);
     sitemaps.push(`${BASE_URL}/${locale}/sitemap-products.xml`);

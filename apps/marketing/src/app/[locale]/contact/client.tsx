@@ -8,7 +8,7 @@ import type { ContactPageClientProps } from "./types";
 export function ContactPageClient({ locale }: ContactPageClientProps) {
   const t = useTranslations("contact");
 
-  const { contactInfo, subjects, faqs } = useContactData();
+  const { contactInfo, subjects } = useContactData();
   const { formData, isSubmitting, submitStatus, handleChange, handleSubmit, resetStatus } =
     useContactForm();
 

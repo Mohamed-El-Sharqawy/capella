@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { apiGet } from "@/lib/api-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://nznstudio.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://capellaae.com";
 
 interface Collection {
   slug: string;
@@ -13,7 +13,7 @@ interface Collection {
 async function getCollections(): Promise<Collection[]> {
   try {
     const data = await apiGet<{ data: Collection[] }>("/api/collections", { next: { revalidate: 3600 } });
-    
+
     // Flatten collections including children
     const allCollections: Collection[] = [];
     for (const c of data?.data || []) {
@@ -22,7 +22,7 @@ async function getCollections(): Promise<Collection[]> {
         updatedAt: c.updatedAt || new Date().toISOString(),
         name: c.name,
       });
-      
+
       // Add children collections
       if (c.children && Array.isArray(c.children)) {
         for (const child of c.children) {
@@ -34,7 +34,7 @@ async function getCollections(): Promise<Collection[]> {
         }
       }
     }
-    
+
     return allCollections;
   } catch {
     return [];
@@ -87,7 +87,7 @@ export async function GET(_request: Request, { params }: Props) {
   // Featured/hero collections get higher priority (0.9), regular collections get (0.75)
   for (const collection of collections) {
     const isFeatured = featuredSlugs.has(collection.slug);
-    
+
     sitemapEntries.push({
       url: `${BASE_URL}/${locale}/collections/${collection.slug}`,
       lastModified: new Date(collection.updatedAt),

@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://nznstudio.com/sitemap.xml
+Sitemap: https://capellaae.com/sitemap.xml

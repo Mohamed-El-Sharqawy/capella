@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { apiGet } from "@/lib/api-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://nznstudio.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://capellaae.com";
 
 interface Product {
   slug: string;

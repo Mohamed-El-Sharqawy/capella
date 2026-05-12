@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://nznstudio.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://capellaae.com";
 
 type ChangeFrequency = "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
 
@@ -14,14 +14,14 @@ interface PageEntry {
 const staticPages: PageEntry[] = [
   // Highest priority - Homepage (1.0, daily) - Main entry point
   { path: "", priority: 1.0, changeFrequency: "daily" },
-  
+
   // High priority - Shopping pages (0.9, daily) - Revenue generating
   { path: "/collections", priority: 0.9, changeFrequency: "daily" },
   { path: "/collections/all-products", priority: 0.9, changeFrequency: "daily" },
-  
+
   // Medium priority - Contact/Support (0.6, weekly) - Customer service
   { path: "/contact", priority: 0.6, changeFrequency: "weekly" },
-  
+
   // Lower priority - Legal/Policy pages (0.3, monthly) - Required but low traffic
   { path: "/privacy-policy", priority: 0.3, changeFrequency: "monthly" },
   { path: "/terms-of-service", priority: 0.3, changeFrequency: "monthly" },
