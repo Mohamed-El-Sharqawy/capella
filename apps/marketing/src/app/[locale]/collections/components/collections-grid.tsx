@@ -38,7 +38,7 @@ export function CollectionsGrid({
       )}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
         {/* Static Collections */}
-        {staticCollections.map((collection) => (
+        {/* {staticCollections.map((collection) => (
           <CollectionCard
             key={collection.slug}
             slug={collection.slug}
@@ -47,7 +47,7 @@ export function CollectionsGrid({
             imageUrl={collection.imageUrl}
             locale={locale}
           />
-        ))}
+        ))} */}
 
         {/* Dynamic Collections */}
         {collections.flatMap((collection: any) => {
