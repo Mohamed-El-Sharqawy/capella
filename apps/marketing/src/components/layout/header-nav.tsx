@@ -53,7 +53,7 @@ export function HeaderNav() {
             letterSpacing: isArabic ? "0em" : "0.15em",
           }}
         >
-          {t("shopByCollection")}
+          {t("jewelleries")}
           <ChevronDown className="h-3 w-3" />
         </Link>
 
@@ -88,10 +88,10 @@ export function HeaderNav() {
               {/* View All link */}
               <div className="border-t mt-2 pt-2">
                 <Link
-                  href="/collections"
+                  href="/collections/all-products"
                   className="block px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 transition"
                 >
-                  {t("viewAllCollections")}
+                  {t("shopAll")}
                 </Link>
               </div>
             </div>

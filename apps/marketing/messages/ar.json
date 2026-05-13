@@ -29,7 +29,8 @@
     "aboutUs": "من نحن",
     "language": "اللغة",
     "viewAllCollections": "عرض الكل",
-    "shopAllIn": "عرض الكل في {name}"
+    "shopAllIn": "عرض الكل في {name}",
+    "jewelleries": "مجوهرات"
   },
   "home": {
     "heroMen": "رجال",

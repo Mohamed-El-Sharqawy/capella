@@ -6,6 +6,7 @@ import { useCollectionFilters, useCollectionProducts } from "./hooks";
 import { CollectionHeader, ProductGrid, LoadMore, FilterDrawer, CollectionPageSkeleton } from "./components";
 import { trackCollectionView } from "@/lib/analytics";
 import type { CollectionPageClientProps, SortOption } from "./types";
+import Image from "next/image";
 
 function CollectionPageContent({
   locale,
@@ -76,48 +77,62 @@ function CollectionPageContent({
             playsInline
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/50 to-transparent pointer-events-none" />
+          <div className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-black/50 to-transparent pointer-events-none" />
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 py-8 pt-32 md:pt-36">
-        <CollectionHeader
-          sortOption={sortOption}
-          sortOptions={sortOptions}
-          onSortChange={setSortOption}
-          isSortOpen={isSortOpen}
-          setIsSortOpen={setIsSortOpen}
-          onFilterOpen={() => setIsFilterOpen(true)}
-        />
+      <div className="pb-8 pt-32 md:pt-36">
+        <div className="lg:hidden">
+          {slug === "all-products" && (
+            <Image
+              src={"/static-collections/assets/all-products.png"}
+              alt="all products"
+              width={1920}
+              height={400}
+              className="w-full object-cover"
+            />
+          )}
+        </div>
 
-        <ProductGrid
-          products={products}
-          locale={locale}
-          isLoading={isLoading}
-          onClearFilters={clearFilters}
-        />
+        <div className="max-w-7xl mx-auto px-4 pt-8">
+          <CollectionHeader
+            sortOption={sortOption}
+            sortOptions={sortOptions}
+            onSortChange={setSortOption}
+            isSortOpen={isSortOpen}
+            setIsSortOpen={setIsSortOpen}
+            onFilterOpen={() => setIsFilterOpen(true)}
+          />
 
-        <LoadMore
-          ref={loadMoreRef}
-          isLoading={isLoading}
-          meta={meta}
-          hasProducts={products.length > 0}
-        />
+          <ProductGrid
+            products={products}
+            locale={locale}
+            isLoading={isLoading}
+            onClearFilters={clearFilters}
+          />
 
-        <FilterDrawer
-          isOpen={isFilterOpen}
-          onClose={() => setIsFilterOpen(false)}
-          locale={locale}
-          slug={slug}
-          collections={collections}
-          onNavigateToCollection={navigateToCollection}
-          availability={availability}
-          onAvailabilityChange={setAvailability}
-          minPrice={minPrice}
-          maxPrice={maxPrice}
-          onMinPriceChange={setMinPrice}
-          onMaxPriceChange={setMaxPrice}
-        />
+          <LoadMore
+            ref={loadMoreRef}
+            isLoading={isLoading}
+            meta={meta}
+            hasProducts={products.length > 0}
+          />
+
+          <FilterDrawer
+            isOpen={isFilterOpen}
+            onClose={() => setIsFilterOpen(false)}
+            locale={locale}
+            slug={slug}
+            collections={collections}
+            onNavigateToCollection={navigateToCollection}
+            availability={availability}
+            onAvailabilityChange={setAvailability}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            onMinPriceChange={setMinPrice}
+            onMaxPriceChange={setMaxPrice}
+          />
+        </div>
       </div>
     </>
   );

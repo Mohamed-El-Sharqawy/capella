@@ -29,7 +29,8 @@
     "aboutUs": "About Us",
     "language": "Language",
     "viewAllCollections": "View All Collections",
-    "shopAllIn": "Shop All {name}"
+    "shopAllIn": "Shop All {name}",
+    "jewelleries": "Jewelleries"
   },
   "home": {
     "heroMen": "Men",

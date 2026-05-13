@@ -71,7 +71,7 @@ export function LanguageSwitcher({ trigger }: { trigger?: React.ReactNode }) {
 
       {isOpen && (
         <div
-          className={cn("absolute mt-1 w-36 bg-white border rounded-lg shadow-lg py-1 z-50", locale === "ar" ? "left-0" : "right-0")}
+          className={cn("absolute mt-1 w-36 bg-white border rounded-lg shadow-lg py-1 z-50 bottom-full", locale === "ar" ? "left-0" : "right-0")}
           role="listbox"
           aria-label="Select language"
         >

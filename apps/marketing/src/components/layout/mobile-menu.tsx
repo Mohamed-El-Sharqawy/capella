@@ -187,7 +187,7 @@ export function MobileMenu() {
               <div className="space-y-6">
                 {/* shop all */}
                 <Link
-                  href={`/collections`}
+                  href={`/collections/all-products`}
                   className="flex items-center justify-between text-xl font-light opacity-60 hover:opacity-100 transition-opacity pl-2" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}
                 >
                   {t("shopAll")}
@@ -221,15 +221,19 @@ export function MobileMenu() {
                 </div>
               </div>
 
-              <Link href="/" className="block text-3xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
+              <Link href="/" className="block text-2xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
+                {t("shopByCollection")}
+              </Link>
+
+              <Link href="/" className="block text-2xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
                 {t("home")}
               </Link>
 
-              <Link href="/about" className="block text-3xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
+              <Link href="/about" className="block text-2xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
                 {t("aboutUs")}
               </Link>
 
-              <Link href="/contact" className="block text-3xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
+              <Link href="/contact" className="block text-2xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
                 {t("contactUs")}
               </Link>
             </div>
