@@ -221,7 +221,7 @@ export function MobileMenu() {
                 </div>
               </div>
 
-              <Link href="/" className="block text-2xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
+              <Link href="/collections" className="block text-2xl font-light opacity-80 hover:opacity-100 transition-opacity" style={{ letterSpacing: isArabic ? "0em" : "0.1em" }}>
                 {t("shopByCollection")}
               </Link>
 
