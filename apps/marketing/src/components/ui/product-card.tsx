@@ -65,7 +65,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
               src={primaryImage}
               alt={name}
               fill
-              className={`object-cover transition-all duration-700 ${isHovered && hoverImage ? "opacity-0" : "opacity-100"
+              className={`object-contain transition-all duration-700 ${isHovered && hoverImage ? "opacity-0" : "opacity-100"
                 } ${isHovered ? "scale-110" : "scale-100"}`}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             />
@@ -74,7 +74,7 @@ export function ProductCard({ product, locale }: ProductCardProps) {
                 src={hoverImage}
                 alt={name}
                 fill
-                className={`object-cover transition-all duration-700 ${isHovered ? "opacity-100 scale-110" : "opacity-0 scale-100"
+                className={`object-contain transition-all duration-700 ${isHovered ? "opacity-100 scale-110" : "opacity-0 scale-100"
                   }`}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />

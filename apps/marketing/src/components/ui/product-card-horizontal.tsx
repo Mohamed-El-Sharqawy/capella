@@ -89,7 +89,7 @@ export function ProductCardHorizontal({
                 src={primaryImage}
                 alt={name}
                 fill
-                className="object-cover"
+                className="object-contain"
                 sizes="300px"
               />
             ) : (

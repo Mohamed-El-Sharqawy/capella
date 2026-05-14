@@ -8,7 +8,7 @@ import { routing } from "@/i18n/routing";
 import { SITE_CONFIG, DEFAULT_METADATA } from "@/lib/metadata";
 import { organizationJsonLd, webSiteJsonLd } from "@/lib/json-ld";
 import "../globals.css";
-import { Header, Footer } from "@/components/layout";
+import { Header, Footer, WhatsAppButton } from "@/components/layout";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { FacebookPixel } from "@/components/analytics";
 import { Providers } from "./providers";
@@ -114,6 +114,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             <main>{children}</main>
             <Footer locale={locale} />
             <CartDrawer locale={locale} />
+            <WhatsAppButton />
             <Toaster position="top-center" richColors />
           </Providers>
         </NextIntlClientProvider>

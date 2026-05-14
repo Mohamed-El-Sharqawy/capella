@@ -98,7 +98,7 @@ export function ImageGallery({
               src={img.url}
               alt={isArabic ? img.altAr || productName : img.altEn || productName}
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="80px"
             />
           </button>
@@ -127,7 +127,7 @@ export function ImageGallery({
                   src={img.url}
                   alt={isArabic ? img.altAr || productName : img.altEn || productName}
                   fill
-                  className="object-cover p-4 md:p-8"
+                  className="object-contain p-4 md:p-8"
                   sizes="(max-width: 1024px) 100vw, 800px"
                   priority={true}
                 />

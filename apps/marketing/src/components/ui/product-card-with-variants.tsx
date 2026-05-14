@@ -164,7 +164,7 @@ export function ProductCardWithVariants({
                       src={primaryImage}
                       alt={name}
                       fill
-                      className={`object-cover select-none transition-all duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${isImageHovered && hoverImage
+                      className={`object-contain select-none transition-all duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${isImageHovered && hoverImage
                         ? "opacity-0 scale-105"
                         : "opacity-100 scale-100"
                         }`}
@@ -175,7 +175,7 @@ export function ProductCardWithVariants({
                         src={hoverImage}
                         alt={name}
                         fill
-                        className={`object-cover select-none transition-all duration-1000 ease-[cubic-bezier(0.25,0.1,0.25,1)] pointer-events-none ${isImageHovered
+                        className={`object-contain select-none transition-all duration-1000 ease-[cubic-bezier(0.25,0.1,0.25,1)] pointer-events-none ${isImageHovered
                           ? "opacity-100 scale-[1.05]"
                           : "opacity-0 scale-100"
                           }`}
