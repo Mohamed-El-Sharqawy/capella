@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard } from "lucide-react";
+import { Search, Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag } from "lucide-react";
 import { ORDER_STATUSES } from "@ecommerce/shared-utils";
 import type { Order } from "@ecommerce/shared-types";
 import { useOrders, useOrder, useUpdateOrderStatus, type OrderStatus } from "@/features/orders";
@@ -76,7 +76,7 @@ export function OrdersPage() {
   };
 
   const formatCurrency = (amount: number) => {
-    return `EGP ${amount.toLocaleString()}`;
+    return `${amount.toLocaleString()} AED`;
   };
 
   // Filter orders by search
@@ -151,6 +151,7 @@ export function OrdersPage() {
                 <TableHead>Customer</TableHead>
                 <TableHead>Items</TableHead>
                 <TableHead>Total</TableHead>
+                <TableHead>Payment</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
@@ -159,7 +160,7 @@ export function OrdersPage() {
             <TableBody>
               {filteredOrders.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-12 text-center text-muted-foreground">
+                  <TableCell colSpan={8} className="py-12 text-center text-muted-foreground">
                     No orders found.
                   </TableCell>
                 </TableRow>
@@ -186,6 +187,20 @@ export function OrdersPage() {
                     </TableCell>
                     <TableCell className="font-medium">
                       {formatCurrency(order.total)}
+                    </TableCell>
+                    <TableCell>
+                      {order.paymentMethod === "ZIINA" ? (
+                        <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1">
+                          <CreditCard className="h-3 w-3" />
+                          Online
+                          {order.paidAt && <span className="text-green-600">✓</span>}
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1">
+                          <Banknote className="h-3 w-3" />
+                          COD
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Select
@@ -298,6 +313,34 @@ export function OrdersPage() {
                     <Calendar className="h-3 w-3" /> Updated
                   </div>
                   <div className="text-sm">{formatDate(orderDetail.data.updatedAt)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Payment Method</div>
+                  {orderDetail.data.paymentMethod === "ZIINA" ? (
+                    <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1 mt-1">
+                      <CreditCard className="h-3 w-3" /> Online Payment
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1 mt-1">
+                      <Banknote className="h-3 w-3" /> Cash on Delivery
+                    </Badge>
+                  )}
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Payment Status</div>
+                  {orderDetail.data.paidAt ? (
+                    <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 mt-1">
+                      Paid {formatDate(orderDetail.data.paidAt)}
+                    </Badge>
+                  ) : orderDetail.data.paymentMethod === "ZIINA" ? (
+                    <Badge variant="secondary" className="bg-yellow-50 text-yellow-700 border-yellow-200 mt-1">
+                      Awaiting Payment
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="bg-gray-50 text-gray-600 border-gray-200 mt-1">
+                      Unpaid (COD)
+                    </Badge>
+                  )}
                 </div>
               </div>
 
@@ -434,12 +477,46 @@ export function OrdersPage() {
 
               {/* Order Total */}
               <div className="rounded-lg border p-4 bg-muted/30">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="h-4 w-4" />
-                    <span className="font-semibold">Order Total</span>
-                  </div>
-                  <div className="text-xl font-bold">{formatCurrency(orderDetail.data.total)}</div>
+                <div className="space-y-2">
+                  {(() => {
+                    const itemsTotal = (orderDetail.data.items || []).reduce(
+                      (sum: number, item: any) => sum + item.price * item.quantity, 0
+                    );
+                    const discount = orderDetail.data.discountAmount || 0;
+                    const shipping = 25;
+                    const total = orderDetail.data.total;
+
+                    return (
+                      <>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Subtotal ({orderDetail.data.items?.length || 0} items)</span>
+                          <span>{formatCurrency(itemsTotal)}</span>
+                        </div>
+                        {discount > 0 && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="flex items-center gap-1 text-green-600">
+                              <Tag className="h-3 w-3" />
+                              {orderDetail.data.coupon
+                                ? `Coupon "${orderDetail.data.coupon.code}" (${orderDetail.data.coupon.discountType === "PERCENTAGE" ? `${orderDetail.data.coupon.discountValue}%` : formatCurrency(orderDetail.data.coupon.discountValue)})`
+                                : "Discount"}
+                            </span>
+                            <span className="text-green-600">-{formatCurrency(discount)}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Shipping</span>
+                          <span>{formatCurrency(shipping)}</span>
+                        </div>
+                        <div className="flex items-center justify-between pt-2 border-t">
+                          <div className="flex items-center gap-2">
+                            <CreditCard className="h-4 w-4" />
+                            <span className="font-semibold">Total</span>
+                          </div>
+                          <div className="text-xl font-bold">{formatCurrency(total)}</div>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
 

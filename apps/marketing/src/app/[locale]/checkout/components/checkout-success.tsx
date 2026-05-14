@@ -15,7 +15,7 @@ export function CheckoutSuccess({ orderId }: CheckoutSuccessProps) {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="container mx-auto px-4 py-16">
+    <div className="min-h-[60vh] container mx-auto px-4 pb-8 pt-32 md:pt-36 flex items-center justify-center">
       <div className="max-w-md mx-auto text-center">
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle2 className="h-10 w-10 text-green-600" />

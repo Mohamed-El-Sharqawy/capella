@@ -5,7 +5,6 @@ import { PaymentModel } from "./model";
 
 export const payment = new Elysia({ prefix: "/payments" })
   .use(authPlugin)
-  // Create checkout session (public - can be guest or authenticated)
   .post("/checkout", async ({ body, user }) => {
     try {
       const result = await PaymentService.createCheckoutSession(
@@ -14,23 +13,33 @@ export const payment = new Elysia({ prefix: "/payments" })
       );
       return { success: true as const, data: result };
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Checkout failed";
+      const message =
+        error instanceof Error ? error.message : "Checkout failed";
       return status(400, { success: false as const, error: message });
     }
   }, { optionalAuth: true, body: PaymentModel.checkoutBody })
-  // Stripe webhook endpoint (no auth required - verified by signature)
-  .post("/webhook", async ({ headers, body, set }) => {
-    const sig = headers["stripe-signature"];
+  .post("/webhook", async ({ headers, body, set, request }) => {
+    const sig = headers["x-hmac-signature"];
 
     if (!sig) {
-      console.error("❌ Webhook Error: Missing stripe-signature header");
+      console.error(
+        "❌ Webhook Error: Missing X-Hmac-Signature header"
+      );
       set.status = 400;
       return { success: false, error: "Missing signature" };
     }
 
+    const clientIp =
+      headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+      headers["x-real-ip"] ||
+      "";
+
     try {
-      // Body is already a string because of parse: 'text'
-      const result = await PaymentService.handleWebhook(body as string, sig);
+      const result = await PaymentService.handleWebhook(
+        body as string,
+        sig,
+        clientIp
+      );
       console.log(`✅ Webhook processed successfully`);
       return result;
     } catch (error: any) {

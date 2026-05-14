@@ -99,7 +99,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   const onFinalSubmit = () => {
     setIsConfirmModalOpen(false);
     // Call handleSubmit with a mock event
-    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+    handleSubmit({ preventDefault: () => { } } as React.FormEvent);
   };
 
   // Track checkout view on mount
@@ -134,7 +134,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 pt-32 md:pt-36">
+    <div className="min-h-[60vh] container mx-auto px-4 pb-8 pt-32 md:pt-36">
       {/* Back to cart */}
       <Link
         href={CHECKOUT_ROUTES.CART}

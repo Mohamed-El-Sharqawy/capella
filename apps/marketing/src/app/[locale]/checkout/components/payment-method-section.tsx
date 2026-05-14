@@ -46,29 +46,25 @@ export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethod
           </div>
         </div>
 
-        {/* Stripe / Card Option */}
+        {/* Ziina / Card Option */}
         <div
-          onClick={() => onUpdateField("paymentMethod", "STRIPE")}
+          onClick={() => onUpdateField("paymentMethod", "ZIINA")}
           className={cn(
             "border-2 rounded-lg p-4 cursor-pointer transition-all",
-            formState.paymentMethod === "STRIPE" ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
+            formState.paymentMethod === "ZIINA" ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
           )}
         >
           <div className="flex items-center gap-3">
             <div className={cn(
               "w-5 h-5 border-2 rounded-full flex items-center justify-center",
-              formState.paymentMethod === "STRIPE" ? "border-black" : "border-gray-300"
+              formState.paymentMethod === "ZIINA" ? "border-black" : "border-gray-300"
             )}>
-              {formState.paymentMethod === "STRIPE" && <div className="w-3 h-3 bg-black rounded-full" />}
+              {formState.paymentMethod === "ZIINA" && <div className="w-3 h-3 bg-black rounded-full" />}
             </div>
             <CreditCard className="h-5 w-5" />
             <div className="flex-1">
               <p className="font-medium">Online Payment</p>
               <p className="text-sm text-muted-foreground">Pay securely via Credit Card, Apple Pay, or Google Pay</p>
-            </div>
-            <div className="flex gap-1">
-              <div className="w-8 h-5 bg-blue-600 rounded flex items-center justify-center text-[8px] text-white font-bold">VISA</div>
-              <div className="w-8 h-5 bg-amber-500 rounded flex items-center justify-center text-[8px] text-white font-bold">MC</div>
             </div>
           </div>
         </div>

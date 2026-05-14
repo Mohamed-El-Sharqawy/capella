@@ -1,48 +1,33 @@
-import Stripe from "stripe";
 import { prisma } from "../../lib/prisma";
+import { ZiinaClient, type PaymentIntentResponse } from "./ziina-client";
 import type { PaymentModel } from "./model";
 
-// Lazy Stripe client - only initialize when needed
-let stripe: Stripe | null = null;
-
-function getStripe(): Stripe {
-  if (!stripe) {
-    const key = process.env.STRIPE_SECRET_KEY;
-    if (!key || key === "sk_test_placeholder") {
-      throw new Error("Stripe is not configured. Set STRIPE_SECRET_KEY in .env");
-    }
-    stripe = new Stripe(key, {
-      apiVersion: "2024-11-20.acacia",
-    });
-  }
-  return stripe;
-}
-
 const MARKETING_URL = process.env.MARKETING_URL || "http://localhost:3000";
+const SHIPPING_COST_AED = 25;
 
 export abstract class PaymentService {
-  /**
-   * Create a Stripe checkout session
-   * 1. Validate stock for all items
-   * 2. Create order with PENDING status
-   * 3. Create Stripe checkout session
-   * 4. Return session ID and URL
-   */
   static async createCheckoutSession(
     body: PaymentModel["checkoutBody"],
     userId?: string
   ) {
-    const { items, customerEmail, successUrl, cancelUrl, couponCode, locale, ...shippingData } = body;
+    const {
+      items,
+      customerEmail,
+      successUrl,
+      cancelUrl,
+      couponCode,
+      locale,
+      ...shippingData
+    } = body;
     const lang = locale || "en";
 
-    // 1. Validate stock and get variant details
     const variantIds = items.map((item) => item.variantId);
     const variants = await prisma.productVariant.findMany({
       where: { id: { in: variantIds } },
       include: {
-        product: { select: { nameEn: true, nameAr: true, descriptionEn: true } },
-        images: { 
-          orderBy: { position: "asc" }, 
+        product: { select: { nameEn: true, nameAr: true } },
+        images: {
+          orderBy: { position: "asc" },
           take: 1,
           include: { image: true },
         },
@@ -53,7 +38,6 @@ export abstract class PaymentService {
       throw new Error("Some variants not found");
     }
 
-    // Check stock
     for (const item of items) {
       const variant = variants.find((v) => v.id === item.variantId);
       if (!variant) {
@@ -64,36 +48,14 @@ export abstract class PaymentService {
       }
     }
 
-    // Calculate total
-    let total = 0;
-    const lineItems = items.map((item) => {
+    let subtotal = 0;
+    items.forEach((item) => {
       const variant = variants.find((v) => v.id === item.variantId)!;
-      const itemTotal = variant.price * item.quantity;
-      total += itemTotal;
-
-      const imageUrl = variant.images[0]?.image?.url;
-
-      return {
-        price_data: {
-          currency: "aed",
-          product_data: {
-            name: `${variant.product.nameEn} - ${variant.nameEn}`,
-            description: variant.product.descriptionEn || undefined,
-            images: imageUrl ? [imageUrl] : undefined,
-            metadata: {
-              variantId: variant.id,
-              productId: variant.productId,
-            },
-          },
-          unit_amount: Math.round(variant.price * 100), // Convert to cents
-        },
-        quantity: item.quantity,
-      };
+      subtotal += variant.price * item.quantity;
     });
 
-    // Apply coupon if provided
     let discountAmount = 0;
-    let couponId: string | undefined;
+    let couponDbId: string | undefined;
     if (couponCode) {
       const coupon = await prisma.coupon.findUnique({
         where: { code: couponCode, isActive: true },
@@ -101,29 +63,26 @@ export abstract class PaymentService {
       if (coupon) {
         const now = new Date();
         if (!coupon.expiresAt || coupon.expiresAt > now) {
-          if (coupon.minOrderAmount && total < coupon.minOrderAmount) {
-            throw new Error(`Minimum purchase amount is ${coupon.minOrderAmount} AED `);
+          if (coupon.minOrderAmount && subtotal < coupon.minOrderAmount) {
+            throw new Error(
+              `Minimum purchase amount is ${coupon.minOrderAmount} AED`
+            );
           }
-
           if (coupon.discountType === "PERCENTAGE") {
-            discountAmount = (total * coupon.discountValue) / 100;
+            discountAmount = (subtotal * coupon.discountValue) / 100;
           } else {
             discountAmount = coupon.discountValue;
           }
-
-          // Create Stripe coupon for the discount
-          const stripeCoupon = await getStripe().coupons.create({
-            amount_off: Math.round(discountAmount * 100),
-            currency: "aed",
-            duration: "once",
-            name: coupon.code,
-          });
-          couponId = stripeCoupon.id;
+          couponDbId = coupon.id;
         }
       }
     }
 
-    // 2. Create order with PENDING status
+    const totalAmount = subtotal - discountAmount + SHIPPING_COST_AED;
+    if (totalAmount <= 0) {
+      throw new Error("Invalid order total");
+    }
+
     const order = await prisma.order.create({
       data: {
         userId: userId || null,
@@ -132,10 +91,10 @@ export abstract class PaymentService {
         guestLastName: shippingData.guestLastName,
         guestPhone: shippingData.guestPhone,
         status: "PENDING",
-        total,
+        total: totalAmount,
         discountAmount,
-        couponId: couponId ? (await prisma.coupon.findFirst({ where: { code: couponCode } }))?.id : null,
-        paymentMethod: "STRIPE",
+        couponId: couponDbId || null,
+        paymentMethod: "ZIINA",
         shippingFirstName: shippingData.shippingFirstName,
         shippingLastName: shippingData.shippingLastName,
         shippingStreet: shippingData.shippingStreet,
@@ -165,196 +124,216 @@ export abstract class PaymentService {
       },
     });
 
-    // 3. Create Stripe checkout session
-    const session = await getStripe().checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: lineItems,
-      mode: "payment",
-      success_url: successUrl || `${MARKETING_URL}/${lang}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: cancelUrl || `${MARKETING_URL}/${lang}/checkout?method=STRIPE${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
-      customer_email: customerEmail || shippingData.guestEmail,
-      discounts: couponId ? [{ coupon: couponId }] : undefined,
-      shipping_options: [
-        {
-          shipping_rate_data: {
-            type: "fixed_amount",
-            fixed_amount: {
-              amount: 2500, // 25 AED
-              currency: "aed",
-            },
-            display_name: "Standard Shipping",
-            delivery_estimate: {
-              minimum: { unit: "business_day", value: 3 },
-              maximum: { unit: "business_day", value: 5 },
-            },
-          },
-        },
-      ],
-      metadata: {
-        orderId: order.id,
-        userId: userId || "",
-      },
+    const paymentIntent = await ZiinaClient.createPaymentIntent({
+      amount: Math.round(totalAmount * 100),
+      currency_code: "AED",
+      success_url:
+        successUrl ||
+        `${MARKETING_URL}/${lang}/checkout/success?payment_intent_id={PAYMENT_INTENT_ID}`,
+      cancel_url:
+        cancelUrl ||
+        `${MARKETING_URL}/${lang}/checkout?method=ZIINA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
+      failure_url:
+        cancelUrl ||
+        `${MARKETING_URL}/${lang}/checkout?method=ZIINA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
+      message: `Order ${order.id}`,
     });
 
-    // 4. Update order with Stripe session ID
     await prisma.order.update({
       where: { id: order.id },
-      data: { stripeSessionId: session.id },
+      data: { ziinaPaymentIntentId: paymentIntent.id },
     });
 
     return {
-      sessionId: session.id,
-      url: session.url,
+      paymentIntentId: paymentIntent.id,
+      url: paymentIntent.redirect_url,
       orderId: order.id,
     };
   }
 
-  /**
-   * Handle Stripe webhook events
-   * 1. Verify signature
-   * 2. Handle checkout.session.completed
-   * 3. Handle checkout.session.expired
-   */
-  static async handleWebhook(payload: string, signature: string) {
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-
-    let event: Stripe.Event;
-    try {
-      event = await getStripe().webhooks.constructEventAsync(payload, signature, webhookSecret);
-    } catch (err) {
-      throw new Error(`Webhook signature verification failed: ${(err as Error).message}`);
+  static async handleWebhook(
+    payload: string,
+    signature: string,
+    clientIp?: string
+  ) {
+    const webhookSecret = process.env.ZIINA_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      throw new Error("ZIINA_WEBHOOK_SECRET is not configured");
     }
 
-    console.log(`📩 Received Stripe Event: ${event.type}`);
+    if (!ZiinaClient.verifyWebhookSignature(payload, signature, webhookSecret)) {
+      throw new Error("Webhook signature verification failed");
+    }
 
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object as Stripe.Checkout.Session;
-        await this.handleCheckoutCompleted(session);
-        break;
+    if (clientIp && !ZiinaClient.isAllowedIp(clientIp)) {
+      console.warn(`⚠️ Webhook from untrusted IP: ${clientIp}`);
+    }
+
+    const event = ZiinaClient.parseWebhookPayload(payload);
+    console.log(`📩 Received Ziina Event: ${event.event}`);
+
+    if (event.event === "payment_intent.status.updated") {
+      const intent = event.data;
+
+      switch (intent.status) {
+        case "completed":
+          await this.handlePaymentCompleted(intent);
+          break;
+        case "canceled":
+          await this.handlePaymentCancelled(intent);
+          break;
+        case "failed":
+          await this.handlePaymentFailed(intent);
+          break;
+        default:
+          console.log(`Unhandled intent status: ${intent.status}`);
       }
-      case "checkout.session.expired": {
-        const session = event.data.object as Stripe.Checkout.Session;
-        await this.handleCheckoutExpired(session);
-        break;
-      }
-      default:
-        // Ignore other events
-        console.log(`Unhandled event type: ${event.type}`);
     }
 
     return { received: true };
   }
 
-  /**
-   * Handle successful checkout
-   * 1. Find order by stripeSessionId
-   * 2. Check idempotency (skip if already PAID/CANCELLED)
-   * 3. Re-validate stock
-   * 4. Update order status to PAID
-   */
-  private static async handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-    const orderId = session.metadata?.orderId;
-    if (!orderId) {
-      console.error("No orderId in session metadata");
-      return;
-    }
-
+  private static async handlePaymentCompleted(
+    intent: PaymentIntentResponse
+  ) {
     const order = await prisma.order.findUnique({
-      where: { id: orderId },
+      where: { ziinaPaymentIntentId: intent.id },
       include: { items: true },
     });
 
     if (!order) {
-      console.error(`Order ${orderId} not found`);
+      console.error(`Order not found for payment intent ${intent.id}`);
       return;
     }
 
-    // Idempotency check
     if (order.status === "DELIVERED" || order.status === "SHIPPED") {
-      console.log(`Order ${orderId} already processed`);
+      console.log(`Order ${order.id} already processed`);
       return;
     }
 
-    // Re-validate stock
     for (const item of order.items) {
       const variant = await prisma.productVariant.findUnique({
         where: { id: item.variantId },
       });
       if (!variant || variant.stock < item.quantity) {
-        // Out of stock - refund and mark as REFUNDED
-        console.error(`Insufficient stock for variant ${item.variantId}, refunding`);
-
-        if (session.payment_intent) {
-          await getStripe().refunds.create({
-            payment_intent: session.payment_intent as string,
-            reason: "requested_by_customer",
+        console.error(
+          `Insufficient stock for variant ${item.variantId}, refunding`
+        );
+        try {
+          await ZiinaClient.createRefund({
+            payment_intent_id: intent.id,
+            amount: intent.amount,
+            currency_code: intent.currency_code,
           });
+        } catch (refundErr) {
+          console.error("Refund failed:", refundErr);
         }
-
         await prisma.order.update({
-          where: { id: orderId },
+          where: { id: order.id },
           data: { status: "REFUNDED" },
         });
         return;
       }
     }
 
-    // Deduct stock
     for (const item of order.items) {
       await prisma.productVariant.update({
         where: { id: item.variantId },
-        data: {
-          stock: { decrement: item.quantity },
-        },
+        data: { stock: { decrement: item.quantity } },
       });
     }
 
-    // Update order to CONFIRMED (paid)
     await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        status: "CONFIRMED",
-        paidAt: new Date(),
-      },
+      where: { id: order.id },
+      data: { status: "CONFIRMED", paidAt: new Date() },
     });
 
-    // Increment coupon usage if order has one
     if (order.couponId) {
       const { CouponService } = await import("../coupon/service");
       await CouponService.incrementUsage(order.couponId);
     }
 
-    console.log(`Order ${orderId} marked as CONFIRMED (paid)`);
+    console.log(`Order ${order.id} marked as CONFIRMED (paid via Ziina)`);
   }
 
-  /**
-   * Handle expired checkout session
-   * Update order status to CANCELLED
-   */
-  private static async handleCheckoutExpired(session: Stripe.Checkout.Session) {
-    const orderId = session.metadata?.orderId;
-    if (!orderId) {
-      console.error("No orderId in session metadata");
-      return;
-    }
-
+  private static async handlePaymentCancelled(
+    intent: PaymentIntentResponse
+  ) {
     const order = await prisma.order.findUnique({
-      where: { id: orderId },
+      where: { ziinaPaymentIntentId: intent.id },
     });
 
     if (!order) {
-      console.error(`Order ${orderId} not found`);
+      console.error(`Order not found for payment intent ${intent.id}`);
       return;
     }
 
-    // Only cancel if still PENDING
     if (order.status === "PENDING") {
       await prisma.order.update({
-        where: { id: orderId },
+        where: { id: order.id },
         data: { status: "CANCELLED" },
       });
-      console.log(`Order ${orderId} marked as CANCELLED (session expired)`);
+      console.log(
+        `Order ${order.id} marked as CANCELLED (payment cancelled)`
+      );
+    }
+  }
+
+  private static async handlePaymentFailed(
+    intent: PaymentIntentResponse
+  ) {
+    const order = await prisma.order.findUnique({
+      where: { ziinaPaymentIntentId: intent.id },
+    });
+
+    if (!order) {
+      console.error(`Order not found for payment intent ${intent.id}`);
+      return;
+    }
+
+    if (order.status === "PENDING") {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { status: "CANCELLED" },
+      });
+      console.log(
+        `Order ${order.id} marked as CANCELLED (payment failed)`
+      );
+    }
+  }
+
+  static async registerWebhook(): Promise<void> {
+    const webhookSecret = process.env.ZIINA_WEBHOOK_SECRET;
+    const webhookUrl = process.env.ZIINA_WEBHOOK_URL;
+
+    if (!webhookSecret) {
+      console.warn(
+        "⚠️ ZIINA_WEBHOOK_SECRET not set, skipping webhook registration"
+      );
+      return;
+    }
+
+    if (!webhookUrl) {
+      console.warn(
+        "⚠️ ZIINA_WEBHOOK_URL not set, skipping webhook registration. Set it to your public backend URL (e.g. https://api.yourdomain.com/api/payments/webhook)"
+      );
+      return;
+    }
+
+    try {
+      const result = await ZiinaClient.registerWebhook(
+        webhookUrl,
+        webhookSecret
+      );
+      if (result.success) {
+        console.log(`✅ Ziina webhook registered: ${webhookUrl}`);
+      } else {
+        console.error(
+          `❌ Failed to register Ziina webhook: ${result.error}`
+        );
+      }
+    } catch (err) {
+      console.error("❌ Ziina webhook registration error:", err);
     }
   }
 }

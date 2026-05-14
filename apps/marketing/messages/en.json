@@ -174,6 +174,7 @@
     "viewMyOrders": "View My Orders",
     "loading": "Loading...",
     "emptyCart": "Your cart is empty",
+    "emptyCartDesc": "Looks like you haven't added any items yet. Explore our collections and find something you love.",
     "startShopping": "Start Shopping",
     "contactInfo": "Contact Information",
     "firstName": "First Name",
@@ -387,7 +388,7 @@
       },
       "payment": {
         "q": "What payment methods are available?",
-        "a": "We accept online payments (Stripe) and cash on delivery."
+        "a": "We accept online payments (Ziina) and cash on delivery."
       },
       "tracking": {
         "q": "How can I track my order?",
@@ -617,7 +618,8 @@
     },
     "cartTab": {
       "title": "Cart",
-      "emptyCart": "Your cart is empty",
+    "emptyCart": "Your cart is empty",
+    "emptyCartDesc": "Looks like you haven't added any items yet. Explore our collections and find something you love.",
       "startShopping": "Start Shopping",
       "product": "Product",
       "price": "Price",

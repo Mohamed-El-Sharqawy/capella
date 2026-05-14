@@ -14,9 +14,9 @@ model Order {
   total  Float
 
   // Payment fields
-  paymentMethod   String?
-  stripeSessionId String? @unique
-  paidAt          DateTime?
+  paymentMethod         String?
+  ziinaPaymentIntentId  String? @unique
+  paidAt                DateTime?
 
   // Coupon applied to order
   coupon   Coupon? @relation(fields: [couponId], references: [id])
@@ -56,7 +56,7 @@ model Order {
   @@index([couponId])
   @@index([status])
   @@index([guestEmail])
-  @@index([stripeSessionId])
+  @@index([ziinaPaymentIntentId])
   @@index([createdAt])
   @@map("orders")
 }

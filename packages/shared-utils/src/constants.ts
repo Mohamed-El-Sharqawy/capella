@@ -22,7 +22,7 @@ export const SIZES = ["XS", "S", "M", "L", "XL", "XXL"] as const;
 
 export const PRODUCT_BADGES = ["NEW", "BESTSELLER", "LIMITED_EDITION"] as const;
 
-export const PAYMENT_METHODS = ["STRIPE", "COD"] as const;
+export const PAYMENT_METHODS = ["ZIINA", "COD"] as const;
 
 export const API_ROUTES = {
   AUTH: {

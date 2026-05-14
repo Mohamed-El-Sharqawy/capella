@@ -88,10 +88,10 @@ export function useCheckoutSubmit({
             }),
       };
 
-      const endpoint = formState.paymentMethod === "STRIPE" ? "/api/payments/checkout" : (isAuthenticated ? "/api/orders" : "/api/orders/guest");
+      const endpoint = formState.paymentMethod === "ZIINA" ? "/api/payments/checkout" : (isAuthenticated ? "/api/orders" : "/api/orders/guest");
       const token = isAuthenticated ? getAccessToken() : undefined;
       
-      const payload = formState.paymentMethod === "STRIPE" ? {
+      const payload = formState.paymentMethod === "ZIINA" ? {
         ...orderData,
         customerEmail: isAuthenticated ? undefined : formState.email,
         locale,
@@ -113,13 +113,13 @@ export function useCheckoutSubmit({
         }
       }
 
-      // If Stripe, redirect to the provided URL
-      if (formState.paymentMethod === "STRIPE" && data.data?.url) {
+      // If Ziina, redirect to the provided URL
+      if (formState.paymentMethod === "ZIINA" && data.data?.url) {
         window.location.href = data.data.url;
         return;
       }
 
-      // Codes below only run for non-Stripe (COD) orders
+      // Codes below only run for non-Ziina (COD) orders
       if (!isBuyNow) {
         clearCart();
       }

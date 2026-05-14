@@ -24,6 +24,7 @@ import { promoBanner } from "./modules/promo-banner";
 import { searchController } from "./modules/search";
 import { analyticsController } from "./modules/analytics";
 import { payment } from "./modules/payment";
+import { PaymentService } from "./modules/payment/service";
 
 const port = process.env.PORT || 3001;
 
@@ -35,8 +36,8 @@ const app = new Elysia()
   .use(requestLogger)
   .use(
     cors({
-      origin: true, // Allow all origins
-      credentials: false, // Disable credentials to avoid CORS preflight issues
+      origin: true,
+      credentials: false,
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "x-session-id"],
     })
@@ -86,6 +87,8 @@ const app = new Elysia()
       .use(payment)
   )
   .listen(port);
+
+PaymentService.registerWebhook();
 
 console.log(`E-Commerce API is running at http://localhost:${port}`);
 console.log(`Swagger docs at http://localhost:${port}/swagger`);

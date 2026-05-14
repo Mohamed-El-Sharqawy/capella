@@ -27,6 +27,17 @@ export interface Order {
   id: string;
   status: OrderStatus;
   total: number;
+  paymentMethod?: string | null;
+  ziinaPaymentIntentId?: string | null;
+  paidAt?: Date | null;
+  discountAmount?: number;
+  couponId?: string | null;
+  coupon?: {
+    id: string;
+    code: string;
+    discountType: string;
+    discountValue: number;
+  } | null;
   userId?: string | null;
   user?: {
     id: string;

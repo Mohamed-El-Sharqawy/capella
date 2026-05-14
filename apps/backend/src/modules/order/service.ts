@@ -8,6 +8,9 @@ const ORDER_INCLUDE = {
     select: { id: true, email: true, firstName: true, lastName: true, role: true },
   },
   address: true,
+  coupon: {
+    select: { id: true, code: true, discountType: true, discountValue: true },
+  },
 } as const;
 
 export abstract class OrderService {

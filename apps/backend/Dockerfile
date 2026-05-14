@@ -22,6 +22,11 @@ RUN pnpm build
 ENV NODE_ENV=production
 ENV PORT=3001
 
+ARG ZIINA_API_KEY
+ARG ZIINA_WEBHOOK_SECRET
+ENV ZIINA_API_KEY=${ZIINA_API_KEY}
+ENV ZIINA_WEBHOOK_SECRET=${ZIINA_WEBHOOK_SECRET}
+
 EXPOSE 3001
 
 CMD ["sh", "-c", "pnpm exec prisma db push --accept-data-loss && bun run dist/index.js"]

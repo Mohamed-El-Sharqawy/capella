@@ -5,7 +5,7 @@ import { useQueryState, parseAsStringLiteral, parseAsString } from "nuqs";
 import { useAuth } from "@/contexts/auth-context";
 import type { CheckoutFormState, SavedAddress } from "../types";
 
-const paymentMethods = ["COD", "STRIPE", "TABBY"] as const;
+const paymentMethods = ["COD", "ZIINA", "TABBY"] as const;
 
 export function useCheckoutForm(savedAddresses: SavedAddress[]) {
   const { user } = useAuth();

@@ -1,5 +1,5 @@
 export interface PaymentSession {
-  sessionId: string;
+  paymentIntentId: string;
   url: string;
 }
 
@@ -15,19 +15,15 @@ export interface CheckoutPayload {
   customerEmail?: string;
 }
 
-export type PaymentMethod = "STRIPE" | "COD";
+export type PaymentMethod = "ZIINA" | "COD";
 
 export interface WebhookEvent {
-  id: string;
-  type: string;
+  event: string;
   data: {
-    object: {
-      id: string;
-      payment_status: string;
-      customer_details?: {
-        email?: string;
-      };
-      metadata?: Record<string, string>;
-    };
+    id: string;
+    status: string;
+    amount: number;
+    currency_code: string;
+    account_id: string;
   };
 }

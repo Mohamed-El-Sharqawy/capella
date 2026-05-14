@@ -11,7 +11,6 @@ export const PaymentModel = {
     customerEmail: t.Optional(t.String({ format: "email" })),
     successUrl: t.Optional(t.String()),
     cancelUrl: t.Optional(t.String()),
-    // Shipping address
     shippingFirstName: t.String({ minLength: 1 }),
     shippingLastName: t.String({ minLength: 1 }),
     shippingStreet: t.String({ minLength: 1 }),
@@ -20,20 +19,17 @@ export const PaymentModel = {
     shippingZipCode: t.String({ minLength: 1 }),
     shippingCountry: t.String({ minLength: 1 }),
     shippingPhone: t.Optional(t.String()),
-    // Guest info (for non-authenticated users)
     guestEmail: t.Optional(t.String({ format: "email" })),
     guestFirstName: t.Optional(t.String()),
     guestLastName: t.Optional(t.String()),
     guestPhone: t.Optional(t.String()),
-    // Coupon
     couponCode: t.Optional(t.String()),
-    // Address ID (for authenticated users with saved address)
     addressId: t.Optional(t.String()),
     note: t.Optional(t.String()),
     locale: t.Optional(t.String()),
   }),
   webhookHeaders: t.Object({
-    "stripe-signature": t.String(),
+    "x-hmac-signature": t.String(),
   }),
 } as const;
 
