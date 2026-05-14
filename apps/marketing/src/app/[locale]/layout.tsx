@@ -50,11 +50,20 @@ export const metadata: Metadata = {
     type: "website",
     siteName: SITE_CONFIG.name,
     locale: "en_US",
+    images: [
+      {
+        url: `${SITE_CONFIG.url}/og-image.webp`,
+        width: 1200,
+        height: 720,
+        alt: SITE_CONFIG.name,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     site: SITE_CONFIG.twitterHandle,
     creator: SITE_CONFIG.twitterHandle,
+    images: [`${SITE_CONFIG.url}/og-image.webp`],
   },
   robots: {
     index: true,

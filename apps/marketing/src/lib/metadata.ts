@@ -5,7 +5,7 @@ export const SITE_CONFIG = {
   nameAr: "كابيلا",
   domain: "capellaae.com",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://capellaae.com",
-  defaultImage: "/og-image.jpg",
+  defaultImage: "/og-image.webp",
   twitterHandle: "@capellaae",
   locale: {
     en: "en_US",
