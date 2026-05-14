@@ -41,7 +41,7 @@ export interface Order {
   id: string;
   orderNumber?: string;
   status: string;
-  paymentMethod?: string;
+  paymentMethod?: string | null;
   total: number;
   createdAt: Date | string;
   items?: OrderItem[];

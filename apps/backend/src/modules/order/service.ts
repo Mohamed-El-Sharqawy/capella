@@ -1,11 +1,12 @@
 import { prisma } from "../../lib/prisma";
 import { PAGINATION_DEFAULTS } from "@ecommerce/shared-utils";
+import { EmailService } from "../email/service";
 import type { OrderModel } from "./model";
 
 const ORDER_INCLUDE = {
   items: true,
   user: {
-    select: { id: true, email: true, firstName: true, lastName: true, role: true },
+    select: { id: true, email: true, firstName: true, lastName: true, role: true, phone: true },
   },
   address: true,
   coupon: {
@@ -147,6 +148,7 @@ export abstract class OrderService {
         total: grandTotal,
         discountAmount: discountAmount > 0 ? discountAmount : undefined,
         couponId: couponId,
+        paymentMethod: "COD",
         guestEmail: body.guestEmail,
         guestFirstName: body.guestFirstName,
         guestLastName: body.guestLastName,
@@ -166,17 +168,84 @@ export abstract class OrderService {
       include: ORDER_INCLUDE,
     });
 
+    const customerEmail = order.user?.email || order.guestEmail || "";
+    const customerName = order.user
+      ? `${order.user.firstName} ${order.user.lastName}`
+      : `${order.guestFirstName || ""} ${order.guestLastName || ""}`.trim();
+    const customerPhone = order.user?.phone || order.guestPhone;
+
+    if (customerEmail) {
+      const emailData = {
+        orderId: order.id,
+        customerName,
+        customerEmail,
+        customerPhone: customerPhone || undefined,
+        items: order.items.map((item) => ({
+          productNameEn: item.productNameEn,
+          productNameAr: item.productNameAr,
+          variantNameEn: item.variantNameEn || undefined,
+          variantNameAr: item.variantNameAr || undefined,
+          quantity: item.quantity,
+          price: item.price,
+          imageUrl: item.imageUrl,
+        })),
+        subtotal: order.items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        shippingCost,
+        discountAmount,
+        total: grandTotal,
+        couponCode: body.couponCode,
+        paymentMethod: "COD",
+        shippingAddress: {
+          firstName: body.shippingFirstName,
+          lastName: body.shippingLastName,
+          street: body.shippingStreet,
+          city: body.shippingCity,
+          state: body.shippingState,
+          zipCode: body.shippingZipCode,
+          country: body.shippingCountry,
+          phone: body.shippingPhone || undefined,
+        },
+        note: body.note || undefined,
+      };
+
+      await Promise.all([
+        EmailService.sendOrderNotification(emailData),
+        EmailService.sendCustomerConfirmation(emailData),
+      ]);
+    }
+
     return order;
   }
 
   static async updateStatus(id: string, statusValue: string) {
-    const existing = await prisma.order.findUnique({ where: { id } });
+    const existing = await prisma.order.findUnique({
+      where: { id },
+      include: ORDER_INCLUDE,
+    });
     if (!existing) return null;
 
-    return prisma.order.update({
+    const updated = await prisma.order.update({
       where: { id },
       data: { status: statusValue as never },
       include: ORDER_INCLUDE,
     });
+
+    if (existing.status !== statusValue) {
+      const customerEmail = updated.user?.email || updated.guestEmail || "";
+      const customerName = updated.user
+        ? `${updated.user.firstName} ${updated.user.lastName}`
+        : `${updated.guestFirstName || ""} ${updated.guestLastName || ""}`.trim();
+
+      if (customerEmail) {
+        await EmailService.sendStatusUpdate({
+          orderId: updated.id,
+          customerName,
+          customerEmail,
+          newStatus: statusValue,
+        });
+      }
+    }
+
+    return updated;
   }
 }

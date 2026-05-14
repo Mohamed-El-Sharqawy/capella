@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductPageClient } from "./client";
 import { generateProductMetadata } from "@/lib/metadata";
+import { productJsonLd, breadcrumbJsonLd } from "@/lib/json-ld";
+import { SITE_CONFIG } from "@/lib/metadata";
 import { apiGet } from "@/lib/api-client";
 
 interface Props {
@@ -124,11 +126,38 @@ export default async function ProductPage({ params }: Props) {
 
   const relatedProducts = await getRelatedProducts(product);
 
+  const structuredData = productJsonLd({ product, locale });
+  const breadcrumbData = breadcrumbJsonLd([
+    { name: locale === "ar" ? "الرئيسية" : "Home", url: `${SITE_CONFIG.url}/${locale}` },
+    ...(product.collections?.length
+      ? [
+          {
+            name: locale === "ar" ? product.collections[0].nameAr : product.collections[0].nameEn,
+            url: `${SITE_CONFIG.url}/${locale}/collections/${product.collections[0].slug}`,
+          },
+        ]
+      : []),
+    {
+      name: locale === "ar" ? product.nameAr : product.nameEn,
+      url: `${SITE_CONFIG.url}/${locale}/products/${product.slug}`,
+    },
+  ]);
+
   return (
-    <ProductPageClient 
-      product={product} 
-      relatedProducts={relatedProducts}
-      locale={locale} 
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
+      />
+      <ProductPageClient
+        product={product}
+        relatedProducts={relatedProducts}
+        locale={locale}
+      />
+    </>
   );
 }

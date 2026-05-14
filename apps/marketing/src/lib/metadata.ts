@@ -9,7 +9,7 @@ export const SITE_CONFIG = {
   twitterHandle: "@capellaae",
   locale: {
     en: "en_US",
-    ar: "ar_EG",
+    ar: "ar_AE",
   },
 } as const;
 

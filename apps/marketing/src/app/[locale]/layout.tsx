@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Toaster } from "sonner";
 import { routing } from "@/i18n/routing";
 import { SITE_CONFIG, DEFAULT_METADATA } from "@/lib/metadata";
+import { organizationJsonLd, webSiteJsonLd } from "@/lib/json-ld";
 import "../globals.css";
 import { Header, Footer } from "@/components/layout";
 import { CartDrawer } from "@/components/cart/cart-drawer";
@@ -96,6 +97,14 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   return (
     <html lang={locale} dir={isRtl ? "rtl" : "ltr"}>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd()) }}
+        />
         <FacebookPixel />
       </head>
       <body className={`${inter.variable} ${playfair.variable} ${cairo.variable} ${montserrat.variable} font-primary`} style={{ '--font-primary': isRtl ? 'var(--font-arabic), sans-serif' : 'var(--font-montserrat), serif' } as React.CSSProperties}>

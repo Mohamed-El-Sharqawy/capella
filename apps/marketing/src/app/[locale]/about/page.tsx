@@ -1,9 +1,25 @@
+import { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
 import { AnimateOnScroll } from "@/components/ui/animate-on-scroll";
+import { generatePageMetadata } from "@/lib/metadata";
 
 interface AboutPageProps {
   params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: AboutPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const isArabic = locale === "ar";
+
+  return generatePageMetadata({
+    title: isArabic ? "من نحن - كابيلا" : "About Us - Capella",
+    description: isArabic
+      ? "تعرف على قصة كابيلا، فلسفتنا في التصميم والتزامنا بالجودة والحرفية في المجوهرات."
+      : "Discover Capella's story, our design philosophy, and commitment to quality craftsmanship in fine jewellery.",
+    locale,
+    path: "/about",
+  });
 }
 
 export default async function AboutPage({ params }: AboutPageProps) {

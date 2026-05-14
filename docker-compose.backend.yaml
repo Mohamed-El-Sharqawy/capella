@@ -20,6 +20,10 @@ services:
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
       - ZIINA_API_KEY=${ZIINA_API_KEY}
       - ZIINA_WEBHOOK_SECRET=${ZIINA_WEBHOOK_SECRET}
+      - MAILTRAP_TOKEN=${MAILTRAP_TOKEN}
+      - MAILTRAP_SENDER_EMAIL=${MAILTRAP_SENDER_EMAIL:-hello@capellauae.com}
+      - MAILTRAP_SENDER_NAME=${MAILTRAP_SENDER_NAME:-Capella}
+      - MAILTRAP_OWNERS=${MAILTRAP_OWNERS}
     networks:
       - coolify-network
     healthcheck:

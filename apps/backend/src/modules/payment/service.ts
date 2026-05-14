@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma";
 import { ZiinaClient, type PaymentIntentResponse } from "./ziina-client";
+import { EmailService } from "../email/service";
 import type { PaymentModel } from "./model";
 
 const MARKETING_URL = process.env.MARKETING_URL || "http://localhost:3000";
@@ -198,7 +199,7 @@ export abstract class PaymentService {
   ) {
     const order = await prisma.order.findUnique({
       where: { ziinaPaymentIntentId: intent.id },
-      include: { items: true },
+      include: { items: true, user: true, address: true, coupon: true },
     });
 
     if (!order) {
@@ -251,6 +252,52 @@ export abstract class PaymentService {
     if (order.couponId) {
       const { CouponService } = await import("../coupon/service");
       await CouponService.incrementUsage(order.couponId);
+    }
+
+    const customerName = order.user
+      ? `${order.user.firstName} ${order.user.lastName}`
+      : `${order.guestFirstName || ""} ${order.guestLastName || ""}`.trim();
+    const customerEmail = order.user?.email || order.guestEmail || "";
+    const customerPhone = order.user?.phone || order.guestPhone;
+
+    if (customerEmail) {
+      const emailData = {
+        orderId: order.id,
+        customerName,
+        customerEmail,
+        customerPhone: customerPhone || undefined,
+        items: order.items.map((item) => ({
+          productNameEn: item.productNameEn,
+          productNameAr: item.productNameAr,
+          variantNameEn: item.variantNameEn || undefined,
+          variantNameAr: item.variantNameAr || undefined,
+          quantity: item.quantity,
+          price: item.price,
+          imageUrl: item.imageUrl,
+        })),
+        subtotal: order.items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        shippingCost: 25,
+        discountAmount: order.discountAmount,
+        total: order.total,
+        couponCode: order.coupon?.code,
+        paymentMethod: "ZIINA",
+        shippingAddress: {
+          firstName: order.shippingFirstName,
+          lastName: order.shippingLastName,
+          street: order.shippingStreet,
+          city: order.shippingCity,
+          state: order.shippingState,
+          zipCode: order.shippingZipCode,
+          country: order.shippingCountry,
+          phone: order.shippingPhone || undefined,
+        },
+        note: order.note || undefined,
+      };
+
+      await Promise.all([
+        EmailService.sendOrderNotification(emailData),
+        EmailService.sendCustomerConfirmation(emailData),
+      ]);
     }
 
     console.log(`Order ${order.id} marked as CONFIRMED (paid via Ziina)`);
