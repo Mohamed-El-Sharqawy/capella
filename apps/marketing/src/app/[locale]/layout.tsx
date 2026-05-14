@@ -10,7 +10,7 @@ import { organizationJsonLd, webSiteJsonLd } from "@/lib/json-ld";
 import "../globals.css";
 import { Header, Footer, WhatsAppButton } from "@/components/layout";
 import { CartDrawer } from "@/components/cart/cart-drawer";
-import { FacebookPixel } from "@/components/analytics";
+import { FacebookPixel, PageViewTracker } from "@/components/analytics";
 import { Providers } from "./providers";
 
 const inter = Inter({
@@ -123,6 +123,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             <main>{children}</main>
             <Footer locale={locale} />
             <CartDrawer locale={locale} />
+            <PageViewTracker />
             <WhatsAppButton />
             <Toaster position="top-center" richColors />
           </Providers>

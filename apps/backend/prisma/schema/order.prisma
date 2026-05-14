@@ -47,6 +47,8 @@ model Order {
   shippingPhone     String?
 
   note  String? @db.Text
+  fbp   String?
+  fbc   String?
   items OrderItem[]
 
   createdAt DateTime @default(now())

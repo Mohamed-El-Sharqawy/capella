@@ -10,6 +10,8 @@ import {
 } from "react";
 import type { User } from "@ecommerce/shared-types";
 import { apiGet, apiPost } from "@/lib/api-client";
+import { fbCompleteRegistration } from "@/lib/facebook-pixel";
+import { getFbp, getFbc } from "@/lib/meta-cookies";
 const AUTH_STORAGE_KEY = "auth_tokens";
 
 interface AuthTokens {
@@ -142,9 +144,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = useCallback(async (signUpData: SignUpData) => {
     try {
-      const data = await apiPost<{ success: boolean; data: { accessToken: string; refreshToken: string; user: User }; error?: string }>(
+      const data = await apiPost<{ success: boolean; data: { accessToken: string; refreshToken: string; user: User; eventId?: string }; error?: string }>(
         "/api/auth/sign-up",
-        signUpData
+        { ...signUpData, fbp: getFbp(), fbc: getFbc() }
       );
       
       if (!data.success) {
@@ -156,6 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         refreshToken: data.data.refreshToken,
       });
       setUser(data.data.user);
+      fbCompleteRegistration({ eventId: data.data.eventId });
       return { success: true };
     } catch (err) {
       return { success: false, error: err instanceof Error ? err.message : "Network error" };

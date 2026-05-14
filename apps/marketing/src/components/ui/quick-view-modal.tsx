@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import { useCart } from "@/contexts/cart-context";
 import { createCartItemFromVariant } from "@/lib/cart";
+import { trackQuickAddToCart } from "@/lib/analytics";
 
 interface QuickViewModalProps {
   product: Product;
@@ -136,6 +137,13 @@ export function QuickViewModal({
       quantity
     );
     addItem(cartItem);
+    trackQuickAddToCart(
+      product.id,
+      selectedVariant.id,
+      isArabic ? product.nameAr : product.nameEn,
+      selectedVariant.price,
+      quantity
+    );
     onClose();
   };
 

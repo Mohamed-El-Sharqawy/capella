@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { apiGet } from "@/lib/api-client";
+import { trackSearch } from "@/lib/analytics";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface SearchProduct {
@@ -40,6 +41,7 @@ export function SearchOverlay() {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const trackedQueries = useRef(new Set<string>());
 
   useEffect(() => {
     setMounted(true);
@@ -67,7 +69,13 @@ export function SearchOverlay() {
     queryKey: ["global-search", debouncedQuery],
     queryFn: async () => {
       if (debouncedQuery.length < 2) return { products: [], collections: [] };
-      return apiGet<SearchResults>(`/api/search?q=${encodeURIComponent(debouncedQuery)}`);
+      const data = await apiGet<SearchResults>(`/api/search?q=${encodeURIComponent(debouncedQuery)}`);
+      if (!trackedQueries.current.has(debouncedQuery)) {
+        trackedQueries.current.add(debouncedQuery);
+        const productIds = data?.products?.map((p: SearchProduct) => p.id);
+        trackSearch(debouncedQuery, productIds?.length ?? 0, productIds);
+      }
+      return data;
     },
     enabled: debouncedQuery.length >= 2,
   });

@@ -66,7 +66,8 @@ export function GlobalSearch() {
       if (!trackedQueries.current.has(debouncedQuery)) {
         trackedQueries.current.add(debouncedQuery);
         const totalResults = (data.products?.length || 0) + (data.collections?.length || 0);
-        trackSearch(debouncedQuery, totalResults);
+        const productIds = data.products?.map((p: any) => p.id);
+        trackSearch(debouncedQuery, totalResults, productIds);
       }
       return data;
     },

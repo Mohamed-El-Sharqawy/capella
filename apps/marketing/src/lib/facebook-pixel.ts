@@ -44,7 +44,7 @@ export function fbViewContent(params: {
     content_name: params.contentName,
     content_type: params.contentType,
     value: params.value,
-    currency: params.currency || "EGP",
+    currency: params.currency || "AED",
   });
 }
 
@@ -77,7 +77,7 @@ export function fbAddToCart(params: {
     content_name: params.contentName,
     content_type: "product",
     value: params.value,
-    currency: params.currency || "EGP",
+    currency: params.currency || "AED",
     contents: [
       {
         id: params.contentId,
@@ -99,7 +99,7 @@ export function fbRemoveFromCart(params: {
     content_ids: [params.contentId],
     content_name: params.contentName,
     value: params.value,
-    currency: "EGP",
+    currency: "AED",
   });
 }
 
@@ -115,7 +115,7 @@ export function fbInitiateCheckout(params: {
   fbq("track", "InitiateCheckout", {
     content_ids: params.contentIds,
     value: params.value,
-    currency: params.currency || "EGP",
+    currency: params.currency || "AED",
     num_items: params.numItems,
   });
 }
@@ -131,7 +131,7 @@ export function fbAddPaymentInfo(params: {
   fbq("track", "AddPaymentInfo", {
     content_ids: params.contentIds,
     value: params.value,
-    currency: params.currency || "EGP",
+    currency: params.currency || "AED",
   });
 }
 
@@ -146,15 +146,23 @@ export function fbPurchase(params: {
   numItems: number;
   orderId?: string;
 }): void {
-  fbq("track", "Purchase", {
+  const eventData: Record<string, unknown> = {
     content_ids: params.contentIds,
     content_name: params.contentName,
     content_type: "product",
     value: params.value,
-    currency: params.currency || "EGP",
+    currency: params.currency || "AED",
     num_items: params.numItems,
     order_id: params.orderId,
-  });
+  };
+
+  if (params.orderId) {
+    fbq("track", "Purchase", eventData, {
+      eventID: `order_${params.orderId}`,
+    });
+  } else {
+    fbq("track", "Purchase", eventData);
+  }
 }
 
 /**
@@ -183,7 +191,7 @@ export function fbAddToWishlist(params: {
     content_ids: [params.contentId],
     content_name: params.contentName,
     value: params.value,
-    currency: params.currency || "EGP",
+    currency: params.currency || "AED",
   });
 }
 
@@ -193,11 +201,18 @@ export function fbAddToWishlist(params: {
 export function fbLead(params?: {
   value?: number;
   currency?: string;
+  eventId?: string;
 }): void {
-  fbq("track", "Lead", {
+  const eventData = {
     value: params?.value,
-    currency: params?.currency || "EGP",
-  });
+    currency: params?.currency || "AED",
+  };
+
+  if (params?.eventId) {
+    fbq("track", "Lead", eventData, { eventID: params.eventId });
+  } else {
+    fbq("track", "Lead", eventData);
+  }
 }
 
 /**
@@ -207,10 +222,17 @@ export function fbCompleteRegistration(params?: {
   value?: number;
   currency?: string;
   status?: string;
+  eventId?: string;
 }): void {
-  fbq("track", "CompleteRegistration", {
+  const eventData = {
     value: params?.value,
-    currency: params?.currency || "EGP",
+    currency: params?.currency || "AED",
     status: params?.status || "registered",
-  });
+  };
+
+  if (params?.eventId) {
+    fbq("track", "CompleteRegistration", eventData, { eventID: params.eventId });
+  } else {
+    fbq("track", "CompleteRegistration", eventData);
+  }
 }

@@ -3,6 +3,10 @@
 import { useState, useCallback } from "react";
 import type { ContactFormData, SubmitStatus } from "../types";
 import { INITIAL_FORM_DATA } from "../constants";
+import { fbLead } from "@/lib/facebook-pixel";
+import { getFbp, getFbc } from "@/lib/meta-cookies";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export function useContactForm() {
   const [formData, setFormData] = useState<ContactFormData>(INITIAL_FORM_DATA);
@@ -23,8 +27,16 @@ export function useContactForm() {
     setSubmitStatus("idle");
 
     try {
-      // Simulate API call - replace with actual API endpoint
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const leadEventId = `lead_${formData.email}_${Date.now()}`;
+      const res = await fetch(`${API_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, eventId: leadEventId, fbp: getFbp(), fbc: getFbc() }),
+      });
+
+      if (!res.ok) throw new Error("Failed");
+
+      fbLead({ eventId: leadEventId });
       setSubmitStatus("success");
       setFormData(INITIAL_FORM_DATA);
     } catch {
@@ -32,7 +44,7 @@ export function useContactForm() {
     } finally {
       setIsSubmitting(false);
     }
-  }, []);
+  }, [formData]);
 
   const resetStatus = useCallback(() => {
     setSubmitStatus("idle");

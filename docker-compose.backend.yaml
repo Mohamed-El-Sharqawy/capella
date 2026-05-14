@@ -24,6 +24,8 @@ services:
       - MAILTRAP_SENDER_EMAIL=${MAILTRAP_SENDER_EMAIL:-hello@capellauae.com}
       - MAILTRAP_SENDER_NAME=${MAILTRAP_SENDER_NAME:-Capella}
       - MAILTRAP_OWNERS=${MAILTRAP_OWNERS}
+      - META_PIXEL_ID=${META_PIXEL_ID}
+      - META_ACCESS_TOKEN=${META_ACCESS_TOKEN}
     networks:
       - coolify-network
     healthcheck:

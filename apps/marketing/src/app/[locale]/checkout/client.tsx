@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useOrders } from "@/contexts/orders-context";
 import { Link } from "@/i18n/navigation";
 import { trackCheckoutView, trackOrderComplete } from "@/lib/analytics";
+import { fbAddPaymentInfo } from "@/lib/facebook-pixel";
 import {
   useCheckoutForm,
   useBuyNow,
@@ -117,6 +118,18 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
       trackOrderComplete(orderId, total, items.length, variantIds);
     }
   }, [orderSuccess, orderId, total, items.length]);
+
+  // Track payment method selection
+  useEffect(() => {
+    if (formState.paymentMethod && items.length > 0) {
+      const variantIds = items.map((item) => item.variantId);
+      fbAddPaymentInfo({
+        contentIds: variantIds,
+        value: total,
+        currency: "AED",
+      });
+    }
+  }, [formState.paymentMethod]);
 
   // Success state
   if (orderSuccess && orderId) {

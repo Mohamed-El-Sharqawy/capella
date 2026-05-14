@@ -7,6 +7,8 @@ export const AuthModel = {
     firstName: t.String({ minLength: 1 }),
     lastName: t.String({ minLength: 1 }),
     phone: t.Optional(t.String()),
+    fbp: t.Optional(t.String()),
+    fbc: t.Optional(t.String()),
   }),
   signInBody: t.Object({
     email: t.String({ format: "email" }),

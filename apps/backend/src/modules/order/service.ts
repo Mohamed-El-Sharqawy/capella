@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { PAGINATION_DEFAULTS } from "@ecommerce/shared-utils";
 import { EmailService } from "../email/service";
+import { sendMetaEvent } from "../../lib/meta-capi";
 import type { OrderModel } from "./model";
 
 const ORDER_INCLUDE = {
@@ -163,6 +164,8 @@ export abstract class OrderService {
         shippingCountry: body.shippingCountry,
         shippingPhone: body.shippingPhone,
         note: body.note,
+        fbp: (body as any).fbp || null,
+        fbc: (body as any).fbc || null,
         items: { create: orderItems },
       },
       include: ORDER_INCLUDE,
@@ -213,6 +216,20 @@ export abstract class OrderService {
         EmailService.sendCustomerConfirmation(emailData),
       ]);
     }
+
+    await sendMetaEvent({
+      eventName: "Purchase",
+      email: customerEmail,
+      phone: customerPhone || undefined,
+      firstName: order.user?.firstName || order.guestFirstName || undefined,
+      lastName: order.user?.lastName || order.guestLastName || undefined,
+      value: grandTotal,
+      currency: "AED",
+      orderId: order.id,
+      eventId: `order_${order.id}`,
+      fbp: (body as any).fbp,
+      fbc: (body as any).fbc,
+    });
 
     return order;
   }

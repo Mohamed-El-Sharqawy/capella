@@ -28,6 +28,8 @@ export const OrderModel = {
     // Coupon data
     couponCode: t.Optional(t.String()),
     discountAmount: t.Optional(t.Number({ minimum: 0 })),
+    fbp: t.Optional(t.String()),
+    fbc: t.Optional(t.String()),
   }),
   updateStatusBody: t.Object({
     status: t.Union([

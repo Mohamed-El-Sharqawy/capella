@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { ZiinaClient, type PaymentIntentResponse } from "./ziina-client";
 import { EmailService } from "../email/service";
+import { sendMetaEvent } from "../../lib/meta-capi";
 import type { PaymentModel } from "./model";
 
 const MARKETING_URL = process.env.MARKETING_URL || "http://localhost:3000";
@@ -106,6 +107,8 @@ export abstract class PaymentService {
         shippingPhone: shippingData.shippingPhone,
         addressId: shippingData.addressId,
         note: shippingData.note,
+        fbp: (shippingData as any).fbp || null,
+        fbc: (shippingData as any).fbc || null,
         items: {
           create: items.map((item) => {
             const variant = variants.find((v) => v.id === item.variantId)!;
@@ -299,6 +302,20 @@ export abstract class PaymentService {
         EmailService.sendCustomerConfirmation(emailData),
       ]);
     }
+
+    await sendMetaEvent({
+      eventName: "Purchase",
+      email: customerEmail,
+      phone: customerPhone || undefined,
+      firstName: order.user?.firstName || order.guestFirstName || undefined,
+      lastName: order.user?.lastName || order.guestLastName || undefined,
+      value: order.total,
+      currency: "AED",
+      orderId: order.id,
+      eventId: `order_${order.id}`,
+      fbp: order.fbp || undefined,
+      fbc: order.fbc || undefined,
+    });
 
     console.log(`Order ${order.id} marked as CONFIRMED (paid via Ziina)`);
   }

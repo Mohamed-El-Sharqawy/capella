@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
 import { apiPost } from "@/lib/api-client";
+import { getFbp, getFbc } from "@/lib/meta-cookies";
 import type { CheckoutFormState, CheckoutItem } from "../types";
 import { SHIPPING_COST, DEFAULT_COUNTRY, DEFAULT_ZIP_CODE } from "../constants";
 
@@ -73,6 +74,8 @@ export function useCheckoutSubmit({
         shippingPhone: formState.phone,
         shippingCost: SHIPPING_COST,
         note: formState.notes,
+        fbp: getFbp(),
+        fbc: getFbc(),
         // Coupon data
         ...(appliedCoupon ? {
           couponCode: appliedCoupon.code,

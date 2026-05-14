@@ -27,6 +27,8 @@ export const PaymentModel = {
     addressId: t.Optional(t.String()),
     note: t.Optional(t.String()),
     locale: t.Optional(t.String()),
+    fbp: t.Optional(t.String()),
+    fbc: t.Optional(t.String()),
   }),
   webhookHeaders: t.Object({
     "x-hmac-signature": t.String(),

@@ -2,12 +2,13 @@ import { Elysia, status } from "elysia";
 import { AuthService } from "./service";
 import { AuthModel } from "./model";
 import { jwtPlugin } from "../../plugins/auth";
+import { sendMetaEvent } from "../../lib/meta-capi";
 
 export const auth = new Elysia({ prefix: "/auth" })
   .use(jwtPlugin)
   .post(
     "/sign-up",
-    async ({ body, jwt, jwtRefresh }) => {
+    async ({ body, jwt, jwtRefresh, request }) => {
       const result = await AuthService.signUp(body);
       if (!result.ok) return status(result.status, { success: false as const, error: result.error });
 
@@ -15,9 +16,30 @@ export const auth = new Elysia({ prefix: "/auth" })
       const accessToken = await jwt.sign({ sub: user.id, role: user.role });
       const refreshToken = await jwtRefresh.sign({ sub: user.id });
 
+      const userAgent = request.headers.get("user-agent") || undefined;
+      const ip =
+        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        request.headers.get("x-real-ip") ||
+        undefined;
+
+      const regEventId = `register_${user.id}`;
+
+      await sendMetaEvent({
+        eventName: "CompleteRegistration",
+        email: body.email,
+        firstName: body.firstName,
+        lastName: body.lastName,
+        phone: body.phone,
+        userAgent,
+        ip,
+        eventId: regEventId,
+        fbp: body.fbp,
+        fbc: body.fbc,
+      });
+
       return {
         success: true as const,
-        data: { user, accessToken, refreshToken },
+        data: { user, accessToken, refreshToken, eventId: regEventId },
       };
     },
     {

@@ -1,6 +1,7 @@
 import { XCircle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { CancelPageTracker } from "./cancel-tracker";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -11,6 +12,8 @@ export default async function CheckoutCancelPage({ params }: PageProps) {
   const t = await getTranslations({ locale, namespace: "checkout" });
 
   return (
+    <>
+    <CancelPageTracker />
     <div className="min-h-[60vh] flex items-center justify-center py-16 pt-32 md:pt-36">
       <div className="max-w-md w-full mx-auto text-center px-4">
         <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -41,5 +44,6 @@ export default async function CheckoutCancelPage({ params }: PageProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -289,6 +289,37 @@ function buildStatusUpdateHtml(data: StatusUpdateEmailData): string {
 </html>`;
 }
 
+export interface ContactEmailData {
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+}
+
+function buildContactNotificationHtml(data: ContactEmailData): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8" /></head>
+<body style="font-family:Arial,sans-serif;color:#333;max-width:600px;margin:0 auto;padding:20px;">
+  <div style="background:#1a1a1a;color:#fff;padding:20px;border-radius:8px 8px 0 0;text-align:center;">
+    <h1 style="margin:0;font-size:22px;">New Contact Message</h1>
+  </div>
+  <div style="border:1px solid #ddd;border-top:none;padding:20px;border-radius:0 0 8px 8px;">
+    <table style="width:100%;border-collapse:collapse;">
+      <tr><td style="padding:8px 0;font-weight:bold;width:100px;">Name</td><td>${data.name}</td></tr>
+      <tr><td style="padding:8px 0;font-weight:bold;">Email</td><td><a href="mailto:${data.email}">${data.email}</a></td></tr>
+      ${data.phone ? `<tr><td style="padding:8px 0;font-weight:bold;">Phone</td><td>${data.phone}</td></tr>` : ""}
+      <tr><td style="padding:8px 0;font-weight:bold;">Subject</td><td>${data.subject}</td></tr>
+    </table>
+    <h3 style="margin-top:20px;">Message</h3>
+    <p style="background:#f9f9f9;padding:16px;border-radius:6px;white-space:pre-wrap;">${data.message}</p>
+  </div>
+</body>
+</html>`;
+}
+
 export abstract class EmailService {
   static async sendOrderNotification(data: OrderEmailData) {
     const owners = getOwnerEmails();
@@ -318,6 +349,21 @@ export abstract class EmailService {
       to: [{ email: data.customerEmail, name: data.customerName }],
       subject: `Order #${data.orderId.slice(-8).toUpperCase()} - ${statusLabel(data.newStatus)}`,
       html: buildStatusUpdateHtml(data),
+    });
+  }
+
+  static async sendContactNotification(data: ContactEmailData) {
+    const owners = getOwnerEmails();
+    if (owners.length === 0) {
+      console.warn("MAILTRAP_OWNERS not set, skipping contact notification");
+      return;
+    }
+
+    await sendEmail({
+      to: owners,
+      subject: `Contact: ${data.subject} - ${data.name}`,
+      html: buildContactNotificationHtml(data),
+      replyTo: { email: data.email, name: data.name },
     });
   }
 }
