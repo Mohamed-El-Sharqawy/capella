@@ -30,6 +30,31 @@ export abstract class OrderService {
 
     const where: Record<string, unknown> = isAdmin ? {} : { userId };
     if (query.status) where.status = query.status;
+    if (query.statuses) {
+      const statusList = query.statuses.split(",").filter(Boolean);
+      if (statusList.length > 0) where.status = { in: statusList };
+    }
+
+    if (query.search) {
+      const q = query.search;
+      const searchTerms = q.split(/\s+/).filter(Boolean);
+      if (searchTerms.length > 0) {
+        const conditions = searchTerms.flatMap((term) => [
+          { id: { contains: term, mode: "insensitive" } },
+          { shippingFirstName: { contains: term, mode: "insensitive" } },
+          { shippingLastName: { contains: term, mode: "insensitive" } },
+          { guestEmail: { contains: term, mode: "insensitive" } },
+          { guestFirstName: { contains: term, mode: "insensitive" } },
+          { guestLastName: { contains: term, mode: "insensitive" } },
+          { shippingPhone: { contains: term, mode: "insensitive" } },
+          { shippingCity: { contains: term, mode: "insensitive" } },
+          { user: { email: { contains: term, mode: "insensitive" } } },
+          { user: { firstName: { contains: term, mode: "insensitive" } } },
+          { user: { lastName: { contains: term, mode: "insensitive" } } },
+        ]);
+        where.OR = conditions;
+      }
+    }
 
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
@@ -262,6 +287,37 @@ export abstract class OrderService {
         });
       }
     }
+
+    return updated;
+  }
+
+  static async delete(id: string) {
+    const existing = await prisma.order.findUnique({ where: { id } });
+    if (!existing) return null;
+
+    await prisma.order.delete({ where: { id } });
+    return true;
+  }
+
+  static async bulkDelete(ids: string[]) {
+    const result = await prisma.order.deleteMany({
+      where: { id: { in: ids } },
+    });
+    return result.count;
+  }
+
+  static async updatePaymentStatus(id: string, paid: boolean) {
+    const existing = await prisma.order.findUnique({
+      where: { id },
+      include: ORDER_INCLUDE,
+    });
+    if (!existing) return null;
+
+    const updated = await prisma.order.update({
+      where: { id },
+      data: { paidAt: paid ? new Date() : null },
+      include: ORDER_INCLUDE,
+    });
 
     return updated;
   }

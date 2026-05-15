@@ -9,6 +9,7 @@ import { MaterialsPage } from "./pages/materials";
 import { StonesPage } from "./pages/stones";
 import { ClaritiesPage } from "./pages/clarities";
 import { OrdersPage } from "./pages/orders";
+import { DailyOrdersPage } from "./pages/daily-orders";
 import { UsersPage } from "./pages/users";
 import { UserDetailsPage } from "./pages/user-details";
 import { CouponsPage } from "./pages/coupons";
@@ -75,6 +76,10 @@ export const router = createBrowserRouter([
       {
         path: "orders",
         element: <OrdersPage />,
+      },
+      {
+        path: "daily-orders",
+        element: <DailyOrdersPage />,
       },
       {
         path: "users",

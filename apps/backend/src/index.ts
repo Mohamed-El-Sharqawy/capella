@@ -25,6 +25,7 @@ import { searchController } from "./modules/search";
 import { analyticsController } from "./modules/analytics";
 import { payment } from "./modules/payment";
 import { contact } from "./modules/contact";
+import { dashboardController } from "./modules/dashboard";
 import { PaymentService } from "./modules/payment/service";
 
 const port = process.env.PORT || 3001;
@@ -87,6 +88,7 @@ const app = new Elysia()
       .use(analyticsController)
       .use(payment)
       .use(contact)
+      .use(dashboardController)
   )
   .listen(port);
 

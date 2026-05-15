@@ -4,7 +4,6 @@ import { OrderService } from "./service";
 import { OrderModel } from "./model";
 
 export const order = new Elysia({ prefix: "/orders" })
-  // Guest checkout (no auth required)
   .post(
     "/guest",
     async ({ body }) => {
@@ -16,7 +15,6 @@ export const order = new Elysia({ prefix: "/orders" })
     },
     { body: OrderModel.createBody }
   )
-  // Authenticated routes
   .use(authPlugin)
   .get("/", async ({ user, query }) => {
     const isAdmin = user.role === "ADMIN";
@@ -37,4 +35,18 @@ export const order = new Elysia({ prefix: "/orders" })
     const result = await OrderService.updateStatus(params.id, body.status);
     if (!result) return status(404, { success: false as const, error: "Order not found" });
     return { success: true as const, data: result };
-  }, { isAdmin: true, body: OrderModel.updateStatusBody });
+  }, { isAdmin: true, body: OrderModel.updateStatusBody })
+  .put("/:id/payment", async ({ params, body }) => {
+    const result = await OrderService.updatePaymentStatus(params.id, body.paid);
+    if (!result) return status(404, { success: false as const, error: "Order not found" });
+    return { success: true as const, data: result };
+  }, { isAdmin: true, body: OrderModel.updatePaymentBody })
+  .delete("/:id", async ({ params }) => {
+    const result = await OrderService.delete(params.id);
+    if (!result) return status(404, { success: false as const, error: "Order not found" });
+    return { success: true as const, message: "Order deleted" };
+  }, { isAdmin: true })
+  .post("/bulk-delete", async ({ body }) => {
+    const count = await OrderService.bulkDelete(body.ids);
+    return { success: true as const, data: { deletedCount: count } };
+  }, { isAdmin: true, body: OrderModel.bulkDeleteBody });

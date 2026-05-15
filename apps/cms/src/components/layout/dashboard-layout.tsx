@@ -14,6 +14,7 @@ import {
   Gem,
   Sparkles,
   Megaphone,
+  Truck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,8 @@ const navItems = [
   { label: "Materials", href: "/materials", icon: Gem },
   { label: "Stones", href: "/stones", icon: Sparkles },
   { label: "Clarities", href: "/clarities", icon: Sparkles },
-  { label: "Orders", href: "/orders", icon: ShoppingCart },
+  { label: "Daily Orders", href: "/daily-orders", icon: Truck },
+  { label: "All Orders", href: "/orders", icon: ShoppingCart },
   { label: "Reviews", href: "/reviews", icon: MessageSquare },
   { label: "Coupons", href: "/coupons", icon: Ticket },
   { label: "Content", href: "/content", icon: Video },

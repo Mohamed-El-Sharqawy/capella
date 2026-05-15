@@ -46,6 +46,14 @@ export const OrderModel = {
     page: t.Optional(t.String()),
     limit: t.Optional(t.String()),
     status: t.Optional(t.String()),
+    search: t.Optional(t.String()),
+    statuses: t.Optional(t.String()),
+  }),
+  bulkDeleteBody: t.Object({
+    ids: t.Array(t.String()),
+  }),
+  updatePaymentBody: t.Object({
+    paid: t.Boolean(),
   }),
 } as const;
 
