@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/markdown-editor";
 import {
   Select,
   SelectContent,
@@ -230,9 +231,9 @@ export function EditProductPage() {
         isActive,
         isFeatured,
         position,
-        materialId: materialId || undefined,
-        stoneId: stoneId || undefined,
-        clarityId: clarityId || undefined,
+        materialId: materialId || null,
+        stoneId: stoneId || null,
+        clarityId: clarityId || null,
       };
 
       await updateProductMutation.mutateAsync({ id: product.id, body: productBody });
@@ -350,22 +351,20 @@ export function EditProductPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="descriptionEn">Description (English)</Label>
-                    <Textarea
-                      id="descriptionEn"
+                    <Label>Description (English)</Label>
+                    <RichTextEditor
                       value={descriptionEn}
-                      onChange={(e) => setDescriptionEn(e.target.value)}
-                      rows={4}
+                      onChange={setDescriptionEn}
+                      placeholder="Enter product description..."
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="descriptionAr">Description (Arabic)</Label>
-                    <Textarea
-                      id="descriptionAr"
+                    <Label>Description (Arabic)</Label>
+                    <RichTextEditor
                       value={descriptionAr}
-                      onChange={(e) => setDescriptionAr(e.target.value)}
+                      onChange={setDescriptionAr}
+                      placeholder="أدخل وصف المنتج..."
                       dir="rtl"
-                      rows={4}
                     />
                   </div>
                 </div>

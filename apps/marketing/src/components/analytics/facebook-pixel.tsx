@@ -2,6 +2,7 @@
 
 import Script from "next/script";
 
+console.log(process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID);
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
 export function FacebookPixel() {
@@ -25,6 +26,7 @@ export function FacebookPixel() {
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '${FB_PIXEL_ID}');
+            fbq('set', 'autoConfig', 'false', '${FB_PIXEL_ID}');
             fbq('track', 'PageView');
           `,
         }}

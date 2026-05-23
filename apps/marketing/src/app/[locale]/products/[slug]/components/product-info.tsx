@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
-import { Accordion, AccordionItem, Checkbox, SocialShare } from "@/components/ui";
+import { Accordion, AccordionItem, Checkbox, SocialShare, RichTextContent } from "@/components/ui";
 import type { UniqueColor, UniqueSize, SizeAvailability } from "../types";
 import { useState } from "react";
 import Link from "next/link";
@@ -159,7 +159,10 @@ export function ProductInfo({
         <Accordion>
           <AccordionItem title={t("description")}>
             <div className="space-y-4">
-              <p>{isArabic ? product.shortDescriptionAr : product.shortDescriptionEn}</p>
+              <RichTextContent
+                content={isArabic ? product.descriptionAr : product.descriptionEn}
+                className="text-sm leading-relaxed text-gray-600 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:mt-3 [&_h2]:mb-1 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mt-2 [&_h3]:mb-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-1.5 [&_li]:mb-0.5"
+              />
               <ul className="list-disc pl-4 space-y-1">
                 {product.material && <li>{isArabic ? product.material.nameAr : product.material.nameEn}</li>}
                 {product.stone && <li>{isArabic ? product.stone.nameAr : product.stone.nameEn}</li>}

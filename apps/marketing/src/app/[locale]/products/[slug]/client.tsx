@@ -142,14 +142,14 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
       </div>
 
       {/* Customer Reviews */}
-      <ReviewsSection
+      {/* <ReviewsSection
         reviews={reviews}
         isLoading={isLoadingReviews}
         averageRating={averageRating}
         locale={locale}
         currentUserId={user?.id}
         onWriteReview={() => setIsReviewModalOpen(true)}
-      />
+      /> */}
 
       {/* Related Products */}
       <RelatedProducts products={relatedProducts} locale={locale} />
@@ -172,13 +172,13 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
       />
 
       {/* Review Modal */}
-      <ReviewModal
+      {/* <ReviewModal
         isOpen={isReviewModalOpen}
         onClose={() => setIsReviewModalOpen(false)}
         product={product}
         locale={locale}
         onReviewSubmitted={invalidateReviews}
-      />
+      /> */}
 
       {/* Size Guide Modal */}
       {product.sizeGuideUrl && (

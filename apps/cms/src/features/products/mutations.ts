@@ -17,9 +17,9 @@ export interface CreateProductBody {
   collectionIds?: string[];
   isActive?: boolean;
   isFeatured?: boolean;
-  materialId?: string;
-  stoneId?: string;
-  clarityId?: string;
+  materialId?: string | null;
+  stoneId?: string | null;
+  clarityId?: string | null;
   position?: number;
   variants?: CreateVariantBody[];
 }

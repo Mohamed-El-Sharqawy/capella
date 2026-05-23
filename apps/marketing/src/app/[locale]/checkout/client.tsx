@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/contexts/cart-context";
@@ -103,9 +103,14 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
     handleSubmit({ preventDefault: () => { } } as React.FormEvent);
   };
 
+  const hasTrackedCheckout = useRef(false);
+  const hasTrackedPayment = useRef(false);
+  const hasTrackedOrder = useRef(false);
+
   // Track checkout view on mount
   useEffect(() => {
-    if (!cartLoading && !authLoading && items.length > 0) {
+    if (!cartLoading && !authLoading && items.length > 0 && !hasTrackedCheckout.current) {
+      hasTrackedCheckout.current = true;
       const variantIds = items.map((item) => item.variantId);
       trackCheckoutView(items.length, total, variantIds);
     }
@@ -113,7 +118,8 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
 
   // Track order completion
   useEffect(() => {
-    if (orderSuccess && orderId) {
+    if (orderSuccess && orderId && !hasTrackedOrder.current) {
+      hasTrackedOrder.current = true;
       const variantIds = items.map((item) => item.variantId);
       trackOrderComplete(orderId, total, items.length, variantIds);
     }
@@ -121,7 +127,8 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
 
   // Track payment method selection
   useEffect(() => {
-    if (formState.paymentMethod && items.length > 0) {
+    if (formState.paymentMethod && items.length > 0 && !hasTrackedPayment.current) {
+      hasTrackedPayment.current = true;
       const variantIds = items.map((item) => item.variantId);
       fbAddPaymentInfo({
         contentIds: variantIds,
