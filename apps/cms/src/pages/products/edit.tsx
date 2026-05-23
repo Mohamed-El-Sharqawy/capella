@@ -371,22 +371,20 @@ export function EditProductPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="shortDescriptionEn">Short Description (English)</Label>
-                    <Textarea
-                      id="shortDescriptionEn"
+                    <Label>Short Description (English)</Label>
+                    <RichTextEditor
                       value={shortDescriptionEn}
-                      onChange={(e) => setShortDescriptionEn(e.target.value)}
-                      rows={2}
+                      onChange={setShortDescriptionEn}
+                      placeholder="Enter short description..."
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="shortDescriptionAr">Short Description (Arabic)</Label>
-                    <Textarea
-                      id="shortDescriptionAr"
+                    <Label>Short Description (Arabic)</Label>
+                    <RichTextEditor
                       value={shortDescriptionAr}
-                      onChange={(e) => setShortDescriptionAr(e.target.value)}
+                      onChange={setShortDescriptionAr}
+                      placeholder="أدخل وصف مختصر..."
                       dir="rtl"
-                      rows={2}
                     />
                   </div>
                 </div>

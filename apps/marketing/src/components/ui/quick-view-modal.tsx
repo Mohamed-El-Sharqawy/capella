@@ -9,6 +9,7 @@ import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import { useCart } from "@/contexts/cart-context";
 import { createCartItemFromVariant } from "@/lib/cart";
 import { trackQuickAddToCart } from "@/lib/analytics";
+import { RichTextContent } from "@/components/ui/markdown-content";
 
 interface QuickViewModalProps {
   product: Product;
@@ -297,9 +298,10 @@ export function QuickViewModal({
               </div>
             </div>
 
-            <p className="text-muted-foreground text-sm line-clamp-3 leading-relaxed">
-              {description}
-            </p>
+            <RichTextContent
+              content={description}
+              className="text-muted-foreground text-sm leading-relaxed line-clamp-5 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-1"
+            />
 
             {uniqueColors && uniqueColors.length > 0 && (
               <div>
