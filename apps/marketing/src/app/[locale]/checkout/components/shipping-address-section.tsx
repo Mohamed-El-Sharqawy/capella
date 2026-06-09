@@ -54,7 +54,7 @@ export function ShippingAddressSection({
                   key={addr.id}
                   type="button"
                   onClick={() => onSelectAddress(addr)}
-                  className={`w-full text-left p-4 border rounded-lg transition ${
+                  className={`w-full text-start p-4 border rounded-lg transition ${
                     selectedAddressId === addr.id
                       ? "border-black bg-gray-50"
                       : "border-gray-200 hover:border-gray-400"

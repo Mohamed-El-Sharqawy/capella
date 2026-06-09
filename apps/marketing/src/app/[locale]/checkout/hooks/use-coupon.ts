@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useQueryState, parseAsString } from "nuqs";
+import { useTranslations } from "next-intl";
 import { apiPost } from "@/lib/api-client";
 
 interface CouponData {
@@ -33,6 +34,7 @@ interface UseCouponReturn {
 }
 
 export function useCoupon(initialTotal?: number): UseCouponReturn {
+  const t = useTranslations("checkout");
   const [couponQuery, setCouponQuery] = useQueryState("coupon", parseAsString.withDefault(""));
   const [couponCode, setCouponCodeState] = useState(couponQuery);
   const [appliedCoupon, setAppliedCoupon] = useState<CouponData | null>(null);
@@ -50,7 +52,7 @@ export function useCoupon(initialTotal?: number): UseCouponReturn {
     const code = (codeToUse || couponCode).trim().toUpperCase();
     
     if (!code) {
-      setError("Please enter a coupon code");
+      setError(t("enterCouponError"));
       return false;
     }
 
@@ -72,11 +74,11 @@ export function useCoupon(initialTotal?: number): UseCouponReturn {
         setCouponQuery(code);
         return true;
       } else {
-        setError(response.error || "Invalid coupon code");
+        setError(response.error || t("invalidCoupon"));
         return false;
       }
     } catch (err: any) {
-      const errorMessage = err?.message || "Failed to validate coupon";
+      const errorMessage = err?.message || t("couponValidationError");
       setError(errorMessage);
       return false;
     } finally {

@@ -2,6 +2,7 @@ import crypto from "crypto";
 
 const PIXEL_ID = process.env.META_PIXEL_ID;
 const ACCESS_TOKEN = process.env.META_ACCESS_TOKEN;
+const TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE;
 const API_VERSION = "v19.0";
 
 function hash(value: string) {
@@ -26,6 +27,10 @@ export interface CAPIEvent {
   ip?: string;
   fbp?: string;
   fbc?: string;
+  contentIds?: string[];
+  contentType?: string;
+  contentName?: string;
+  numItems?: number;
 }
 
 export async function sendMetaEvent({
@@ -43,6 +48,10 @@ export async function sendMetaEvent({
   ip,
   fbp,
   fbc,
+  contentIds,
+  contentType,
+  contentName,
+  numItems,
 }: CAPIEvent) {
   if (!PIXEL_ID || !ACCESS_TOKEN) {
     console.warn("META_PIXEL_ID or META_ACCESS_TOKEN not set, skipping CAPI event");
@@ -60,7 +69,24 @@ export async function sendMetaEvent({
   if (fbp) userData.fbp = fbp;
   if (fbc) userData.fbc = fbc;
 
-  const payload = {
+  if (Object.keys(userData).length === 0) {
+    console.warn(`[CAPI] Skipping ${eventName}: no customer data provided`);
+    return;
+  }
+
+  const hasMatchableKey =
+    userData.em ||
+    userData.ph ||
+    userData.fbp ||
+    userData.fbc ||
+    (userData.client_ip_address && userData.client_user_agent);
+
+  if (!hasMatchableKey) {
+    console.warn(`[CAPI] Skipping ${eventName}: insufficient customer data for matching`);
+    return;
+  }
+
+  const payload: Record<string, unknown> = {
     data: [
       {
         event_name: eventName,
@@ -72,10 +98,28 @@ export async function sendMetaEvent({
           value,
           currency,
           order_id: orderId,
+          ...(contentIds && { content_ids: contentIds }),
+          ...(contentType && { content_type: contentType }),
+          ...(contentName && { content_name: contentName }),
+          ...(numItems != null && { num_items: numItems }),
         },
       },
     ],
   };
+
+  if (TEST_EVENT_CODE) {
+    payload.test_event_code = TEST_EVENT_CODE;
+  }
+
+  console.log(`[CAPI] Sending: ${eventName}`, {
+    eventId,
+    email: email ? "***" : undefined,
+    phone: phone ? "***" : undefined,
+    value,
+    currency,
+    orderId,
+    testMode: !!TEST_EVENT_CODE,
+  });
 
   try {
     const res = await fetch(
@@ -90,7 +134,7 @@ export async function sendMetaEvent({
     if (!res.ok) {
       console.error("Meta CAPI error:", await res.text());
     } else {
-      console.log(`Meta CAPI event sent: ${eventName} (${eventId})`);
+      console.log(`Meta CAPI event sent: ${eventName} (${eventId})${TEST_EVENT_CODE ? " [TEST]" : ""}`);
     }
   } catch (err) {
     console.error("Meta CAPI fetch failed:", err);

@@ -19,6 +19,9 @@ function isFbqAvailable(): boolean {
 function fbq(...args: unknown[]): void {
   if (isFbqAvailable()) {
     window.fbq(...args);
+    console.log(`[Pixel]`, ...args);
+  } else {
+    console.warn("[Pixel] fbq not available, event not sent:", ...args);
   }
 }
 

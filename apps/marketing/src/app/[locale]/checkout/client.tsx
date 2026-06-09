@@ -119,7 +119,13 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   // Track order completion
   useEffect(() => {
     if (orderSuccess && orderId && !hasTrackedOrder.current) {
+      const purchaseKey = `purchase_tracked_${orderId}`;
+      if (sessionStorage.getItem(purchaseKey)) {
+        hasTrackedOrder.current = true;
+        return;
+      }
       hasTrackedOrder.current = true;
+      sessionStorage.setItem(purchaseKey, "1");
       const variantIds = items.map((item) => item.variantId);
       trackOrderComplete(orderId, total, items.length, variantIds);
     }
@@ -160,7 +166,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
         href={CHECKOUT_ROUTES.CART}
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6"
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeft className={`h-4 w-4 ${locale === "ar" ? "rotate-180" : ""}`} />
         {t("backToCart")}
       </Link>
 

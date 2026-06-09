@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { trackCheckoutAbandon } from "@/lib/analytics";
 
 export function CancelPageTracker() {
+  const hasTracked = useRef(false);
   useEffect(() => {
-    trackCheckoutAbandon("payment_cancelled", 0, 0);
+    if (!hasTracked.current) {
+      hasTracked.current = true;
+      trackCheckoutAbandon("payment_cancelled", 0, 0);
+    }
   }, []);
 
   return null;

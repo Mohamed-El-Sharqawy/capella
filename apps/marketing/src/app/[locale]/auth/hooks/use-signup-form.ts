@@ -19,7 +19,7 @@ export function useSignUpForm({ locale }: UseSignUpFormProps) {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    phone: "5",
     password: "",
     confirmPassword: "",
   });
@@ -70,7 +70,7 @@ export function useSignUpForm({ locale }: UseSignUpFormProps) {
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        phone: formData.phone,
+        phone: `+971${formData.phone}`,
       });
 
       if (result.success) {

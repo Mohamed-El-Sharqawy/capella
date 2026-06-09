@@ -57,7 +57,7 @@ export function ContactInfoSection({ formState, onUpdateField }: ContactInfoSect
             value={formState.phone}
             onChange={(e) => onUpdateField("phone", e.target.value)}
             required
-            placeholder="+20 1XX XXX XXXX"
+            placeholder={t("phonePlaceholder")}
             className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>

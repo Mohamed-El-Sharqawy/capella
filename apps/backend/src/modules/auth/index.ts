@@ -48,13 +48,34 @@ export const auth = new Elysia({ prefix: "/auth" })
   )
   .post(
     "/sign-in",
-    async ({ body, jwt, jwtRefresh }) => {
+    async ({ body, jwt, jwtRefresh, request }) => {
       const result = await AuthService.signIn(body);
       if (!result.ok) return status(result.status, { success: false as const, error: result.error });
 
       const user = result.data;
       const accessToken = await jwt.sign({ sub: user.id, role: user.role });
       const refreshToken = await jwtRefresh.sign({ sub: user.id });
+
+      const userAgent = request.headers.get("user-agent") || undefined;
+      const ip =
+        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        request.headers.get("x-real-ip") ||
+        undefined;
+
+      const loginEventId = `login_${user.id}_${Date.now()}`;
+
+      await sendMetaEvent({
+        eventName: "Login",
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone || undefined,
+        userAgent,
+        ip,
+        eventId: loginEventId,
+        fbp: body.fbp,
+        fbc: body.fbc,
+      });
 
       return {
         success: true as const,

@@ -14,8 +14,17 @@ import {
   fbInitiateCheckout,
   fbPurchase,
 } from "./facebook-pixel";
+import { getFbp, getFbc } from "./meta-cookies";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+const trackedViews = new Set<string>();
+
+function dedup(key: string): boolean {
+  if (trackedViews.has(key)) return false;
+  trackedViews.add(key);
+  return true;
+}
 
 // Generate or retrieve session ID for anonymous tracking
 function getSessionId(): string {
@@ -59,6 +68,7 @@ export function trackProductView(
   productName?: string,
   price?: number
 ): void {
+  if (!dedup(`product_${productId}`)) return;
   trackEvent("product-view", { productId, productSlug });
   
   // Facebook Pixel
@@ -78,6 +88,7 @@ export function trackCollectionView(
   collectionSlug?: string,
   collectionName?: string
 ): void {
+  if (!dedup(`collection_${collectionId}`)) return;
   trackEvent("collection-view", { collectionId, collectionSlug });
   
   // Facebook Pixel
@@ -110,7 +121,16 @@ export function trackQuickAddToCart(
   price?: number,
   quantity?: number
 ): void {
-  trackEvent("cart-add", { productId, variantId, source: "quick_add" });
+  trackEvent("cart-add", {
+    productId,
+    variantId,
+    source: "quick_add",
+    fbp: getFbp(),
+    fbc: getFbc(),
+    value: price,
+    contentIds: [variantId],
+    contentName: productName || productId,
+  });
   
   // Facebook Pixel
   fbAddToCart({
@@ -130,7 +150,15 @@ export function trackCartRemove(
   productName?: string,
   price?: number
 ): void {
-  trackEvent("cart-remove", { productId, variantId });
+  trackEvent("cart-remove", {
+    productId,
+    variantId,
+    fbp: getFbp(),
+    fbc: getFbc(),
+    value: price,
+    contentIds: [variantId],
+    contentName: productName || productId,
+  });
   
   // Facebook Pixel
   fbRemoveFromCart({
@@ -176,7 +204,13 @@ export function trackCheckoutView(
   cartTotal: number,
   variantIds?: string[]
 ): void {
-  trackEvent("checkout-view", { cartItemCount, cartTotal });
+  trackEvent("checkout-view", {
+    cartItemCount,
+    cartTotal,
+    fbp: getFbp(),
+    fbc: getFbc(),
+    contentIds: variantIds || [],
+  });
   
   // Facebook Pixel
   fbInitiateCheckout({

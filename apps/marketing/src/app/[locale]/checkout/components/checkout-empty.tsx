@@ -14,7 +14,7 @@ export function CheckoutEmpty() {
         <div className="relative w-72 h-72 mx-auto mb-8">
           <Image
             src="/checkout/illustrations/empty.svg"
-            alt="Empty cart"
+            alt={t("emptyCart")}
             fill
             className="object-contain"
             priority

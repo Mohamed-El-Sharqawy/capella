@@ -83,7 +83,7 @@ async function ziinaRequest<T>(
   };
 
   if (body && method !== "GET") {
-    options.body = JSON.stringify(body);
+    options.body = JSON.stringify(process.env.ZIINA_TEST_MODE === "true" ? { ...body, test: true } : body);
   }
 
   const response = await fetch(url, options);

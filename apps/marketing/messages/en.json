@@ -251,7 +251,17 @@
     "cashOnDelivery": "Cash on Delivery",
     "back": "Back",
     "confirmOrder": "Confirm Order",
-    "sessionId": "Session ID: "
+    "sessionId": "Session ID: ",
+    "onlinePayment": "Online Payment",
+    "onlinePaymentDesc": "Pay securely via Credit Card, Apple Pay, or Google Pay",
+    "removeCoupon": "Remove coupon",
+    "noImage": "No image",
+    "phonePlaceholder": "+971 5X XXX XXXX",
+    "percentOff": "{value}% off",
+    "fixedAmountOff": "{currency} {value} off",
+    "enterCouponError": "Please enter a coupon code",
+    "invalidCoupon": "Invalid coupon code",
+    "couponValidationError": "Failed to validate coupon"
   },
   "reviewModal": {
     "errorSubmit": "Failed to submit review",

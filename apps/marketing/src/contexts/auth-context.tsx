@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const data = await apiPost<{ success: boolean; data: { accessToken: string; refreshToken: string; user: User }; error?: string }>(
         "/api/auth/sign-in",
-        { email, password }
+        { email, password, fbp: getFbp(), fbc: getFbc() }
       );
       
       if (!data.success) {

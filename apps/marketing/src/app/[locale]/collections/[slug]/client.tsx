@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { useTranslations } from "next-intl";
 import { useCollectionFilters, useCollectionProducts } from "./hooks";
 import { CollectionHeader, ProductGrid, LoadMore, FilterDrawer, CollectionPageSkeleton } from "./components";
@@ -49,8 +49,12 @@ function CollectionPageContent({
   });
 
   // Track collection view on mount
+  const hasTrackedView = useRef(false);
   useEffect(() => {
-    trackCollectionView(slug, slug, title);
+    if (!hasTrackedView.current) {
+      hasTrackedView.current = true;
+      trackCollectionView(slug, slug, title);
+    }
   }, [slug, title]);
 
   const sortOptions: SortOption[] = [

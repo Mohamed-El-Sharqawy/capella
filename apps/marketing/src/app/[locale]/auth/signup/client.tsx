@@ -70,15 +70,33 @@ export function SignUpClient({ params }: AuthPageProps) {
           icon={Mail}
         />
 
-        <FormInput
-          label={t("phone")}
-          type="tel"
-          value={formData.phone}
-          onChange={(value) => handlers.handleChange("phone", value)}
-          placeholder={t("phonePlaceholder")}
-          required
-          icon={Phone}
-        />
+        <div>
+          <label className="block text-sm font-medium mb-1">{t("phone")} *</label>
+          <div className="flex gap-2" dir="ltr">
+            <input
+              type="tel"
+              value="+971"
+              readOnly
+              className="w-20 px-3 py-3 border rounded-lg bg-gray-50 text-sm font-medium text-muted-foreground"
+            />
+            <div className="flex-1 relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  if (!val.startsWith("5") && val.length > 0) return;
+                  if (val.length > 8) return;
+                  handlers.handleChange("phone", val);
+                }}
+                placeholder="5X XXX XXXX"
+                required
+                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              />
+            </div>
+          </div>
+        </div>
 
         <PasswordInput
           label={t("password")}

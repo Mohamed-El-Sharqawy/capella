@@ -63,8 +63,8 @@ export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethod
             </div>
             <CreditCard className="h-5 w-5" />
             <div className="flex-1">
-              <p className="font-medium">Online Payment</p>
-              <p className="text-sm text-muted-foreground">Pay securely via Credit Card, Apple Pay, or Google Pay</p>
+              <p className="font-medium">{t("onlinePayment")}</p>
+              <p className="text-sm text-muted-foreground">{t("onlinePaymentDesc")}</p>
             </div>
           </div>
         </div>

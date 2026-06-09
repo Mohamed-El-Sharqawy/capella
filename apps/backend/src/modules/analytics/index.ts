@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import { authPlugin } from "../../plugins/auth";
 import { analyticsService } from "./service";
+import { sendMetaEvent } from "../../lib/meta-capi";
 
 export const analyticsController = new Elysia({ prefix: "/analytics" })
   .use(authPlugin)
@@ -144,12 +145,32 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
     "/track/cart-add",
     async ({ body, headers }) => {
       const sessionId = headers["x-session-id"] as string | undefined;
+      const userAgent = headers["user-agent"] as string | undefined;
+      const ip =
+        (headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
+        (headers["x-real-ip"] as string) ||
+        undefined;
+
       await analyticsService.track({
         type: "cart.add",
         sessionId,
         productId: body.productId,
         data: { variantId: body.variantId, source: body.source },
       });
+
+      await sendMetaEvent({
+        eventName: "AddToCart",
+        userAgent,
+        ip,
+        fbp: body.fbp,
+        fbc: body.fbc,
+        value: body.value,
+        contentIds: body.contentIds,
+        contentType: "product",
+        contentName: body.contentName,
+        eventId: `cart_${body.variantId}_${Date.now()}`,
+      });
+
       return { success: true as const };
     },
     {
@@ -157,6 +178,11 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
         productId: t.String(),
         variantId: t.String(),
         source: t.Optional(t.String()),
+        fbp: t.Optional(t.String()),
+        fbc: t.Optional(t.String()),
+        value: t.Optional(t.Number()),
+        contentIds: t.Optional(t.Array(t.String())),
+        contentName: t.Optional(t.String()),
       }),
     }
   )
@@ -165,18 +191,43 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
     "/track/cart-remove",
     async ({ body, headers }) => {
       const sessionId = headers["x-session-id"] as string | undefined;
+      const userAgent = headers["user-agent"] as string | undefined;
+      const ip =
+        (headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
+        (headers["x-real-ip"] as string) ||
+        undefined;
+
       await analyticsService.track({
         type: "cart.remove",
         sessionId,
         productId: body.productId,
         data: { variantId: body.variantId },
       });
+
+      await sendMetaEvent({
+        eventName: "RemoveFromCart",
+        userAgent,
+        ip,
+        fbp: body.fbp,
+        fbc: body.fbc,
+        value: body.value,
+        contentIds: body.contentIds,
+        contentType: "product",
+        contentName: body.contentName,
+        eventId: `remove_${body.variantId}_${Date.now()}`,
+      });
+
       return { success: true as const };
     },
     {
       body: t.Object({
         productId: t.String(),
         variantId: t.String(),
+        fbp: t.Optional(t.String()),
+        fbc: t.Optional(t.String()),
+        value: t.Optional(t.Number()),
+        contentIds: t.Optional(t.Array(t.String())),
+        contentName: t.Optional(t.String()),
       }),
     }
   )
@@ -261,17 +312,40 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
     "/track/checkout-view",
     async ({ body, headers }) => {
       const sessionId = headers["x-session-id"] as string | undefined;
+      const userAgent = headers["user-agent"] as string | undefined;
+      const ip =
+        (headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
+        (headers["x-real-ip"] as string) ||
+        undefined;
+
       await analyticsService.track({
         type: "checkout.view",
         sessionId,
         data: { cartItemCount: body.cartItemCount, cartTotal: body.cartTotal },
       });
+
+      await sendMetaEvent({
+        eventName: "InitiateCheckout",
+        userAgent,
+        ip,
+        fbp: body.fbp,
+        fbc: body.fbc,
+        value: body.cartTotal,
+        contentIds: body.contentIds,
+        contentType: "product",
+        numItems: body.cartItemCount,
+        eventId: `checkout_${Date.now()}`,
+      });
+
       return { success: true as const };
     },
     {
       body: t.Object({
         cartItemCount: t.Number(),
         cartTotal: t.Number(),
+        fbp: t.Optional(t.String()),
+        fbc: t.Optional(t.String()),
+        contentIds: t.Optional(t.Array(t.String())),
       }),
     }
   )

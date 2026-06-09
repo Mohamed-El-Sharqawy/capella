@@ -82,7 +82,7 @@ export function OrderSummarySection({
                 {t("qty")} {item.quantity}
               </p>
             </div>
-            <p className="text-sm font-medium">AED {(item.price * item.quantity).toLocaleString()}</p>
+            <p className="text-sm font-medium">{t("aed")} {(item.price * item.quantity).toLocaleString()}</p>
           </div>
         ))}
       </div>
@@ -90,7 +90,7 @@ export function OrderSummarySection({
       <div className="border-t pt-4 space-y-2">
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{t("subtotal")}</span>
-          <span>AED {total.toLocaleString()}</span>
+          <span>{t("aed")} {total.toLocaleString()}</span>
         </div>
         {appliedCoupon && roundedDiscount > 0 && (
           <div className="flex justify-between text-sm text-green-600">
@@ -100,16 +100,16 @@ export function OrderSummarySection({
                 {appliedCoupon.code}
               </span>
             </span>
-            <span>-AED {roundedDiscount.toLocaleString()}</span>
+            <span>-{t("aed")} {roundedDiscount.toLocaleString()}</span>
           </div>
         )}
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{t("shipping")}</span>
-          <span>AED {SHIPPING_COST.toLocaleString()}</span>
+          <span>{t("aed")} {SHIPPING_COST.toLocaleString()}</span>
         </div>
         <div className="flex justify-between font-semibold text-lg pt-2 border-t">
           <span>{t("total")}</span>
-          <span>AED {grandTotal.toLocaleString()}</span>
+          <span>{t("aed")} {grandTotal.toLocaleString()}</span>
         </div>
       </div>
 
@@ -129,8 +129,8 @@ export function OrderSummarySection({
                       <span className="font-sans font-semibold">{couponProps.appliedCoupon.code}</span>
                       {" - "}
                       {couponProps.appliedCoupon.discountType === "PERCENTAGE"
-                        ? `${couponProps.appliedCoupon.discountValue}% off`
-                        : `AED ${couponProps.appliedCoupon.discountValue} off`}
+                        ? t("percentOff", { value: couponProps.appliedCoupon.discountValue })
+                        : t("fixedAmountOff", { value: couponProps.appliedCoupon.discountValue, currency: t("aed") })}
                     </p>
                   </div>
                 </div>
@@ -138,7 +138,7 @@ export function OrderSummarySection({
                   type="button"
                   onClick={couponProps.onRemove}
                   className="p-1 hover:bg-green-100 rounded transition"
-                  aria-label="Remove coupon"
+                  aria-label={t("removeCoupon")}
                 >
                   <X className="h-4 w-4 text-green-600" />
                 </button>

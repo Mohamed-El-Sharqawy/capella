@@ -86,7 +86,7 @@ export function OrderConfirmationModal({
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gray-100 italic text-xs text-gray-400">
-                          No img
+                          {t("noImage")}
                         </div>
                       )}
                     </div>

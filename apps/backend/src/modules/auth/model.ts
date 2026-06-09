@@ -13,6 +13,8 @@ export const AuthModel = {
   signInBody: t.Object({
     email: t.String({ format: "email" }),
     password: t.String(),
+    fbp: t.Optional(t.String()),
+    fbc: t.Optional(t.String()),
   }),
   refreshBody: t.Object({
     refreshToken: t.String(),
