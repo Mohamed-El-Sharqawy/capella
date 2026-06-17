@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, Pencil, Trash2, Loader2, GripVertical } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Loader2, GripVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import { useProducts, useDeleteProduct, useReorderProducts } from "@/features/products";
 import { useCollections } from "@/features/collections";
 import { Button } from "@/components/ui/button";
@@ -117,8 +117,13 @@ export function ProductsPage() {
   const [search, setSearch] = useState("");
   const [gender, setGender] = useState("");
   const [collectionId, setCollectionId] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 20;
 
-  const params: Record<string, string> = {};
+  const params: Record<string, string> = {
+    page: String(page),
+    limit: String(limit),
+  };
   if (search) params.search = search;
   if (gender) params.gender = gender;
   if (collectionId) params.collectionId = collectionId;
@@ -128,6 +133,9 @@ export function ProductsPage() {
   params.sortOrder = "asc";
 
   const { data: response, isLoading } = useProducts(params);
+
+  const total = response?.data?.meta?.total ?? 0;
+  const totalPages = response?.data?.meta?.totalPages ?? 1;
   const { data: collectionsResponse } = useCollections();
   const deleteMutation = useDeleteProduct();
   const reorderMutation = useReorderProducts();
@@ -195,8 +203,10 @@ export function ProductsPage() {
     return variants?.reduce((sum, v) => sum + v.stock, 0) ?? 0;
   };
 
-  // Reordering is only enabled when not searching or filtering, to ensure consistency
-  const isReorderEnabled = !search && !gender && !collectionId;
+  // Reordering is only enabled when not searching or filtering, and only on the
+  // first page — the reorder mutation uses the visible index as the absolute
+  // position, which is only correct for page 1 (positions 0..limit-1).
+  const isReorderEnabled = !search && !gender && !collectionId && page === 1;
 
   return (
     <div>
@@ -221,13 +231,19 @@ export function ProductsPage() {
           <Input
             placeholder="Search products..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             className="pl-10"
           />
         </div>
         <Select
           value={collectionId || "all"}
-          onValueChange={(v) => setCollectionId(v === "all" ? "" : v)}
+          onValueChange={(v) => {
+            setCollectionId(v === "all" ? "" : v);
+            setPage(1);
+          }}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="All Collections" />
@@ -243,7 +259,10 @@ export function ProductsPage() {
         </Select>
         <Select
           value={gender || "all"}
-          onValueChange={(v) => setGender(v === "all" ? "" : v)}
+          onValueChange={(v) => {
+            setGender(v === "all" ? "" : v);
+            setPage(1);
+          }}
         >
           <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="All Genders" />
@@ -314,6 +333,34 @@ export function ProductsPage() {
         <p className="mt-2 text-xs text-muted-foreground italic">
           * Reordering is disabled while searching or filtering.
         </p>
+      )}
+      {totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            {total > 0 && `${total} total · `}
+            Page {page} of {totalPages}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );
