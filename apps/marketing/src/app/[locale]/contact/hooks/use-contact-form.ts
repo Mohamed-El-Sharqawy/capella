@@ -27,7 +27,9 @@ export function useContactForm() {
     setSubmitStatus("idle");
 
     try {
-      const leadEventId = `lead_${formData.email}_${Date.now()}`;
+      const leadEventId = typeof crypto !== "undefined" && crypto.randomUUID
+        ? `lead_${crypto.randomUUID()}`
+        : `lead_${Date.now()}_${Math.random().toString(36).slice(2)}`;
       const res = await fetch(`${API_URL}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

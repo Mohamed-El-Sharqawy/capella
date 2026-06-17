@@ -26,6 +26,7 @@ import { analyticsController } from "./modules/analytics";
 import { payment } from "./modules/payment";
 import { contact } from "./modules/contact";
 import { dashboardController } from "./modules/dashboard";
+import { metaCatalogFeed } from "./modules/meta-catalog";
 import { PaymentService } from "./modules/payment/service";
 
 const port = process.env.PORT || 3001;
@@ -64,6 +65,7 @@ const app = new Elysia()
     status: "ok",
     timestamp: new Date().toISOString(),
   }))
+  .use(metaCatalogFeed)
   .group("/api", (app) =>
     app
       .use(auth)

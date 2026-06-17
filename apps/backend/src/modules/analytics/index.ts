@@ -158,18 +158,22 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
         data: { variantId: body.variantId, source: body.source },
       });
 
-      await sendMetaEvent({
-        eventName: "AddToCart",
-        userAgent,
-        ip,
-        fbp: body.fbp,
-        fbc: body.fbc,
-        value: body.value,
-        contentIds: body.contentIds,
-        contentType: "product",
-        contentName: body.contentName,
-        eventId: `cart_${body.variantId}_${Date.now()}`,
-      });
+      // Dual-channel dedup: only fire CAPI when the client forwarded an eventId
+      // shared with the pixel. Without a shared id the event would double-count.
+      if (body.eventId) {
+        await sendMetaEvent({
+          eventName: "AddToCart",
+          userAgent,
+          ip,
+          fbp: body.fbp,
+          fbc: body.fbc,
+          value: body.value,
+          contentIds: body.contentIds,
+          contentType: "product",
+          contentName: body.contentName,
+          eventId: body.eventId,
+        });
+      }
 
       return { success: true as const };
     },
@@ -183,6 +187,7 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
         value: t.Optional(t.Number()),
         contentIds: t.Optional(t.Array(t.String())),
         contentName: t.Optional(t.String()),
+        eventId: t.Optional(t.String()),
       }),
     }
   )
@@ -204,18 +209,24 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
         data: { variantId: body.variantId },
       });
 
-      await sendMetaEvent({
-        eventName: "RemoveFromCart",
-        userAgent,
-        ip,
-        fbp: body.fbp,
-        fbc: body.fbc,
-        value: body.value,
-        contentIds: body.contentIds,
-        contentType: "product",
-        contentName: body.contentName,
-        eventId: `remove_${body.variantId}_${Date.now()}`,
-      });
+      // RemoveFromCart is a custom (non-optimizable) event, kept for product
+      // analytics + custom audiences. Dual-channel with shared eventId so it
+      // deduplicates like AddToCart. Only fires CAPI when the client forwarded
+      // an eventId shared with the pixel.
+      if (body.eventId) {
+        await sendMetaEvent({
+          eventName: "RemoveFromCart",
+          userAgent,
+          ip,
+          fbp: body.fbp,
+          fbc: body.fbc,
+          value: body.value,
+          contentIds: body.contentIds,
+          contentType: "product",
+          contentName: body.contentName,
+          eventId: body.eventId,
+        });
+      }
 
       return { success: true as const };
     },
@@ -228,6 +239,7 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
         value: t.Optional(t.Number()),
         contentIds: t.Optional(t.Array(t.String())),
         contentName: t.Optional(t.String()),
+        eventId: t.Optional(t.String()),
       }),
     }
   )
@@ -324,18 +336,22 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
         data: { cartItemCount: body.cartItemCount, cartTotal: body.cartTotal },
       });
 
-      await sendMetaEvent({
-        eventName: "InitiateCheckout",
-        userAgent,
-        ip,
-        fbp: body.fbp,
-        fbc: body.fbc,
-        value: body.cartTotal,
-        contentIds: body.contentIds,
-        contentType: "product",
-        numItems: body.cartItemCount,
-        eventId: `checkout_${Date.now()}`,
-      });
+      // Dual-channel dedup: only fire CAPI when the client forwarded an eventId
+      // shared with the pixel. Without a shared id the event would double-count.
+      if (body.eventId) {
+        await sendMetaEvent({
+          eventName: "InitiateCheckout",
+          userAgent,
+          ip,
+          fbp: body.fbp,
+          fbc: body.fbc,
+          value: body.cartTotal,
+          contentIds: body.contentIds,
+          contentType: "product",
+          numItems: body.cartItemCount,
+          eventId: body.eventId,
+        });
+      }
 
       return { success: true as const };
     },
@@ -346,6 +362,7 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
         fbp: t.Optional(t.String()),
         fbc: t.Optional(t.String()),
         contentIds: t.Optional(t.Array(t.String())),
+        eventId: t.Optional(t.String()),
       }),
     }
   )

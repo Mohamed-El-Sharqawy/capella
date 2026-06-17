@@ -210,8 +210,13 @@ export abstract class PaymentService {
       return;
     }
 
-    if (order.status === "DELIVERED" || order.status === "SHIPPED") {
-      console.log(`Order ${order.id} already processed`);
+    // Idempotency: once the order has been confirmed (or reached any later
+    // terminal state), a replayed webhook must NOT re-run side effects. Meta does
+    // NOT dedupe server-to-server duplicates, so a replay would otherwise fire a
+    // duplicate Purchase plus double stock/coupon/email work.
+    const TERMINAL_STATUSES = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"];
+    if (TERMINAL_STATUSES.includes(order.status)) {
+      console.log(`Order ${order.id} already processed (${order.status}), skipping duplicate webhook`);
       return;
     }
 
@@ -309,12 +314,18 @@ export abstract class PaymentService {
       phone: customerPhone || undefined,
       firstName: order.user?.firstName || order.guestFirstName || undefined,
       lastName: order.user?.lastName || order.guestLastName || undefined,
+      city: order.shippingCity,
+      state: order.shippingState,
+      zipCode: order.shippingZipCode,
+      country: order.shippingCountry,
+      externalId: order.userId || undefined,
       value: order.total,
       currency: "AED",
       orderId: order.id,
       eventId: `order_${order.id}`,
       fbp: order.fbp || undefined,
       fbc: order.fbc || undefined,
+      eventSourceUrl: `${MARKETING_URL}/checkout`,
     });
 
     console.log(`Order ${order.id} marked as CONFIRMED (paid via Ziina)`);

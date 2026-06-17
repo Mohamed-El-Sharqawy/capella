@@ -10,7 +10,7 @@ import {
 } from "react";
 import type { User } from "@ecommerce/shared-types";
 import { apiGet, apiPost } from "@/lib/api-client";
-import { fbCompleteRegistration } from "@/lib/facebook-pixel";
+import { fbCompleteRegistration, setPixelUser, clearPixelUser } from "@/lib/facebook-pixel";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
 const AUTH_STORAGE_KEY = "auth_tokens";
 
@@ -74,6 +74,24 @@ function clearTokens(): void {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Keep the Meta Pixel Advanced Matching in sync with the authenticated user.
+  // One effect covers session restore, sign-in, sign-up, and logout. Attaches
+  // em/ph/fn/ln/external_id to all subsequent pixel events (raises EMQ) without
+  // relying on Automatic Advanced Matching (autoConfig), which we keep disabled.
+  useEffect(() => {
+    if (user) {
+      setPixelUser({
+        id: user.id,
+        email: user.email,
+        phone: user.phone,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      });
+    } else {
+      clearPixelUser();
+    }
+  }, [user]);
 
   const fetchUser = useCallback(async (accessToken: string) => {
     try {

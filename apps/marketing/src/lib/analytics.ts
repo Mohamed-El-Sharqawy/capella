@@ -59,6 +59,15 @@ async function trackEvent(endpoint: string, data: Record<string, unknown>): Prom
   }
 }
 
+// Generate a stable event id for deduplication between Pixel and CAPI.
+// Generated client-side and forwarded to the server so both channels share it.
+function genEventId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `evt_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+}
+
 /**
  * Track product page view
  */
@@ -121,6 +130,7 @@ export function trackQuickAddToCart(
   price?: number,
   quantity?: number
 ): void {
+  const eventId = genEventId();
   trackEvent("cart-add", {
     productId,
     variantId,
@@ -130,6 +140,7 @@ export function trackQuickAddToCart(
     value: price,
     contentIds: [variantId],
     contentName: productName || productId,
+    eventId,
   });
   
   // Facebook Pixel
@@ -138,6 +149,7 @@ export function trackQuickAddToCart(
     contentName: productName || productId,
     value: price || 0,
     quantity: quantity || 1,
+    eventId,
   });
 }
 
@@ -150,6 +162,7 @@ export function trackCartRemove(
   productName?: string,
   price?: number
 ): void {
+  const eventId = genEventId();
   trackEvent("cart-remove", {
     productId,
     variantId,
@@ -158,6 +171,7 @@ export function trackCartRemove(
     value: price,
     contentIds: [variantId],
     contentName: productName || productId,
+    eventId,
   });
   
   // Facebook Pixel
@@ -165,6 +179,7 @@ export function trackCartRemove(
     contentId: variantId,
     contentName: productName || productId,
     value: price || 0,
+    eventId,
   });
 }
 
@@ -204,12 +219,14 @@ export function trackCheckoutView(
   cartTotal: number,
   variantIds?: string[]
 ): void {
+  const eventId = genEventId();
   trackEvent("checkout-view", {
     cartItemCount,
     cartTotal,
     fbp: getFbp(),
     fbc: getFbc(),
     contentIds: variantIds || [],
+    eventId,
   });
   
   // Facebook Pixel
@@ -217,6 +234,7 @@ export function trackCheckoutView(
     contentIds: variantIds || [],
     value: cartTotal,
     numItems: cartItemCount,
+    eventId,
   });
 }
 

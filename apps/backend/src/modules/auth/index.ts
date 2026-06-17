@@ -62,7 +62,7 @@ export const auth = new Elysia({ prefix: "/auth" })
         request.headers.get("x-real-ip") ||
         undefined;
 
-      const loginEventId = `login_${user.id}_${Date.now()}`;
+      const loginEventId = `login_${user.id}`;
 
       await sendMetaEvent({
         eventName: "Login",
