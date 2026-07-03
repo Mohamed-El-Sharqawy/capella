@@ -29,6 +29,8 @@ export interface Order {
   total: number;
   paymentMethod?: string | null;
   ziinaPaymentIntentId?: string | null;
+  tabbyPaymentId?: string | null;
+  tamaraCheckoutId?: string | null;
   paidAt?: Date | null;
   discountAmount?: number;
   couponId?: string | null;

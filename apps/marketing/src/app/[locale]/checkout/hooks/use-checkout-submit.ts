@@ -9,7 +9,7 @@ import { useCart } from "@/contexts/cart-context";
 import { apiPost } from "@/lib/api-client";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
 import type { CheckoutFormState, CheckoutItem } from "../types";
-import { SHIPPING_COST, DEFAULT_COUNTRY, DEFAULT_ZIP_CODE } from "../constants";
+import { DEFAULT_COUNTRY, DEFAULT_ZIP_CODE, getShippingCost } from "../constants";
 
 interface CouponData {
   id: string;
@@ -58,6 +58,7 @@ export function useCheckoutSubmit({
     try {
       // Round up discount amount (29.1 -> 30, 29.9 -> 30)
       const roundedDiscount = discountAmount > 0 ? Math.ceil(discountAmount) : 0;
+      const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
       const orderData = {
         items: items.map((item) => ({
@@ -72,7 +73,7 @@ export function useCheckoutSubmit({
         shippingZipCode: DEFAULT_ZIP_CODE,
         shippingCountry: DEFAULT_COUNTRY,
         shippingPhone: formState.phone,
-        shippingCost: SHIPPING_COST,
+        shippingCost: getShippingCost(subtotal),
         note: formState.notes,
         fbp: getFbp(),
         fbc: getFbc(),
@@ -91,12 +92,18 @@ export function useCheckoutSubmit({
             }),
       };
 
-      const endpoint = formState.paymentMethod === "ZIINA" ? "/api/payments/checkout" : (isAuthenticated ? "/api/orders" : "/api/orders/guest");
+      const isOnlinePayment =
+        formState.paymentMethod === "ZIINA" ||
+        formState.paymentMethod === "TABBY" ||
+        formState.paymentMethod === "TAMARA";
+
+      const endpoint = isOnlinePayment ? "/api/payments/checkout" : (isAuthenticated ? "/api/orders" : "/api/orders/guest");
       const token = isAuthenticated ? getAccessToken() : undefined;
       
-      const payload = formState.paymentMethod === "ZIINA" ? {
+      const payload = isOnlinePayment ? {
         ...orderData,
         customerEmail: isAuthenticated ? undefined : formState.email,
+        method: formState.paymentMethod,
         locale,
       } : orderData;
 
@@ -116,8 +123,8 @@ export function useCheckoutSubmit({
         }
       }
 
-      // If Ziina, redirect to the provided URL
-      if (formState.paymentMethod === "ZIINA" && data.data?.url) {
+      // If online payment, redirect to the provider-hosted checkout URL
+      if (isOnlinePayment && data.data?.url) {
         window.location.href = data.data.url;
         return;
       }

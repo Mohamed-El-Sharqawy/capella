@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import { PAGINATION_DEFAULTS } from "@ecommerce/shared-utils";
+import { PAGINATION_DEFAULTS, getShippingCost } from "@ecommerce/shared-utils";
 import { EmailService } from "../email/service";
 import { sendMetaEvent } from "../../lib/meta-capi";
 import type { OrderModel } from "./model";
@@ -124,8 +124,9 @@ export abstract class OrderService {
       };
     });
 
-    // Add shipping cost and apply discount
-    const shippingCost = body.shippingCost ?? 0;
+    // Shipping is computed authoritatively from the order subtotal (free at or
+    // above FREE_SHIPPING_THRESHOLD). The client-supplied value is ignored.
+    const shippingCost = getShippingCost(total);
     const discountAmount = body.discountAmount ?? 0;
     const grandTotal = total - discountAmount + shippingCost;
 

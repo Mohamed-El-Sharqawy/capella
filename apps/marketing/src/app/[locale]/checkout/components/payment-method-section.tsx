@@ -1,7 +1,7 @@
 import type { CheckoutFormState } from "../types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { Banknote, CreditCard, Truck, Clock, Smartphone } from "lucide-react";
+import { Banknote, CreditCard, Wallet } from "lucide-react";
 
 interface PaymentMethodSectionProps {
   formState: CheckoutFormState;
@@ -10,6 +10,43 @@ interface PaymentMethodSectionProps {
 
 export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethodSectionProps) {
   const t = useTranslations("checkout");
+
+  const methods = [
+    {
+      id: "COD" as const,
+      icon: Banknote,
+      label: t("cod"),
+      desc: t("codDesc"),
+    },
+    {
+      id: "ZIINA" as const,
+      icon: CreditCard,
+      label: t("onlinePayment"),
+      desc: t("onlinePaymentDesc"),
+    },
+    {
+      id: "TABBY" as const,
+      icon: Wallet,
+      label: "Tabby",
+      desc: t("tabbyDesc"),
+      brand: (
+        <span className="px-2 py-1 bg-[#39F9D8] text-black text-[11px] font-bold rounded">
+          tabby
+        </span>
+      ),
+    },
+    {
+      id: "TAMARA" as const,
+      icon: Wallet,
+      label: "Tamara",
+      desc: t("tamaraDesc"),
+      brand: (
+        <span className="px-2 py-1 bg-[#97D700] text-black text-[11px] font-bold rounded">
+          tamara
+        </span>
+      ),
+    },
+  ];
 
   return (
     <div className="bg-white border rounded-lg p-6">
@@ -22,69 +59,36 @@ export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethod
 
       {/* Payment Options */}
       <div className="space-y-4">
-        {/* COD Option */}
-        <div
-          onClick={() => onUpdateField("paymentMethod", "COD")}
-          className={cn(
-            "border-2 rounded-lg p-4 cursor-pointer transition-all",
-            formState.paymentMethod === "COD" ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
-          )}
-        >
-          <div className="flex items-center gap-3">
-            <div className={cn(
-              "w-5 h-5 border-2 rounded-full flex items-center justify-center",
-              formState.paymentMethod === "COD" ? "border-black" : "border-gray-300"
-            )}>
-              {formState.paymentMethod === "COD" && <div className="w-3 h-3 bg-black rounded-full" />}
+        {methods.map(({ id, icon: Icon, label, desc, brand }) => {
+          const selected = formState.paymentMethod === id;
+          return (
+            <div
+              key={id}
+              onClick={() => onUpdateField("paymentMethod", id)}
+              className={cn(
+                "border-2 rounded-lg p-4 cursor-pointer transition-all",
+                selected ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <div className={cn(
+                  "w-5 h-5 border-2 rounded-full flex items-center justify-center shrink-0",
+                  selected ? "border-black" : "border-gray-300"
+                )}>
+                  {selected && <div className="w-3 h-3 bg-black rounded-full" />}
+                </div>
+                <Icon className="h-5 w-5 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{label}</p>
+                    {brand}
+                  </div>
+                  <p className="text-sm text-muted-foreground">{desc}</p>
+                </div>
+              </div>
             </div>
-            <Banknote className="h-5 w-5" />
-            <div className="flex-1">
-              <p className="font-medium">{t("cod")}</p>
-              <p className="text-sm text-muted-foreground">{t("codDesc")}</p>
-            </div>
-            <Truck className="h-5 w-5 text-green-600" />
-          </div>
-        </div>
-
-        {/* Ziina / Card Option */}
-        <div
-          onClick={() => onUpdateField("paymentMethod", "ZIINA")}
-          className={cn(
-            "border-2 rounded-lg p-4 cursor-pointer transition-all",
-            formState.paymentMethod === "ZIINA" ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
-          )}
-        >
-          <div className="flex items-center gap-3">
-            <div className={cn(
-              "w-5 h-5 border-2 rounded-full flex items-center justify-center",
-              formState.paymentMethod === "ZIINA" ? "border-black" : "border-gray-300"
-            )}>
-              {formState.paymentMethod === "ZIINA" && <div className="w-3 h-3 bg-black rounded-full" />}
-            </div>
-            <CreditCard className="h-5 w-5" />
-            <div className="flex-1">
-              <p className="font-medium">{t("onlinePayment")}</p>
-              <p className="text-sm text-muted-foreground">{t("onlinePaymentDesc")}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Coming Soon Section */}
-      <div className="mt-6 pt-6 border-t border-gray-100">
-        <div className="flex items-center gap-2 mb-3">
-          <Clock className="h-4 w-4 text-amber-500" />
-          <span className="text-sm font-medium text-amber-600">{t("comingSoon")}</span>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {/* Tabby */}
-          <div className="flex flex-col items-center gap-1 p-3 bg-gray-50 rounded-lg border border-gray-100 opacity-60">
-            <div className="w-12 h-8 bg-[#39F9D8] rounded flex items-center justify-center text-black text-[10px] font-bold">
-              tabby
-            </div>
-            <span className="text-xs text-muted-foreground uppercase">Tabby</span>
-          </div>
-        </div>
+          );
+        })}
       </div>
     </div>
   );

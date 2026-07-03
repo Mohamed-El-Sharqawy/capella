@@ -10,6 +10,7 @@ import { useCart } from "@/contexts/cart-context";
 import { createCartItemFromVariant } from "@/lib/cart";
 import { trackQuickAddToCart } from "@/lib/analytics";
 import { RichTextContent } from "@/components/ui/markdown-content";
+import { BnplPromo } from "@/components/ui/bnpl-promo";
 
 interface QuickViewModalProps {
   product: Product;
@@ -296,6 +297,7 @@ export function QuickViewModal({
                   </span>
                 )}
               </div>
+              <BnplPromo price={price} locale={locale} source="product" />
             </div>
 
             <RichTextContent

@@ -2,6 +2,7 @@ import { t, type UnwrapSchema } from "elysia";
 
 export const PaymentModel = {
   checkoutBody: t.Object({
+    method: t.Optional(t.String()),
     items: t.Array(
       t.Object({
         variantId: t.String(),

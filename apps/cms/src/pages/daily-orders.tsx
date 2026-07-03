@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, ArrowRight, Truck, Clock, ClipboardList } from "lucide-react";
+import { getShippingCost } from "@ecommerce/shared-utils";
 import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, type OrderStatus } from "@/features/orders";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -175,7 +176,7 @@ export function DailyOrdersPage() {
                     </TableCell>
                     <TableCell className="font-medium">{formatCurrency(order.total)}</TableCell>
                     <TableCell>
-                      {order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" ? (
+                      {order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA" ? (
                         <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1"><CreditCard className="h-3 w-3" />{order.paymentMethod}</Badge>
                       ) : (
                         <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1"><Banknote className="h-3 w-3" />COD</Badge>
@@ -183,7 +184,7 @@ export function DailyOrdersPage() {
                     </TableCell>
                     <TableCell>
                       {(() => {
-                        const isOnline = order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY";
+                        const isOnline = order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA";
                         const isRefunded = order.status === "REFUNDED";
                         if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge>;
                         if (isOnline) return <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>;
@@ -249,7 +250,7 @@ export function DailyOrdersPage() {
                        <div><div className="text-xs text-muted-foreground">Payment</div>
                          <div className="flex items-center gap-2 mt-1">
                            {(() => {
-                             const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY";
+                             const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
                              const isRefunded = od.status === "REFUNDED";
                              const pmBadge = isOnline
                                ? <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1"><CreditCard className="h-3 w-3" /> {od.paymentMethod}</Badge>
@@ -326,6 +327,7 @@ export function DailyOrdersPage() {
                         {(() => {
                           const itemsTotal = (od.items || []).reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
                           const discount = od.discountAmount || 0;
+                          const shipping = getShippingCost(itemsTotal);
                           return (
                             <>
                               <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Subtotal</span><span>{formatCurrency(itemsTotal)}</span></div>
@@ -335,6 +337,7 @@ export function DailyOrdersPage() {
                                   <span className="text-green-600">-{formatCurrency(discount)}</span>
                                 </div>
                               )}
+                              <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Shipping</span><span>{shipping === 0 ? <span className="text-green-600 font-medium">Free</span> : formatCurrency(shipping)}</span></div>
                               <div className="flex items-center justify-between pt-2 border-t">
                                 <span className="font-semibold">Total</span>
                                 <span className="text-xl font-bold">{formatCurrency(od.total)}</span>

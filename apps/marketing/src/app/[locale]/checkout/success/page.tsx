@@ -10,12 +10,13 @@ import { useAuth } from "@/contexts/auth-context";
 
 interface PageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ payment_intent_id?: string }>;
+  searchParams: Promise<{ payment_intent_id?: string; payment_id?: string }>;
 }
 
 export default function CheckoutSuccessPage({ params, searchParams }: PageProps) {
   const { locale } = React.use(params);
-  const { payment_intent_id } = React.use(searchParams);
+  const { payment_intent_id, payment_id } = React.use(searchParams);
+  const sessionId = payment_intent_id || payment_id;
   const t = useTranslations("checkout");
   const { clearCart } = useCart();
   const { isAuthenticated } = useAuth();
@@ -40,10 +41,10 @@ export default function CheckoutSuccessPage({ params, searchParams }: PageProps)
           {t("success.message")}
         </p>
 
-        {payment_intent_id && (
+        {sessionId && (
           <p className="text-sm text-gray-400 mb-8 overflow-hidden text-ellipsis whitespace-nowrap">
             {t("sessionId")}
-            <span className="font-sans text-[10px]">{payment_intent_id}</span>
+            <span className="font-sans text-[10px]">{sessionId}</span>
           </p>
         )}
 

@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
-import { Accordion, AccordionItem, Checkbox, SocialShare, RichTextContent } from "@/components/ui";
+import { Accordion, AccordionItem, Checkbox, SocialShare, RichTextContent, BnplPromo } from "@/components/ui";
 import type { UniqueColor, UniqueSize, SizeAvailability } from "../types";
 import { useState } from "react";
 import Link from "next/link";
@@ -90,6 +90,7 @@ export function ProductInfo({
         <div className="pt-2">
           <span className="text-lg md:text-xl font-medium">AED {price.toLocaleString()}</span>
         </div>
+        <BnplPromo price={price} locale={locale} source="product" className="pt-1" />
       </div>
 
       {/* Gift Toggle */}

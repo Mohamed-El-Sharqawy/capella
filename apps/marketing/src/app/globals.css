@@ -61,7 +61,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    scroll-behavior: smooth;
 
     *,
     *::before,
@@ -83,6 +82,10 @@
   }
 
   html {
+    /* Smooth scrolling for in-page (hash) navigation. Route-change scroll
+       resets are forced to instant by <ScrollToTop /> to avoid leaving a stale
+       scroll position / blank space below the footer. */
+    scroll-behavior: smooth;
     text-rendering: optimizeSpeed;
   }
 

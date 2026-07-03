@@ -16,6 +16,8 @@ model Order {
   // Payment fields
   paymentMethod         String?
   ziinaPaymentIntentId  String? @unique
+  tabbyPaymentId        String? @unique
+  tamaraCheckoutId      String? @unique
   paidAt                DateTime?
 
   // Coupon applied to order
@@ -59,6 +61,8 @@ model Order {
   @@index([status])
   @@index([guestEmail])
   @@index([ziinaPaymentIntentId])
+  @@index([tabbyPaymentId])
+  @@index([tamaraCheckoutId])
   @@index([createdAt])
   @@map("orders")
 }

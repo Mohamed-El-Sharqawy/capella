@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Search, Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, Trash2, CheckSquare, Square, XSquare } from "lucide-react";
-import { ORDER_STATUSES } from "@ecommerce/shared-utils";
+import { ORDER_STATUSES, getShippingCost } from "@ecommerce/shared-utils";
 import type { Order } from "@ecommerce/shared-types";
 import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, useBulkDeleteOrders, type OrderStatus } from "@/features/orders";
 import { Button } from "@/components/ui/button";
@@ -222,7 +222,7 @@ export function OrdersPage() {
                     <TableCell>{order.items?.length || 0} item{(order.items?.length || 0) !== 1 ? "s" : ""}</TableCell>
                     <TableCell className="font-medium">{formatCurrency(order.total)}</TableCell>
                     <TableCell>
-                      {order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" ? (
+                      {order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA" ? (
                         <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1"><CreditCard className="h-3 w-3" />{order.paymentMethod}</Badge>
                       ) : (
                         <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1"><Banknote className="h-3 w-3" />COD</Badge>
@@ -230,7 +230,7 @@ export function OrdersPage() {
                     </TableCell>
                     <TableCell>
                       {(() => {
-                        const isOnline = order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY";
+                        const isOnline = order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA";
                         const isRefunded = order.status === "REFUNDED";
                         if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge>;
                         if (isOnline) return <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>;
@@ -300,7 +300,7 @@ export function OrdersPage() {
                 <div><div className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="h-3 w-3" /> Created</div><div className="text-sm">{formatDate(od.createdAt)}</div></div>
                 <div><div className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="h-3 w-3" /> Updated</div><div className="text-sm">{formatDate(od.updatedAt)}</div></div>
                 <div><div className="text-xs text-muted-foreground">Payment Method</div>
-                  {od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" ? (
+                  {od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA" ? (
                     <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1 mt-1"><CreditCard className="h-3 w-3" /> Online Payment</Badge>
                   ) : (
                     <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1 mt-1"><Banknote className="h-3 w-3" /> Cash on Delivery</Badge>
@@ -308,7 +308,7 @@ export function OrdersPage() {
                 </div>
                 <div><div className="text-xs text-muted-foreground">Payment Status</div>
                   {(() => {
-                    const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY";
+                    const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
                     const isRefunded = od.status === "REFUNDED";
                     if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0 mt-1">Refunded</Badge>;
                     if (isOnline) return <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 mt-1">Paid</Badge>;
@@ -393,7 +393,7 @@ export function OrdersPage() {
                   {(() => {
                     const itemsTotal = (od.items || []).reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
                     const discount = od.discountAmount || 0;
-                    const shipping = 25;
+                    const shipping = getShippingCost(itemsTotal);
                     const total = od.total;
                     return (
                       <>
@@ -404,7 +404,7 @@ export function OrdersPage() {
                             <span className="text-green-600">-{formatCurrency(discount)}</span>
                           </div>
                         )}
-                        <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Shipping</span><span>{formatCurrency(shipping)}</span></div>
+                        <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Shipping</span><span>{shipping === 0 ? <span className="text-green-600 font-medium">Free</span> : formatCurrency(shipping)}</span></div>
                         <div className="flex items-center justify-between pt-2 border-t"><div className="flex items-center gap-2"><CreditCard className="h-4 w-4" /><span className="font-semibold">Total</span></div><div className="text-xl font-bold">{formatCurrency(total)}</div></div>
                       </>
                     );
@@ -423,7 +423,7 @@ export function OrdersPage() {
                 <div className="flex items-center justify-between rounded-lg border p-4">
                   <div><div className="font-semibold">Payment Status</div>
                     {(() => {
-                      const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY";
+                      const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
                       const isRefunded = od.status === "REFUNDED";
                       if (isRefunded) return <div className="text-sm text-muted-foreground">Refunded</div>;
                       if (isOnline) return <div className="text-sm text-muted-foreground">Paid (Online)</div>;
@@ -431,7 +431,7 @@ export function OrdersPage() {
                     })()}
                   </div>
                   {(() => {
-                    const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY";
+                    const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
                     const isRefunded = od.status === "REFUNDED";
                     if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge>;
                     if (isOnline) return <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>;
