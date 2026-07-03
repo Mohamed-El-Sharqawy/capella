@@ -9,7 +9,7 @@ import { useCart } from "@/contexts/cart-context";
 import { apiPost } from "@/lib/api-client";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
 import type { CheckoutFormState, CheckoutItem } from "../types";
-import { SHIPPING_COST, DEFAULT_COUNTRY, DEFAULT_ZIP_CODE } from "../constants";
+import { DEFAULT_COUNTRY, DEFAULT_ZIP_CODE, getShippingCost } from "../constants";
 
 interface CouponData {
   id: string;
@@ -58,6 +58,7 @@ export function useCheckoutSubmit({
     try {
       // Round up discount amount (29.1 -> 30, 29.9 -> 30)
       const roundedDiscount = discountAmount > 0 ? Math.ceil(discountAmount) : 0;
+      const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
       const orderData = {
         items: items.map((item) => ({
@@ -72,7 +73,7 @@ export function useCheckoutSubmit({
         shippingZipCode: DEFAULT_ZIP_CODE,
         shippingCountry: DEFAULT_COUNTRY,
         shippingPhone: formState.phone,
-        shippingCost: SHIPPING_COST,
+        shippingCost: getShippingCost(subtotal),
         note: formState.notes,
         fbp: getFbp(),
         fbc: getFbc(),

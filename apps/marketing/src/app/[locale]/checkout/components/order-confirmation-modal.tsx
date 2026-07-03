@@ -156,7 +156,13 @@ export function OrderConfirmationModal({
               )}
               <div className="flex justify-between text-sm text-gray-600">
                 <span>{t("shipping")}</span>
-                <span>{shippingCost} {t("aed")}</span>
+                <span>
+                  {shippingCost === 0 ? (
+                    <span className="text-green-600 font-medium">{t("free")}</span>
+                  ) : (
+                    <>{shippingCost} {t("aed")}</>
+                  )}
+                </span>
               </div>
               <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t">
                 <span>{t("total")}</span>

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Loader2, Shield, Tag, X, Check, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { CheckoutItem } from "../types";
-import { SHIPPING_COST } from "../constants";
+import { FREE_SHIPPING_THRESHOLD, getShippingCost } from "../constants";
 
 interface CouponData {
   id: string;
@@ -48,7 +48,8 @@ export function OrderSummarySection({
   const isArabic = locale === "ar";
   // Round up discount amount (29.1 -> 30, 29.9 -> 30)
   const roundedDiscount = discountAmount > 0 ? Math.ceil(discountAmount) : 0;
-  const grandTotal = total - roundedDiscount + SHIPPING_COST;
+  const shippingCost = getShippingCost(total);
+  const grandTotal = total - roundedDiscount + shippingCost;
   const [isCouponExpanded, setIsCouponExpanded] = useState(false);
 
   return (
@@ -105,8 +106,21 @@ export function OrderSummarySection({
         )}
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{t("shipping")}</span>
-          <span>{t("aed")} {SHIPPING_COST.toLocaleString()}</span>
+          <span>
+            {shippingCost === 0 ? (
+              <span className="text-green-600 font-medium">{t("free")}</span>
+            ) : (
+              <>{t("aed")} {shippingCost.toLocaleString()}</>
+            )}
+          </span>
         </div>
+        {shippingCost === 0 ? (
+          <p className="text-xs text-green-600 font-medium">{t("freeShippingUnlocked")}</p>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            {t("freeShippingProgress", { amount: (FREE_SHIPPING_THRESHOLD - total).toLocaleString() })}
+          </p>
+        )}
         <div className="flex justify-between font-semibold text-lg pt-2 border-t">
           <span>{t("total")}</span>
           <span>{t("aed")} {grandTotal.toLocaleString()}</span>

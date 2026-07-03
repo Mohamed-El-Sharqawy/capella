@@ -1,4 +1,9 @@
-export const SHIPPING_COST = 25;
+// Shipping rules live in shared-utils so frontend, backend and CMS stay in sync.
+export {
+  SHIPPING_COST,
+  FREE_SHIPPING_THRESHOLD,
+  getShippingCost,
+} from "@ecommerce/shared-utils";
 
 export const CHECKOUT_ROUTES = {
   CART: "/cart",

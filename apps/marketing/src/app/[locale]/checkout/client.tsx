@@ -27,7 +27,7 @@ import {
   OrderSummarySection,
   OrderConfirmationModal,
 } from "./components";
-import { CHECKOUT_ROUTES, SHIPPING_COST } from "./constants";
+import { CHECKOUT_ROUTES, getShippingCost } from "./constants";
 import type { CheckoutPageClientProps } from "./types";
 
 function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
@@ -227,7 +227,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
         total={total}
         formState={formState}
         discountAmount={discountAmount}
-        shippingCost={SHIPPING_COST}
+        shippingCost={getShippingCost(total)}
         locale={locale}
       />
     </div>

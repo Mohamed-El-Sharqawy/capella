@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Search, Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, Trash2, CheckSquare, Square, XSquare } from "lucide-react";
-import { ORDER_STATUSES } from "@ecommerce/shared-utils";
+import { ORDER_STATUSES, getShippingCost } from "@ecommerce/shared-utils";
 import type { Order } from "@ecommerce/shared-types";
 import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, useBulkDeleteOrders, type OrderStatus } from "@/features/orders";
 import { Button } from "@/components/ui/button";
@@ -393,7 +393,7 @@ export function OrdersPage() {
                   {(() => {
                     const itemsTotal = (od.items || []).reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
                     const discount = od.discountAmount || 0;
-                    const shipping = 25;
+                    const shipping = getShippingCost(itemsTotal);
                     const total = od.total;
                     return (
                       <>
@@ -404,7 +404,7 @@ export function OrdersPage() {
                             <span className="text-green-600">-{formatCurrency(discount)}</span>
                           </div>
                         )}
-                        <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Shipping</span><span>{formatCurrency(shipping)}</span></div>
+                        <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Shipping</span><span>{shipping === 0 ? <span className="text-green-600 font-medium">Free</span> : formatCurrency(shipping)}</span></div>
                         <div className="flex items-center justify-between pt-2 border-t"><div className="flex items-center gap-2"><CreditCard className="h-4 w-4" /><span className="font-semibold">Total</span></div><div className="text-xl font-bold">{formatCurrency(total)}</div></div>
                       </>
                     );
