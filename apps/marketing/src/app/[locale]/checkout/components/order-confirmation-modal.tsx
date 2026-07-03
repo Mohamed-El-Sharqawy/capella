@@ -137,6 +137,7 @@ export function OrderConfirmationModal({
               <span className="text-sm font-semibold text-gray-900">
                 {formState.paymentMethod === "ZIINA" ? t("creditCard") :
                   formState.paymentMethod === "TABBY" ? "Tabby" :
+                  formState.paymentMethod === "TAMARA" ? "Tamara" :
                     t("cashOnDelivery")}
               </span>
             </div>

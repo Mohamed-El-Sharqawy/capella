@@ -245,7 +245,7 @@ export function DashboardPage() {
                 <div className="text-right ml-4">
                   <p className="font-medium">{formatCurrency(order.total)}</p>
                   <div className="mt-0.5">
-                    {order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" ? (
+                    {order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA" ? (
                       <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1 text-xs"><CreditCard className="h-2.5 w-2.5" /> {order.paymentMethod}</Badge>
                     ) : (
                       <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1 text-xs"><Banknote className="h-2.5 w-2.5" /> COD</Badge>

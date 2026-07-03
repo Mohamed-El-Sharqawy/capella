@@ -15,7 +15,7 @@ export interface CheckoutPayload {
   customerEmail?: string;
 }
 
-export type PaymentMethod = "ZIINA" | "COD";
+export type PaymentMethod = "ZIINA" | "TABBY" | "TAMARA" | "COD";
 
 export interface WebhookEvent {
   event: string;

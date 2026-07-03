@@ -40,7 +40,7 @@ export interface CheckoutFormState {
   city: string;
   area: string;
   notes: string;
-  paymentMethod: "COD" | "ZIINA" | "TABBY";
+  paymentMethod: "COD" | "ZIINA" | "TABBY" | "TAMARA";
 }
 
 export interface CheckoutItem {

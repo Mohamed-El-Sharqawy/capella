@@ -91,12 +91,18 @@ export function useCheckoutSubmit({
             }),
       };
 
-      const endpoint = formState.paymentMethod === "ZIINA" ? "/api/payments/checkout" : (isAuthenticated ? "/api/orders" : "/api/orders/guest");
+      const isOnlinePayment =
+        formState.paymentMethod === "ZIINA" ||
+        formState.paymentMethod === "TABBY" ||
+        formState.paymentMethod === "TAMARA";
+
+      const endpoint = isOnlinePayment ? "/api/payments/checkout" : (isAuthenticated ? "/api/orders" : "/api/orders/guest");
       const token = isAuthenticated ? getAccessToken() : undefined;
       
-      const payload = formState.paymentMethod === "ZIINA" ? {
+      const payload = isOnlinePayment ? {
         ...orderData,
         customerEmail: isAuthenticated ? undefined : formState.email,
+        method: formState.paymentMethod,
         locale,
       } : orderData;
 
@@ -116,8 +122,8 @@ export function useCheckoutSubmit({
         }
       }
 
-      // If Ziina, redirect to the provided URL
-      if (formState.paymentMethod === "ZIINA" && data.data?.url) {
+      // If online payment, redirect to the provider-hosted checkout URL
+      if (isOnlinePayment && data.data?.url) {
         window.location.href = data.data.url;
         return;
       }

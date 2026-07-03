@@ -254,6 +254,8 @@
     "sessionId": "Session ID: ",
     "onlinePayment": "Online Payment",
     "onlinePaymentDesc": "Pay securely via Credit Card, Apple Pay, or Google Pay",
+    "tabbyDesc": "Split into 4 interest-free payments",
+    "tamaraDesc": "Pay later or split into 4 instalments",
     "removeCoupon": "Remove coupon",
     "noImage": "No image",
     "phonePlaceholder": "+971 5X XXX XXXX",

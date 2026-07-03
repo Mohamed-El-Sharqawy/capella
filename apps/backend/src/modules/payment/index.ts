@@ -18,7 +18,7 @@ export const payment = new Elysia({ prefix: "/payments" })
       return status(400, { success: false as const, error: message });
     }
   }, { optionalAuth: true, body: PaymentModel.checkoutBody })
-  .post("/webhook", async ({ headers, body, set, request }) => {
+  .post("/webhook", async ({ headers, body, set }) => {
     const sig = headers["x-hmac-signature"];
 
     if (!sig) {
@@ -44,6 +44,40 @@ export const payment = new Elysia({ prefix: "/payments" })
       return result;
     } catch (error: any) {
       console.error("❌ Webhook Error:", error.message);
+      set.status = 400;
+      return { success: false, error: error.message };
+    }
+  }, {
+    parse: "text",
+  })
+  .post("/tabby/webhook", async ({ headers, body, set }) => {
+    const sig = headers["x-tabby-auth"];
+    const clientIp =
+      headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+      headers["x-real-ip"] ||
+      "";
+
+    try {
+      const result = await PaymentService.handleTabbyWebhook(
+        body as string,
+        sig,
+        clientIp
+      );
+      return result;
+    } catch (error: any) {
+      console.error("❌ Tabby Webhook Error:", error.message);
+      set.status = 400;
+      return { success: false, error: error.message };
+    }
+  }, {
+    parse: "text",
+  })
+  .post("/tamara/webhook", async ({ body, set }) => {
+    try {
+      const result = await PaymentService.handleTamaraWebhook(body as string);
+      return result;
+    } catch (error: any) {
+      console.error("❌ Tamara Webhook Error:", error.message);
       set.status = 400;
       return { success: false, error: error.message };
     }

@@ -175,7 +175,7 @@ export function DailyOrdersPage() {
                     </TableCell>
                     <TableCell className="font-medium">{formatCurrency(order.total)}</TableCell>
                     <TableCell>
-                      {order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" ? (
+                      {order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA" ? (
                         <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1"><CreditCard className="h-3 w-3" />{order.paymentMethod}</Badge>
                       ) : (
                         <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1"><Banknote className="h-3 w-3" />COD</Badge>
@@ -183,7 +183,7 @@ export function DailyOrdersPage() {
                     </TableCell>
                     <TableCell>
                       {(() => {
-                        const isOnline = order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY";
+                        const isOnline = order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA";
                         const isRefunded = order.status === "REFUNDED";
                         if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge>;
                         if (isOnline) return <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>;
@@ -249,7 +249,7 @@ export function DailyOrdersPage() {
                        <div><div className="text-xs text-muted-foreground">Payment</div>
                          <div className="flex items-center gap-2 mt-1">
                            {(() => {
-                             const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY";
+                             const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
                              const isRefunded = od.status === "REFUNDED";
                              const pmBadge = isOnline
                                ? <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1"><CreditCard className="h-3 w-3" /> {od.paymentMethod}</Badge>

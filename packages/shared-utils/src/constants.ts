@@ -24,6 +24,21 @@ export const PRODUCT_BADGES = ["NEW", "BESTSELLER", "LIMITED_EDITION"] as const;
 
 export const PAYMENT_METHODS = ["ZIINA", "COD"] as const;
 
+// --- Shipping (AED) ---
+/** Flat shipping fee in AED for orders below the free-shipping threshold. */
+export const SHIPPING_COST = 25;
+/** Orders with a subtotal at or above this amount (AED) ship for free. */
+export const FREE_SHIPPING_THRESHOLD = 1000;
+
+/**
+ * Compute the shipping cost for an order based on its subtotal (the value of
+ * items, before any discount). At or above FREE_SHIPPING_THRESHOLD shipping is
+ * free (0), otherwise the flat SHIPPING_COST applies.
+ */
+export function getShippingCost(subtotal: number): number {
+  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
+}
+
 export const API_ROUTES = {
   AUTH: {
     SIGN_IN: "/api/auth/sign-in",

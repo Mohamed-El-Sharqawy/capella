@@ -4,3 +4,4 @@ export { MobileMenu } from "./mobile-menu";
 export { CartIcon } from "./cart-icon";
 export { Footer } from "./footer";
 export { WhatsAppButton } from "./whatsapp-button";
+export { ScrollToTop } from "./scroll-to-top";

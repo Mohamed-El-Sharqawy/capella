@@ -254,6 +254,8 @@
     "sessionId": "معرف الجلسة: ",
     "onlinePayment": "دفع إلكتروني",
     "onlinePaymentDesc": "ادفع بأمان عبر بطاقة الائتمان، أبل باي، أو جوجل باي",
+    "tabbyDesc": "قسّمها على 4 دفعات بدون فوائد",
+    "tamaraDesc": "ادفع لاحقًا أو قسّمها على 4 دفعات",
     "removeCoupon": "إزالة الكوبون",
     "noImage": "لا توجد صورة",
     "phonePlaceholder": "+971 5X XXX XXXX",
