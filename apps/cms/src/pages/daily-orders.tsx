@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, ArrowRight, Truck, Clock, ClipboardList } from "lucide-react";
+import { Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, ArrowRight, Truck, Clock, ClipboardList, ClipboardCheck } from "lucide-react";
 import { getShippingCost } from "@ecommerce/shared-utils";
-import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, type OrderStatus } from "@/features/orders";
+import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, printPackingSlip, type OrderStatus } from "@/features/orders";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -187,7 +187,9 @@ export function DailyOrdersPage() {
                         const isOnline = order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA";
                         const isRefunded = order.status === "REFUNDED";
                         if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge>;
-                        if (isOnline) return <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>;
+                        if (isOnline) return order.paidAt
+                          ? <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>
+                          : <Badge className="bg-gray-100 text-gray-600 border-0">Unpaid</Badge>;
                         return (
                           <button onClick={() => handlePaymentToggle(order.id, !!order.paidAt)} className="focus:outline-none" title={order.paidAt ? "Click to mark as unpaid" : "Click to mark as paid"}>
                             {order.paidAt ? (
@@ -209,6 +211,7 @@ export function DailyOrdersPage() {
                           {activeTab === "delivery" ? "Delivered" : <><ArrowRight className="h-3 w-3 mr-1" />{moveLabel}</>}
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => setSelectedOrderId(order.id)}><Eye className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="sm" onClick={() => printPackingSlip(order)} title="Print packing slip"><ClipboardCheck className="h-4 w-4" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -255,8 +258,8 @@ export function DailyOrdersPage() {
                              const pmBadge = isOnline
                                ? <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1"><CreditCard className="h-3 w-3" /> {od.paymentMethod}</Badge>
                                : <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1"><Banknote className="h-3 w-3" /> COD</Badge>;
-                             if (isRefunded) return <>{pmBadge}<Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge></>;
-                             if (isOnline) return <>{pmBadge}<Badge className="bg-green-100 text-green-800 border-0">Paid</Badge></>;
+                              if (isRefunded) return <>{pmBadge}<Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge></>;
+                              if (isOnline) return <>{pmBadge}{od.paidAt ? <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge> : <Badge className="bg-gray-100 text-gray-600 border-0">Unpaid</Badge>}</>;
                              return (
                                <>
                                  {pmBadge}
@@ -346,6 +349,12 @@ export function DailyOrdersPage() {
                           );
                         })()}
                       </div>
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                      <Button variant="outline" onClick={() => printPackingSlip(od)}>
+                        <ClipboardCheck className="h-4 w-4 mr-2" /> Packing Slip
+                      </Button>
                     </div>
                   </>
                 );

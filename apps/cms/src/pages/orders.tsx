@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Search, Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, Trash2, CheckSquare, Square, XSquare, Printer } from "lucide-react";
+import { Search, Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, Trash2, CheckSquare, Square, XSquare, Printer, ClipboardList } from "lucide-react";
 import { ORDER_STATUSES, getShippingCost } from "@ecommerce/shared-utils";
 import type { Order } from "@ecommerce/shared-types";
-import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, useBulkDeleteOrders, printOrderInvoice, type OrderStatus } from "@/features/orders";
+import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, useBulkDeleteOrders, printOrderInvoice, printPackingSlip, type OrderStatus } from "@/features/orders";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -233,7 +233,9 @@ export function OrdersPage() {
                         const isOnline = order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA";
                         const isRefunded = order.status === "REFUNDED";
                         if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge>;
-                        if (isOnline) return <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>;
+                        if (isOnline) return order.paidAt
+                          ? <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>
+                          : <Badge className="bg-gray-100 text-gray-600 border-0">Unpaid</Badge>;
                         return (
                           <button onClick={() => handlePaymentToggle(order.id, !!order.paidAt)} className="focus:outline-none" title={order.paidAt ? "Click to mark as unpaid" : "Click to mark as paid"}>
                             {order.paidAt ? (
@@ -260,6 +262,7 @@ export function OrdersPage() {
                       <div className="flex items-center gap-1">
                       <Button variant="ghost" size="sm" onClick={() => setSelectedOrderId(order.id)} title="View details"><Eye className="h-4 w-4" /></Button>
                       <Button variant="ghost" size="sm" onClick={() => printOrderInvoice(order)} title="Print invoice"><Printer className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="sm" onClick={() => printPackingSlip(order)} title="Print packing slip"><ClipboardList className="h-4 w-4" /></Button>
                       <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => setDeleteTarget({ ids: [order.id], label: order.id.slice(0, 8) + "..." })} title="Delete"><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </TableCell>
@@ -312,7 +315,9 @@ export function OrdersPage() {
                     const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
                     const isRefunded = od.status === "REFUNDED";
                     if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0 mt-1">Refunded</Badge>;
-                    if (isOnline) return <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 mt-1">Paid</Badge>;
+                    if (isOnline) return od.paidAt
+                      ? <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200 mt-1">Paid</Badge>
+                      : <Badge variant="secondary" className="bg-gray-50 text-gray-600 border-gray-200 mt-1">Unpaid</Badge>;
                     return (
                       <button onClick={() => handlePaymentToggle(od.id, !!od.paidAt)}>
                         {od.paidAt ? (
@@ -427,7 +432,7 @@ export function OrdersPage() {
                       const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
                       const isRefunded = od.status === "REFUNDED";
                       if (isRefunded) return <div className="text-sm text-muted-foreground">Refunded</div>;
-                      if (isOnline) return <div className="text-sm text-muted-foreground">Paid (Online)</div>;
+                      if (isOnline) return <div className="text-sm text-muted-foreground">{od.paidAt ? `Paid (Online) · ${formatDate(od.paidAt)}` : "Awaiting online payment"}</div>;
                       return <div className="text-sm text-muted-foreground">{od.paidAt ? `Paid on ${formatDate(od.paidAt)}` : "Not yet paid"}</div>;
                     })()}
                   </div>
@@ -435,7 +440,9 @@ export function OrdersPage() {
                     const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
                     const isRefunded = od.status === "REFUNDED";
                     if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge>;
-                    if (isOnline) return <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>;
+                    if (isOnline) return od.paidAt
+                      ? <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>
+                      : <Badge className="bg-gray-100 text-gray-600 border-0">Unpaid</Badge>;
                     return (
                       <Button variant={od.paidAt ? "outline" : "default"} size="sm" onClick={() => handlePaymentToggle(od.id, !!od.paidAt)}>
                         {od.paidAt ? "Mark Unpaid" : "Mark as Paid"}
@@ -445,7 +452,10 @@ export function OrdersPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end pt-2">
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" onClick={() => printPackingSlip(od)}>
+                  <ClipboardList className="h-4 w-4 mr-2" /> Packing Slip
+                </Button>
                 <Button variant="outline" onClick={() => printOrderInvoice(od)}>
                   <Printer className="h-4 w-4 mr-2" /> Print Invoice
                 </Button>

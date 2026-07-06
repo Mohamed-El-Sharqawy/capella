@@ -678,7 +678,7 @@ export abstract class PaymentService {
       ...(order.discountAmount && order.discountAmount > 0
         ? {
             discount: {
-              name: order.coupon?.code || "Discount",
+              name: "Discount",
               amount: tamaraMoney(order.discountAmount, CURRENCY),
             },
           }
