@@ -1,15 +1,8 @@
 import type { Order } from "@ecommerce/shared-types";
 import { toast } from "sonner";
 
-// ─── Brand / return address ──────────────────────────────────────────────────
-// ⚠️ UPDATE with Capella's real warehouse/return address — carriers need it
-// for undeliverable parcels. Edit the values below.
-const STORE_RETURN_ADDRESS = {
-  name: "Capella",
-  line1: "[Warehouse / return street address]",
-  city: "Dubai, UAE",
-  phone: "[+971 ...]",
-};
+// ─── Brand contact ───────────────────────────────────────────────────────────
+const STORE_PHONE = "+971 52 451 4147";
 
 // ─── Small helpers (kept local so this file is self-contained) ────────────────
 const money = (n: number) => `${(Math.round(n * 100) / 100).toLocaleString()} AED`;
@@ -105,6 +98,7 @@ function buildPackingSlipHtml(order: Order): string {
   .head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 6px; margin-bottom: 8px; }
   .brand { font-size: 16px; font-weight: 800; letter-spacing: 2px; }
   .brand-sub { font-size: 7px; color: #b8945f; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
+  .brand-contact { font-size: 9px; color: #444; margin-top: 3px; }
   .head-right { text-align: right; }
   .qr { width: 46px; height: 46px; }
   .ord-no { font-size: 11px; font-weight: 700; margin-top: 2px; }
@@ -150,6 +144,7 @@ function buildPackingSlipHtml(order: Order): string {
     <div>
       <div class="brand">CAPELLA</div>
       <div class="brand-sub">Luxury Jewellery</div>
+      <div class="brand-contact">Tel: ${STORE_PHONE}</div>
     </div>
     <div class="head-right">
       <img class="qr" src="https://quickchart.io/qr?text=${encodeURIComponent(order.id)}&size=200&ecLevel=M&margin=2" alt="Order QR" onerror="this.style.display='none'" />
@@ -159,8 +154,7 @@ function buildPackingSlipHtml(order: Order): string {
     </div>
   </div>
 
-  <div class="grid">
-    <div class="box ship">
+  <div class="box ship">
       <h3>Ship To</h3>
       <div class="name">${esc(shipName)}</div>
       <div class="line">${esc(order.shippingStreet)}</div>
@@ -168,14 +162,6 @@ function buildPackingSlipHtml(order: Order): string {
       <div class="line">${esc(order.shippingCountry)}</div>
       <div class="phone">Tel: ${esc(order.shippingPhone || "—")}</div>
     </div>
-    <div class="box from">
-      <h3>From / Return</h3>
-      <div class="line"><b>${esc(STORE_RETURN_ADDRESS.name)}</b></div>
-      <div class="line">${esc(STORE_RETURN_ADDRESS.line1)}</div>
-      <div class="line">${esc(STORE_RETURN_ADDRESS.city)}</div>
-      <div class="line">Tel: ${esc(STORE_RETURN_ADDRESS.phone)}</div>
-    </div>
-  </div>
 
   <table>
     <thead>
