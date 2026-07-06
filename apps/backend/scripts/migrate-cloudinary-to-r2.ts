@@ -1,35 +1,22 @@
 /**
- * One-off migration: Cloudinary -> Cloudflare R2.
+ * One-shot migration: Cloudinary -> Cloudflare R2.
  *
- * Three phases:
+ * A SINGLE command runs the whole migration end-to-end:
  *   1. Copy every Cloudinary asset (images AND videos) into the R2 bucket,
- *      preserving the key shape (`ecommerce/<folder>/<file>`). Idempotent via
- *      HeadObject — safe to re-run.
- *   2. Prune R2 orphans (objects under the prefix that no longer exist in
- *      Cloudinary). OPT-IN: requires `--prune`. Prints orphans by default.
- *   3. Rewrite the DB: swap the Cloudinary host for the R2 host on every URL
- *      column, and rewrite every `publicId` column to be the R2 key (Cloudinary
- *      stored public_ids WITHOUT an extension; R2 keys need one).
+ *      preserving the key shape (`ecommerce/<folder>/<file>`).
+ *   2. Rewrite every media URL + publicId column in the DB to point at R2
+ *      (Cloudinary stored public_ids WITHOUT an extension; R2 keys need one).
  *
  * Usage (from repo root):
- *   pnpm migrate:storage                     # run phase 1 then phase 3
- *   pnpm migrate:storage -- --phase=1        # only copy files
- *   pnpm migrate:storage -- --phase=2        # list orphans (dry-run)
- *   pnpm migrate:storage -- --phase=2 --prune # actually delete orphans
- *   pnpm migrate:storage -- --phase=3        # only rewrite DB
- *   pnpm migrate:storage -- --dry-run        # phases 2/3 print without writing
- *   pnpm migrate:storage -- --limit=20       # cap items (testing)
+ *   pnpm migrate:storage              # run the full migration
+ *   pnpm migrate:storage -- --dry-run # preview without writing anything
  *
- * NOTE: take a `pg_dump` of the database before running phase 3. Phase 3 is
- * idempotent (guarded WHERE clauses), but a backup is still strongly advised.
+ * Both steps are idempotent (HeadObject skip + guarded WHERE clauses), so the
+ * command is safe to re-run. ⚠️ Still take a `pg_dump` first — step 2 rewrites
+ * DB rows.
  */
 import "dotenv/config";
-import {
-  PutObjectCommand,
-  HeadObjectCommand,
-  ListObjectsV2Command,
-  DeleteObjectsCommand,
-} from "@aws-sdk/client-s3";
+import { PutObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
 import { r2, R2_BUCKET_NAME, R2_PUBLIC_BASE, KEY_PREFIX } from "../src/lib/storage";
 import { prisma } from "../src/lib/prisma";
 
@@ -46,16 +33,7 @@ const c = {
 const log = (msg: string) => console.log(msg);
 const ts = () => new Date().toISOString().replace("T", " ").substring(0, 19);
 
-// ─── CLI args ────────────────────────────────────────────────────────────────
-const args = process.argv.slice(2);
-const getArg = (name: string): string | undefined => {
-  const found = args.find((a) => a.startsWith(`--${name}=`));
-  return found ? found.slice(name.length + 3) : undefined;
-};
-const phase = getArg("phase"); // "1" | "2" | "3" | undefined (= run 1 + 3)
-const dryRun = args.includes("--dry-run");
-const prune = args.includes("--prune");
-const limit = getArg("limit") ? Number(getArg("limit")) : undefined;
+const dryRun = process.argv.includes("--dry-run");
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -146,27 +124,29 @@ async function listAllCloudinaryResources(): Promise<CloudinaryResource[]> {
   return out;
 }
 
-// ─── Phase 1: copy files from Cloudinary to R2 ──────────────────────────────
-async function phase1CopyFiles() {
-  log(`\n${c.bright}${c.green}▶ Phase 1: copy Cloudinary assets -> R2${c.reset}`);
-  const resources = await listAllCloudinaryResources();
-  log(`${c.dim}  ${resources.length} resource(s) found in Cloudinary${c.reset}`);
+// ─── Step 1: copy files from Cloudinary to R2 ───────────────────────────────
+async function copyFilesToR2(resources: CloudinaryResource[]) {
+  log(`\n${c.bright}${c.green}▶ Step 1: copy Cloudinary assets -> R2${c.reset}`);
+  log(`${c.dim}  ${resources.length} resource(s) to migrate${c.reset}`);
 
   let copied = 0;
   let skipped = 0;
   let failed = 0;
-  const total = limit ? Math.min(limit, resources.length) : resources.length;
 
-  for (let i = 0; i < total; i++) {
-    const r = resources[i];
+  for (const r of resources) {
     const key = cloudinaryUrlToKey(r.secure_url);
     try {
-      // Idempotency: skip if already in R2.
+      // Idempotency: skip if already in R2 (read-only, safe even in dry-run).
       await r2.send(new HeadObjectCommand({ Bucket: R2_BUCKET_NAME, Key: key }));
       skipped++;
       continue;
     } catch {
       // not found -> proceed to copy
+    }
+
+    if (dryRun) {
+      copied++;
+      continue;
     }
 
     try {
@@ -185,7 +165,7 @@ async function phase1CopyFiles() {
       if (copied % 25 === 0) {
         log(
           `${c.dim}[${ts()}]${c.reset} ${c.green}copied ${copied}${c.reset}` +
-            `${c.dim} / ${total} (skipped ${skipped})${c.reset}`
+            `${c.dim} (skipped ${skipped}, failed ${failed})${c.reset}`
         );
       }
     } catch (err) {
@@ -198,72 +178,13 @@ async function phase1CopyFiles() {
   }
 
   log(
-    `${c.green}✓ Phase 1 done:${c.reset} copied=${copied}, skipped=${skipped}, failed=${failed}`
+    `${c.green}✓ Step 1 done:${c.reset} copied=${copied}, skipped=${skipped}, failed=${failed}`
   );
 }
 
-// ─── Phase 2: prune R2 orphans ──────────────────────────────────────────────
-async function phase2PruneOrphans() {
-  log(`\n${c.bright}${c.yellow}▶ Phase 2: prune R2 orphans${c.reset}`);
-
-  // Canonical set of keys that SHOULD exist (= what Cloudinary has).
-  const resources = await listAllCloudinaryResources();
-  const canonical = new Set(resources.map((r) => cloudinaryUrlToKey(r.secure_url)));
-  log(`${c.dim}  ${canonical.size} canonical key(s) from Cloudinary${c.reset}`);
-
-  // List everything currently in R2 under the prefix.
-  const r2Keys: string[] = [];
-  let continuationToken: string | undefined;
-  do {
-    const resp = await r2.send(
-      new ListObjectsV2Command({
-        Bucket: R2_BUCKET_NAME,
-        Prefix: `${KEY_PREFIX}/`,
-        ContinuationToken: continuationToken,
-      })
-    );
-    for (const obj of resp.Contents ?? []) {
-      if (obj.Key) r2Keys.push(obj.Key);
-    }
-    continuationToken = resp.IsTruncated ? resp.NextContinuationToken : undefined;
-  } while (continuationToken);
-  log(`${c.dim}  ${r2Keys.length} object(s) in R2 under ${KEY_PREFIX}/${c.reset}`);
-
-  const orphans = r2Keys.filter((k) => !canonical.has(k));
-  log(`${c.yellow}  ${orphans.length} orphan(s) detected${c.reset}`);
-  if (orphans.length > 0 && orphans.length <= 50) {
-    for (const k of orphans) log(`${c.dim}    - ${k}${c.reset}`);
-  }
-
-  if (!prune) {
-    log(
-      `${c.dim}  dry-run: pass --prune to delete orphans (1000 per batch)${c.reset}`
-    );
-    return;
-  }
-  if (dryRun) {
-    log(`${c.dim}  --dry-run set: skipping actual deletion${c.reset}`);
-    return;
-  }
-
-  const capped = limit ? orphans.slice(0, limit) : orphans;
-  let deleted = 0;
-  for (let i = 0; i < capped.length; i += 1000) {
-    const batch = capped.slice(i, i + 1000);
-    const resp = await r2.send(
-      new DeleteObjectsCommand({
-        Bucket: R2_BUCKET_NAME,
-        Delete: { Objects: batch.map((Key) => ({ Key })) },
-      })
-    );
-    deleted += resp.Deleted?.length ?? batch.length;
-  }
-  log(`${c.green}✓ Phase 2 done:${c.reset} deleted ${deleted} orphan(s)`);
-}
-
-// ─── Phase 3: rewrite DB URLs and publicIds ─────────────────────────────────
-async function phase3RewriteDb() {
-  log(`\n${c.bright}${c.cyan}▶ Phase 3: rewrite DB URLs & publicIds${c.reset}`);
+// ─── Step 2: rewrite DB URLs and publicIds ───────────────────────────────────
+async function rewriteDatabaseUrls() {
+  log(`\n${c.bright}${c.cyan}▶ Step 2: rewrite DB URLs & publicIds${c.reset}`);
   if (dryRun) log(`${c.yellow}  DRY-RUN — no writes will be performed${c.reset}`);
 
   // Host-swap regex (POSIX). Matches the Cloudinary delivery prefix and
@@ -311,17 +232,14 @@ async function phase3RewriteDb() {
       log(`${c.dim}  [dry-run] ${sql.replace(/\s+/g, " ").slice(0, 120)}${c.reset}`);
       return 0;
     }
-    // Prisma.raw() keeps the literal identifiers intact; the dynamic values
-    // (pattern, replacement, prefix, likes) are inlined here as they are all
-    // constants derived from trusted config, not user input.
     const count = await prisma.$executeRawUnsafe(sql);
     return count;
   };
 
   let totalAffected = 0;
 
-  // 3a — swap Cloudinary host -> R2 host on every URL column.
-  log(`${c.cyan}  3a) swapping Cloudinary hosts -> ${R2_PUBLIC_BASE}${c.reset}`);
+  // 2a — swap Cloudinary host -> R2 host on every URL column.
+  log(`${c.cyan}  2a) swapping Cloudinary hosts -> ${R2_PUBLIC_BASE}${c.reset}`);
   for (const [table, col] of urlSwaps) {
     const sql = `UPDATE ${table} SET ${col} = REGEXP_REPLACE(${col}, '${pattern.replace(/'/g, "''")}', '${replacement.replace(/'/g, "''")}') WHERE ${col} LIKE '${cloudLike}';`;
     const n = await exec(sql);
@@ -329,8 +247,8 @@ async function phase3RewriteDb() {
     log(`    ${table}.${col.replace(/"/g, "")}: ${n} row(s)`);
   }
 
-  // 3b — rewrite publicIds to the R2 key (strip host prefix from the URL col).
-  log(`${c.cyan}  3b) rewriting publicIds -> R2 keys${c.reset}`);
+  // 2b — rewrite publicIds to the R2 key (strip host prefix from the URL col).
+  log(`${c.cyan}  2b) rewriting publicIds -> R2 keys${c.reset}`);
   for (const [table, pubCol, urlCol] of publicIdSwaps) {
     const sql = `UPDATE ${table} SET ${pubCol} = SUBSTRING(${urlCol} FROM LENGTH('${r2Prefix}') + 1) WHERE ${urlCol} LIKE '${r2Like}';`;
     const n = await exec(sql);
@@ -338,7 +256,7 @@ async function phase3RewriteDb() {
     log(`    ${table}.${pubCol.replace(/"/g, "")}: ${n} row(s)`);
   }
 
-  log(`${c.green}✓ Phase 3 done:${c.reset} ${totalAffected} row(s) affected (cumulative)`);
+  log(`${c.green}✓ Step 2 done:${c.reset} ${totalAffected} row(s) affected (cumulative)`);
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
@@ -347,7 +265,7 @@ async function main() {
   log(`${c.dim}  bucket:    ${R2_BUCKET_NAME || "(unset)"}${c.reset}`);
   log(`${c.dim}  publicUrl: ${R2_PUBLIC_BASE || "(unset)"}${c.reset}`);
   log(`${c.dim}  prefix:    ${KEY_PREFIX}/${c.reset}`);
-  log(`${c.dim}  phase:     ${phase ?? "1+3"}  dryRun: ${dryRun}  limit: ${limit ?? "∞"}${c.reset}`);
+  log(`${c.dim}  dryRun:    ${dryRun}${c.reset}`);
 
   if (!R2_BUCKET_NAME || !R2_PUBLIC_BASE) {
     log(`${c.red}R2_BUCKET / R2_PUBLIC_URL not set. Aborting.${c.reset}`);
@@ -355,19 +273,9 @@ async function main() {
   }
 
   try {
-    if (phase === "1") {
-      await phase1CopyFiles();
-    } else if (phase === "2") {
-      await phase2PruneOrphans();
-    } else if (phase === "3") {
-      await phase3RewriteDb();
-    } else if (!phase) {
-      await phase1CopyFiles();
-      await phase3RewriteDb();
-    } else {
-      log(`${c.red}Unknown --phase=${phase}. Use 1, 2, or 3.${c.reset}`);
-      process.exit(1);
-    }
+    const resources = await listAllCloudinaryResources();
+    await copyFilesToR2(resources);
+    await rewriteDatabaseUrls();
     log(`\n${c.bright}${c.green}Migration finished.${c.reset}\n`);
   } catch (err) {
     log(`\n${c.red}${c.bright}Migration failed:${c.reset} ${(err as Error).message}`);
