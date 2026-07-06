@@ -182,14 +182,6 @@ function buildPackingSlipHtml(order: Order): string {
 
   ${noteHtml}
 
-  <div class="fillin">Weight: <span>&nbsp;</span> &nbsp;&nbsp; Dimensions: <span>&nbsp;</span></div>
-
-  <div class="sigs">
-    <div class="sig">Packed by:<div class="line"></div></div>
-    <div class="sig">Checked by:<div class="line"></div></div>
-    <div class="sig">Date / Time:<div class="line"></div></div>
-  </div>
-
   <script>
     (function () {
       function doPrint() { setTimeout(function () { window.focus(); window.print(); }, 250); }
