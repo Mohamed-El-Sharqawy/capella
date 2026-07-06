@@ -1,11 +1,10 @@
 import { prisma } from "../../lib/prisma";
 
 export abstract class DashboardService {
-  static async getStats() {
+  static async getStats(_startDate?: Date, _endDate?: Date) {
     const now = new Date();
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastMonthEnd = thisMonth;
 
     const [
       totalRevenue,

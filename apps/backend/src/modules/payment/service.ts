@@ -655,43 +655,46 @@ export abstract class PaymentService {
       throw new Error("Tamara is currently unavailable. Please choose another payment method.");
     }
     const { cancelUrl, couponCode, locale } = body;
-    const lang = (locale || "en") === "ar" ? "ar-SA" : "en-US";
+    const lang = (locale || "en") === "ar" ? "ar_SA" : "en_US";
 
     const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TAMARA");
     const contact = this.getCustomerContact(body);
     const localePath = (locale || "en") === "ar" ? "ar" : "en";
-    // Public base URL of the backend (where Tamara can reach the webhook).
-    const backendUrl =
-      process.env.BACKEND_PUBLIC_URL || process.env.BACKEND_URL;
-    if (!backendUrl) {
-      throw new Error(
-        "BACKEND_PUBLIC_URL is not configured (needed for Tamara notifications)"
-      );
-    }
-    const notificationTo = `${backendUrl.replace(/\/$/, "")}/api/payments/tamara/webhook`;
+
+    const cancelUrlResolved =
+      cancelUrl ||
+      `${MARKETING_URL}/${localePath}/checkout?method=TAMARA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`;
 
     const checkout = await TamaraClient.createCheckout({
       order_reference_id: order.id,
       total_amount: tamaraMoney(order.total, CURRENCY),
       shipping_amount: tamaraMoney(shippingCost, CURRENCY),
-      discount_amount: tamaraMoney(order.discountAmount, CURRENCY),
+      tax_amount: tamaraMoney(0, CURRENCY),
       description: `Capella order ${order.id}`,
       country_code: "AE",
       payment_type: "PAY_BY_INSTALMENTS",
       platform: "Web",
       locale: lang,
+      ...(order.discountAmount && order.discountAmount > 0
+        ? {
+            discount: {
+              name: order.coupon?.code || "Discount",
+              amount: tamaraMoney(order.discountAmount, CURRENCY),
+            },
+          }
+        : {}),
       items: body.items.map((item) => {
         const variant = variants.find((v) => v.id === item.variantId)!;
         const lineTotal = variant.price * item.quantity;
         return {
           reference_id: variant.sku || variant.id,
           name: variant.product.nameEn,
-          type: "physical",
+          type: "Physical",
+          sku: variant.sku || variant.id,
           quantity: item.quantity,
           unit_price: tamaraMoney(variant.price, CURRENCY),
           total_amount: tamaraMoney(lineTotal, CURRENCY),
           image_url: variant.images[0]?.image?.url || undefined,
-          categories: [["Jewellery"]],
         };
       }),
       consumer: {
@@ -705,9 +708,8 @@ export abstract class PaymentService {
         last_name: order.shippingLastName,
         line1: order.shippingStreet,
         city: order.shippingCity,
-        country: "AE",
+        country_code: "AE",
         region: order.shippingState,
-        postal_code: order.shippingZipCode || "00000",
         phone_number: order.shippingPhone || contact.phone,
       },
       shipping_address: {
@@ -715,19 +717,15 @@ export abstract class PaymentService {
         last_name: order.shippingLastName,
         line1: order.shippingStreet,
         city: order.shippingCity,
-        country: "AE",
+        country_code: "AE",
         region: order.shippingState,
-        postal_code: order.shippingZipCode || "00000",
         phone_number: order.shippingPhone || contact.phone,
       },
-      success_url: `${MARKETING_URL}/${localePath}/checkout/success?method=TAMARA`,
-      cancel_url:
-        cancelUrl ||
-        `${MARKETING_URL}/${localePath}/checkout?method=TAMARA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
-      failure_url:
-        cancelUrl ||
-        `${MARKETING_URL}/${localePath}/checkout?method=TAMARA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
-      notification_to: notificationTo,
+      merchant_url: {
+        success: `${MARKETING_URL}/${localePath}/checkout/success?method=TAMARA`,
+        failure: cancelUrlResolved,
+        cancel: cancelUrlResolved,
+      },
     });
 
     if (!checkout.checkout_url) {

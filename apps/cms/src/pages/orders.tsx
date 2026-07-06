@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Search, Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, Trash2, CheckSquare, Square, XSquare } from "lucide-react";
+import { Search, Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, Trash2, CheckSquare, Square, XSquare, Printer } from "lucide-react";
 import { ORDER_STATUSES, getShippingCost } from "@ecommerce/shared-utils";
 import type { Order } from "@ecommerce/shared-types";
-import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, useBulkDeleteOrders, type OrderStatus } from "@/features/orders";
+import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, useBulkDeleteOrders, printOrderInvoice, type OrderStatus } from "@/features/orders";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -258,8 +258,9 @@ export function OrdersPage() {
                     <TableCell className="text-sm text-muted-foreground">{formatDate(order.createdAt)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => setSelectedOrderId(order.id)}><Eye className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => setDeleteTarget({ ids: [order.id], label: order.id.slice(0, 8) + "..." })}><Trash2 className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedOrderId(order.id)} title="View details"><Eye className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="sm" onClick={() => printOrderInvoice(order)} title="Print invoice"><Printer className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => setDeleteTarget({ ids: [order.id], label: order.id.slice(0, 8) + "..." })} title="Delete"><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -442,6 +443,12 @@ export function OrdersPage() {
                     );
                   })()}
                 </div>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <Button variant="outline" onClick={() => printOrderInvoice(od)}>
+                  <Printer className="h-4 w-4 mr-2" /> Print Invoice
+                </Button>
               </div>
                   </>
                 );

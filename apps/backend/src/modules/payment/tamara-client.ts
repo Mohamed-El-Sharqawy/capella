@@ -11,33 +11,33 @@ interface AddressInput {
   last_name: string;
   line1: string;
   city: string;
-  country: string;
+  country_code: string;
   region?: string;
-  postal_code?: string;
   phone_number?: string;
 }
 
 interface OrderItemInput {
   reference_id: string;
   name: string;
+  sku: string;
   quantity: number;
   unit_price: Money;
   total_amount: Money;
   type?: string;
   image_url?: string;
-  categories?: string[][];
 }
 
 interface CreateCheckoutParams {
   order_reference_id: string;
   total_amount: Money;
   shipping_amount: Money;
-  discount_amount: Money;
+  tax_amount: Money;
   description?: string;
   country_code: string;
   payment_type: string;
   platform: string;
   locale: string;
+  discount?: { name: string; amount: Money };
   items: OrderItemInput[];
   consumer: {
     first_name: string;
@@ -47,10 +47,11 @@ interface CreateCheckoutParams {
   };
   billing_address: AddressInput;
   shipping_address: AddressInput;
-  success_url: string;
-  cancel_url: string;
-  failure_url: string;
-  notification_to: string;
+  merchant_url: {
+    success: string;
+    failure: string;
+    cancel: string;
+  };
 }
 
 interface CreateCheckoutResponse {
