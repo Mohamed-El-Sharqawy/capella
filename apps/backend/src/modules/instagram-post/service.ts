@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import { CloudinaryService } from "../../lib/cloudinary";
+import { StorageService } from "../../lib/storage";
 
 export abstract class InstagramPostService {
   static async list(activeOnly = false) {
@@ -58,7 +58,7 @@ export abstract class InstagramPostService {
     if (!post) return null;
 
     // Delete from Cloudinary
-    await CloudinaryService.delete(post.publicId);
+    await StorageService.delete(post.publicId);
 
     await prisma.instagramPost.delete({ where: { id } });
     return true;

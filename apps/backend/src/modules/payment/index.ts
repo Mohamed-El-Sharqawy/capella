@@ -5,6 +5,11 @@ import { PaymentModel } from "./model";
 
 export const payment = new Elysia({ prefix: "/payments" })
   .use(authPlugin)
+  // Public: which payment methods are enabled (drives frontend visibility).
+  .get("/methods", () => ({
+    success: true as const,
+    data: PaymentService.getEnabledMethods(),
+  }))
   .post("/checkout", async ({ body, user }) => {
     try {
       const result = await PaymentService.createCheckoutSession(

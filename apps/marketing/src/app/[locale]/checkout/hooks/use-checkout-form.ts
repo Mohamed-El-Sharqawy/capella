@@ -3,12 +3,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQueryState, parseAsStringLiteral, parseAsString } from "nuqs";
 import { useAuth } from "@/contexts/auth-context";
+import { usePaymentMethods } from "@/lib/payment-methods";
 import type { CheckoutFormState, SavedAddress } from "../types";
 
 const paymentMethods = ["COD", "ZIINA", "TABBY", "TAMARA"] as const;
 
 export function useCheckoutForm(savedAddresses: SavedAddress[]) {
   const { user } = useAuth();
+  const enabledMethods = usePaymentMethods();
   const [paymentQuery, setPaymentQuery] = useQueryState(
     "method",
     parseAsStringLiteral(paymentMethods).withDefault("COD")
@@ -164,6 +166,16 @@ export function useCheckoutForm(savedAddresses: SavedAddress[]) {
       }
     }
   }, [selectedAddressId, savedAddresses]);
+
+  // Returning users may have a saved (localStorage) payment method that is now
+  // disabled on this deployment — reset it to COD so checkout stays usable.
+  useEffect(() => {
+    if (!enabledMethods) return;
+    const m = formState.paymentMethod;
+    if ((m === "TABBY" && !enabledMethods.tabby) || (m === "TAMARA" && !enabledMethods.tamara)) {
+      setFormState((prev) => ({ ...prev, paymentMethod: "COD" }));
+    }
+  }, [enabledMethods, formState.paymentMethod]);
 
   return {
     formState,

@@ -2,7 +2,7 @@ import { Elysia, t, status } from "elysia";
 import { InstagramPostService } from "./service";
 import { InstagramPostModel } from "./model";
 import { authPlugin } from "../../plugins/auth";
-import { CloudinaryService } from "../../lib/cloudinary";
+import { StorageService } from "../../lib/storage";
 
 export const instagramPostController = new Elysia({ prefix: "/instagram-posts" })
   // Public: list active posts
@@ -32,7 +32,7 @@ export const instagramPostController = new Elysia({ prefix: "/instagram-posts" }
     }
 
     // Upload image
-    const imageResult = await CloudinaryService.upload(imageFile, "instagram-posts");
+    const imageResult = await StorageService.upload(imageFile, "instagram-posts");
 
     // FormData sends everything as strings, convert them
     const position = body.position !== undefined ? Number(body.position) : undefined;

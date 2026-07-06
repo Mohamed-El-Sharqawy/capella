@@ -1,7 +1,10 @@
+"use client";
+
 import type { CheckoutFormState } from "../types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Banknote, CreditCard, Wallet } from "lucide-react";
+import { usePaymentMethods } from "@/lib/payment-methods";
 
 interface PaymentMethodSectionProps {
   formState: CheckoutFormState;
@@ -10,8 +13,11 @@ interface PaymentMethodSectionProps {
 
 export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethodSectionProps) {
   const t = useTranslations("checkout");
+  const enabled = usePaymentMethods();
+  const tabbyEnabled = enabled?.tabby ?? false;
+  const tamaraEnabled = enabled?.tamara ?? false;
 
-  const methods = [
+  const allMethods = [
     {
       id: "COD" as const,
       icon: Banknote,
@@ -48,6 +54,12 @@ export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethod
     },
   ];
 
+  const visibleMethods = allMethods.filter((m) => {
+    if (m.id === "TABBY") return tabbyEnabled;
+    if (m.id === "TAMARA") return tamaraEnabled;
+    return true;
+  });
+
   return (
     <div className="bg-white border rounded-lg p-6">
       <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -59,7 +71,7 @@ export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethod
 
       {/* Payment Options */}
       <div className="space-y-4">
-        {methods.map(({ id, icon: Icon, label, desc, brand }) => {
+        {visibleMethods.map(({ id, icon: Icon, label, desc, brand }) => {
           const selected = formState.paymentMethod === id;
           return (
             <div

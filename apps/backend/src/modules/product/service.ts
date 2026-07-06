@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { slugify } from "@ecommerce/shared-utils";
 import { PAGINATION_DEFAULTS } from "@ecommerce/shared-utils";
-import { CloudinaryService } from "../../lib/cloudinary";
+import { StorageService } from "../../lib/storage";
 import type { ProductModel } from "./model";
 
 const VARIANT_WITH_IMAGES = {
@@ -286,7 +286,7 @@ export abstract class ProductService {
 
     // Delete from Cloudinary
     if (publicIds.length > 0) {
-      await CloudinaryService.deleteMultiple(publicIds);
+      await StorageService.deleteMultiple(publicIds);
     }
 
     // Cascade delete will handle ProductImage, ProductVariantImage, and ProductVariant
@@ -348,7 +348,7 @@ export abstract class ProductService {
       });
       if (otherLinks === 0) {
         // No other variants use this image, delete from Cloudinary
-        await CloudinaryService.delete(link.image.publicId);
+        await StorageService.delete(link.image.publicId);
         await prisma.productImage.delete({ where: { id: link.imageId } });
       }
     }

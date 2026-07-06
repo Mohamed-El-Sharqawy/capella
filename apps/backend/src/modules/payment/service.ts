@@ -316,6 +316,20 @@ export abstract class PaymentService {
   // Checkout dispatcher
   // ---------------------------------------------------------------------------
 
+  /**
+   * Which payment methods are enabled. Tabby/Tamara can be toggled off via the
+   * TABBY_ENABLED / TAMARA_ENABLED env vars — disabled only when === "false"
+   * (default on, so existing deployments keep working until you opt out).
+   */
+  static getEnabledMethods() {
+    return {
+      cod: true,
+      ziina: true,
+      tabby: process.env.TABBY_ENABLED !== "false",
+      tamara: process.env.TAMARA_ENABLED !== "false",
+    };
+  }
+
   static async createCheckoutSession(
     body: PaymentModel["checkoutBody"],
     userId?: string
@@ -479,6 +493,9 @@ export abstract class PaymentService {
     body: PaymentModel["checkoutBody"],
     userId?: string
   ) {
+    if (process.env.TABBY_ENABLED === "false") {
+      throw new Error("Tabby is currently unavailable. Please choose another payment method.");
+    }
     const merchantCode = process.env.TABBY_MERCHANT_CODE;
     if (!merchantCode) {
       throw new Error("Tabby is not configured. Set TABBY_MERCHANT_CODE in .env");
@@ -634,10 +651,13 @@ export abstract class PaymentService {
     body: PaymentModel["checkoutBody"],
     userId?: string
   ) {
+    if (process.env.TAMARA_ENABLED === "false") {
+      throw new Error("Tamara is currently unavailable. Please choose another payment method.");
+    }
     const { cancelUrl, couponCode, locale } = body;
     const lang = (locale || "en") === "ar" ? "ar-SA" : "en-US";
 
-    const { order, variants } = await this.prepareOrder(body, userId, "TAMARA");
+    const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TAMARA");
     const contact = this.getCustomerContact(body);
     const localePath = (locale || "en") === "ar" ? "ar" : "en";
     // Public base URL of the backend (where Tamara can reach the webhook).
@@ -653,6 +673,8 @@ export abstract class PaymentService {
     const checkout = await TamaraClient.createCheckout({
       order_reference_id: order.id,
       total_amount: tamaraMoney(order.total, CURRENCY),
+      shipping_amount: tamaraMoney(shippingCost, CURRENCY),
+      discount_amount: tamaraMoney(order.discountAmount, CURRENCY),
       description: `Capella order ${order.id}`,
       country_code: "AE",
       payment_type: "PAY_BY_INSTALMENTS",

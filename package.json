@@ -16,7 +16,8 @@
     "db:migrate": "pnpm --filter @ecommerce/backend db:migrate",
     "db:studio": "pnpm --filter @ecommerce/backend db:studio",
     "db:seed": "pnpm --filter @ecommerce/backend db:seed",
-    "db:seed-admin": "pnpm --filter @ecommerce/backend db:seed-admin"
+    "db:seed-admin": "pnpm --filter @ecommerce/backend db:seed-admin",
+    "migrate:storage": "pnpm --filter @ecommerce/backend migrate:storage"
   },
   "engines": {
     "node": ">=20.0.0"

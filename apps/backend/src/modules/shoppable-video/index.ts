@@ -2,7 +2,7 @@ import { Elysia, t, status } from "elysia";
 import { ShoppableVideoService } from "./service";
 import { ShoppableVideoModel } from "./model";
 import { authPlugin } from "../../plugins/auth";
-import { CloudinaryService } from "../../lib/cloudinary";
+import { StorageService } from "../../lib/storage";
 
 export const shoppableVideoController = new Elysia({ prefix: "/shoppable-videos" })
   // Public: list active videos
@@ -33,8 +33,8 @@ export const shoppableVideoController = new Elysia({ prefix: "/shoppable-videos"
     }
 
     // Upload video (as video resource) and thumbnail (as image)
-    const videoResult = await CloudinaryService.uploadVideo(videoFile, "shoppable-videos");
-    const thumbnailResult = await CloudinaryService.upload(thumbnailFile, "shoppable-videos/thumbnails");
+    const videoResult = await StorageService.uploadVideo(videoFile, "shoppable-videos");
+    const thumbnailResult = await StorageService.upload(thumbnailFile, "shoppable-videos/thumbnails");
 
     // FormData sends everything as strings, convert them
     const position = body.position !== undefined ? Number(body.position) : undefined;
@@ -83,16 +83,16 @@ export const shoppableVideoController = new Elysia({ prefix: "/shoppable-videos"
 
     // Upload new video if provided
     if (body.video) {
-      await CloudinaryService.deleteVideo(existingVideo.videoPublicId);
-      const videoResult = await CloudinaryService.uploadVideo(body.video, "shoppable-videos");
+      await StorageService.deleteVideo(existingVideo.videoPublicId);
+      const videoResult = await StorageService.uploadVideo(body.video, "shoppable-videos");
       videoUrl = videoResult.url;
       videoPublicId = videoResult.publicId;
     }
 
     // Upload new thumbnail if provided
     if (body.thumbnail) {
-      await CloudinaryService.delete(existingVideo.thumbnailPublicId);
-      const thumbnailResult = await CloudinaryService.upload(body.thumbnail, "shoppable-videos/thumbnails");
+      await StorageService.delete(existingVideo.thumbnailPublicId);
+      const thumbnailResult = await StorageService.upload(body.thumbnail, "shoppable-videos/thumbnails");
       thumbnailUrl = thumbnailResult.url;
       thumbnailPublicId = thumbnailResult.publicId;
     }

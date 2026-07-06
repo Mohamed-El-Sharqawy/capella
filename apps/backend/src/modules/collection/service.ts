@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/prisma";
 import { slugify } from "@ecommerce/shared-utils";
-import { CloudinaryService } from "../../lib/cloudinary";
+import { StorageService } from "../../lib/storage";
 import type { CollectionModel } from "./model";
 
 const COLLECTION_INCLUDE = {
@@ -210,11 +210,11 @@ export abstract class CollectionService {
     if (!collection) return null;
 
     if (collection.image) {
-      await CloudinaryService.delete(collection.image.publicId);
+      await StorageService.delete(collection.image.publicId);
     }
 
     if (collection.video) {
-      await CloudinaryService.deleteVideo(collection.video.publicId);
+      await StorageService.deleteVideo(collection.video.publicId);
     }
 
     await prisma.collection.delete({ where: { id } });

@@ -13,9 +13,11 @@
     "db:studio": "bunx prisma studio",
     "db:push": "bunx prisma db push",
     "db:seed": "bun run prisma/seed.ts",
-    "db:seed-admin": "bun run prisma/seed-admin.ts"
+    "db:seed-admin": "bun run prisma/seed-admin.ts",
+    "migrate:storage": "bun run scripts/migrate-cloudinary-to-r2.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1079.0",
     "@ecommerce/shared-types": "workspace:*",
     "@ecommerce/shared-utils": "workspace:*",
     "@elysiajs/bearer": "^1.1.0",

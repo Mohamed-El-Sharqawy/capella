@@ -31,10 +31,12 @@ DATABASE_URL=postgresql://postgres:password@postgres-xxxxx:5432/postgres?schema=
 # JWT Secret - Generate a strong random string
 JWT_SECRET=your-super-secret-jwt-key-min-32-chars
 
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
+# Cloudflare R2 (media storage)
+R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+R2_ACCESS_KEY_ID=your-access-key-id
+R2_SECRET_ACCESS_KEY=your-secret-access-key
+R2_BUCKET=capella
+R2_PUBLIC_URL=https://cdn.capellauae.com
 
 # API URLs - Use your actual domain
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com
@@ -114,9 +116,11 @@ capella/
 |----------|---------|-------------|
 | `DATABASE_URL` | backend | PostgreSQL connection string |
 | `JWT_SECRET` | backend | Secret for JWT tokens (min 32 chars) |
-| `CLOUDINARY_CLOUD_NAME` | backend | Cloudinary cloud name |
-| `CLOUDINARY_API_KEY` | backend | Cloudinary API key |
-| `CLOUDINARY_API_SECRET` | backend | Cloudinary API secret |
+| `R2_ENDPOINT` | backend | Cloudflare R2 S3 endpoint |
+| `R2_ACCESS_KEY_ID` | backend | R2 access key ID |
+| `R2_SECRET_ACCESS_KEY` | backend | R2 secret access key |
+| `R2_BUCKET` | backend | R2 bucket name |
+| `R2_PUBLIC_URL` | backend | R2 public custom domain (cdn.capellauae.com) |
 | `NEXT_PUBLIC_API_URL` | marketing | Backend API URL (public) |
 | `VITE_API_URL` | cms | Backend API URL |
 

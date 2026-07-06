@@ -28,6 +28,16 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
+      // Cloudflare R2 — custom domains serving the media bucket.
+      // cdndev for development, cdn for production.
+      {
+        protocol: "https",
+        hostname: "cdndev.capellauae.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.capellauae.com",
+      },
       {
         protocol: "https",
         hostname: "images.unsplash.com",

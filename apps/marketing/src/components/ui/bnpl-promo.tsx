@@ -1,6 +1,7 @@
 "use client";
 
 import { createElement, useEffect, useId, useRef } from "react";
+import { usePaymentMethods } from "@/lib/payment-methods";
 
 const TABBY_PUBLIC_KEY =
   process.env.NEXT_PUBLIC_TABBY_PUBLIC_KEY ||
@@ -50,14 +51,19 @@ export function BnplPromo({
   source = "product",
   className,
 }: BnplPromoProps) {
+  const enabled = usePaymentMethods();
+  const tabbyEnabled = enabled?.tabby ?? false;
+  const tamaraEnabled = enabled?.tamara ?? false;
   const reactId = useId();
   const tabbyContainerId = `tabby-promo-${reactId.replace(/[:]/g, "")}`;
   const tabbyContainerRef = useRef<HTMLDivElement>(null);
   const lang = locale === "ar" ? "ar" : "en";
   const priceStr = (Math.round(price * 100) / 100).toFixed(2);
 
-  // Tabby promo snippet
+  // Tabby promo snippet — skip entirely (script + DOM) when disabled so the
+  // third-party tracker never loads on deployments where Tabby is hidden.
   useEffect(() => {
+    if (!tabbyEnabled) return;
     let active = true;
     loadScript(TABBY_PROMO_SRC)
       .then(() => {
@@ -87,10 +93,11 @@ export function BnplPromo({
     return () => {
       active = false;
     };
-  }, [priceStr, lang, source, tabbyContainerId]);
+  }, [priceStr, lang, source, tabbyContainerId, tabbyEnabled]);
 
-  // Tamara widget global config
+  // Tamara widget global config — skip entirely when disabled.
   useEffect(() => {
+    if (!tamaraEnabled) return;
     const w = window as unknown as { tamaraWidgetConfig?: Record<string, unknown> };
     w.tamaraWidgetConfig = {
       ...(w.tamaraWidgetConfig || {}),
@@ -99,20 +106,25 @@ export function BnplPromo({
       publicKey: TAMARA_PUBLIC_KEY,
     };
     loadScript(TAMARA_WIDGET_SRC).catch((err) => console.error(err));
-  }, [lang]);
+  }, [lang, tamaraEnabled]);
+
+  if (!tabbyEnabled && !tamaraEnabled) return null;
 
   return (
     <div className={className}>
-      <div id={tabbyContainerId} ref={tabbyContainerRef} className="min-h-[20px]" />
-      {createElement("tamara-widget", {
-        key: `tamara-${priceStr}`,
-        type: "tamara-summary",
-        lang,
-        currency: "AED",
-        price: priceStr,
-        "public-key": TAMARA_PUBLIC_KEY,
-        style: { display: "block", minHeight: "20px" },
-      })}
+      {tabbyEnabled && (
+        <div id={tabbyContainerId} ref={tabbyContainerRef} className="min-h-[20px]" />
+      )}
+      {tamaraEnabled &&
+        createElement("tamara-widget", {
+          key: `tamara-${priceStr}`,
+          type: "tamara-summary",
+          lang,
+          currency: "AED",
+          price: priceStr,
+          "public-key": TAMARA_PUBLIC_KEY,
+          style: { display: "block", minHeight: "20px" },
+        })}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import { CloudinaryService } from "../../lib/cloudinary";
+import { StorageService } from "../../lib/storage";
 import type { Static } from "elysia";
 import type { PromoBannerModel } from "./model";
 
@@ -47,7 +47,7 @@ export abstract class PromoBannerService {
     if (!banner) return null;
 
     if (data.publicId && data.publicId !== banner.publicId) {
-      await CloudinaryService.delete(banner.publicId);
+      await StorageService.delete(banner.publicId);
     }
 
     return prisma.promoBanner.update({
@@ -60,7 +60,7 @@ export abstract class PromoBannerService {
     const banner = await prisma.promoBanner.findUnique({ where: { id } });
     if (!banner) return null;
 
-    await CloudinaryService.delete(banner.publicId);
+    await StorageService.delete(banner.publicId);
 
     return prisma.promoBanner.delete({ where: { id } });
   }

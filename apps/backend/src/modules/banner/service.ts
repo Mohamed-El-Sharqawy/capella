@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import { CloudinaryService } from "../../lib/cloudinary";
+import { StorageService } from "../../lib/storage";
 import type { Static } from "elysia";
 import type { BannerModel } from "./model";
 
@@ -52,19 +52,19 @@ export abstract class BannerService {
 
     // If image is being replaced, delete old one from Cloudinary
     if (data.publicId && data.publicId !== banner.publicId) {
-      await CloudinaryService.delete(banner.publicId);
+      await StorageService.delete(banner.publicId);
     }
 
     // If mobile image is being replaced, delete old one from Cloudinary
     if (data.mobilePublicId && data.mobilePublicId !== banner.mobilePublicId) {
       if (banner.mobilePublicId) {
-        await CloudinaryService.delete(banner.mobilePublicId);
+        await StorageService.delete(banner.mobilePublicId);
       }
     }
 
     // If mobile image is being explicitly cleared (empty string sent)
     if (data.mobileImageUrl === "" && banner.mobilePublicId) {
-      await CloudinaryService.delete(banner.mobilePublicId);
+      await StorageService.delete(banner.mobilePublicId);
     }
 
     return prisma.banner.update({
@@ -78,11 +78,11 @@ export abstract class BannerService {
     if (!banner) return null;
 
     // Delete image from Cloudinary
-    await CloudinaryService.delete(banner.publicId);
+    await StorageService.delete(banner.publicId);
 
     // Delete mobile image from Cloudinary
     if (banner.mobilePublicId) {
-      await CloudinaryService.delete(banner.mobilePublicId);
+      await StorageService.delete(banner.mobilePublicId);
     }
 
     return prisma.banner.delete({ where: { id } });

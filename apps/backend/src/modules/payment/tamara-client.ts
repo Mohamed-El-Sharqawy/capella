@@ -31,6 +31,8 @@ interface OrderItemInput {
 interface CreateCheckoutParams {
   order_reference_id: string;
   total_amount: Money;
+  shipping_amount: Money;
+  discount_amount: Money;
   description?: string;
   country_code: string;
   payment_type: string;
@@ -124,21 +126,21 @@ async function tamaraRequest<T>(
 
   if (body && method !== "GET") {
     options.body = JSON.stringify(body);
+    console.log(`[Tamara] -> ${method} ${url}\n` + JSON.stringify(body, null, 2));
   }
 
   const response = await fetch(url, options);
 
   if (!response.ok) {
     const text = await response.text();
-    let errorMessage: string;
-    try {
-      const parsed = JSON.parse(text);
-      errorMessage =
-        parsed.message || parsed.error || parsed.errorType || text;
-    } catch {
-      errorMessage = text;
-    }
-    throw new Error(`Tamara API error (${response.status}): ${errorMessage}`);
+    console.error(
+      `[Tamara] ${method} ${path} -> ${response.status}:`,
+      text
+    );
+    // Surface Tamara's raw response so opaque 500s are debuggable from the
+    // client instead of just the server console.
+    const trimmed = text.length > 800 ? text.slice(0, 800) + "…" : text;
+    throw new Error(`Tamara API error (${response.status}): ${trimmed}`);
   }
 
   const contentType = response.headers.get("content-type") || "";

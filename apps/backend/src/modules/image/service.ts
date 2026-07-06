@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import { CloudinaryService } from "../../lib/cloudinary";
+import { StorageService } from "../../lib/storage";
 
 export abstract class ImageService {
   // ==========================================
@@ -16,7 +16,7 @@ export abstract class ImageService {
     const product = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) return null;
 
-    const uploads = await CloudinaryService.uploadMultiple(files, "products");
+    const uploads = await StorageService.uploadMultiple(files, "products");
 
     const images = await Promise.all(
       uploads.map((upload) =>
@@ -53,7 +53,7 @@ export abstract class ImageService {
     const image = await prisma.productImage.findUnique({ where: { id: imageId } });
     if (!image) return null;
 
-    await CloudinaryService.delete(image.publicId);
+    await StorageService.delete(image.publicId);
     // Cascade delete will remove ProductVariantImage links
     await prisma.productImage.delete({ where: { id: imageId } });
     return true;
@@ -196,7 +196,7 @@ export abstract class ImageService {
     if (!variant) return null;
 
     // Upload to product level
-    const uploads = await CloudinaryService.uploadMultiple(files, "products");
+    const uploads = await StorageService.uploadMultiple(files, "products");
 
     // Get next position
     const lastLink = await prisma.productVariantImage.findFirst({
@@ -260,7 +260,7 @@ export abstract class ImageService {
 
     // If no other variants use this image, delete it from Cloudinary
     if (otherLinks === 0) {
-      await CloudinaryService.delete(link.image.publicId);
+      await StorageService.delete(link.image.publicId);
       await prisma.productImage.delete({ where: { id: link.imageId } });
     }
 
@@ -277,11 +277,11 @@ export abstract class ImageService {
 
     // Delete old image from Cloudinary if exists
     if (collection.image) {
-      await CloudinaryService.delete(collection.image.publicId);
+      await StorageService.delete(collection.image.publicId);
       await prisma.collectionImage.delete({ where: { id: collection.image.id } });
     }
 
-    const upload = await CloudinaryService.upload(file, "collections");
+    const upload = await StorageService.upload(file, "collections");
 
     return prisma.collectionImage.create({
       data: {
@@ -300,7 +300,7 @@ export abstract class ImageService {
     });
     if (!image) return null;
 
-    await CloudinaryService.delete(image.publicId);
+    await StorageService.delete(image.publicId);
     await prisma.collectionImage.delete({ where: { id: image.id } });
     return true;
   }
@@ -313,11 +313,11 @@ export abstract class ImageService {
     if (!collection) return null;
 
     if (collection.video) {
-      await CloudinaryService.deleteVideo(collection.video.publicId);
+      await StorageService.deleteVideo(collection.video.publicId);
       await prisma.collectionVideo.delete({ where: { id: collection.video.id } });
     }
 
-    const upload = await CloudinaryService.uploadVideo(file, "collections/videos");
+    const upload = await StorageService.uploadVideo(file, "collections/videos");
 
     return prisma.collectionVideo.create({
       data: {
@@ -334,14 +334,14 @@ export abstract class ImageService {
     });
     if (!video) return null;
 
-    await CloudinaryService.deleteVideo(video.publicId);
+    await StorageService.deleteVideo(video.publicId);
     await prisma.collectionVideo.delete({ where: { id: video.id } });
     return true;
   }
 
   // Generic upload - returns URL and publicId without DB storage
   static async uploadGeneric(file: File, folder: string) {
-    const upload = await CloudinaryService.upload(file, folder);
+    const upload = await StorageService.upload(file, folder);
     return {
       url: upload.url,
       publicId: upload.publicId,

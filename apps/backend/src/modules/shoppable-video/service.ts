@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import { CloudinaryService } from "../../lib/cloudinary";
+import { StorageService } from "../../lib/storage";
 
 const SHOPPABLE_VIDEO_INCLUDE = {
   product: {
@@ -78,8 +78,8 @@ export abstract class ShoppableVideoService {
     if (!video) return null;
 
     // Delete from Cloudinary (video needs resource_type: video)
-    await CloudinaryService.deleteVideo(video.videoPublicId);
-    await CloudinaryService.delete(video.thumbnailPublicId);
+    await StorageService.deleteVideo(video.videoPublicId);
+    await StorageService.delete(video.thumbnailPublicId);
 
     await prisma.shoppableVideo.delete({ where: { id } });
     return true;
