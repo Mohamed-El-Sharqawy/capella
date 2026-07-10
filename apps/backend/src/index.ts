@@ -95,6 +95,7 @@ const app = new Elysia()
   .listen(port);
 
 PaymentService.registerWebhook();
+PaymentService.registerTabbyWebhook();
 
 console.log(`E-Commerce API is running at http://localhost:${port}`);
 console.log(`Swagger docs at http://localhost:${port}/swagger`);

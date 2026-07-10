@@ -10,6 +10,32 @@ export const payment = new Elysia({ prefix: "/payments" })
     success: true as const,
     data: PaymentService.getEnabledMethods(),
   }))
+  // Background pre-scoring for Tabby — determines eligibility before showing
+  // the Tabby option. Public (guests can check out) and fail-safe.
+  .post("/tabby/eligibility", async ({ body }) => {
+    try {
+      const result = await PaymentService.checkTabbyEligibility(
+        body as { amount: number; email?: string; phone?: string }
+      );
+      return { success: true as const, data: result };
+    } catch (error) {
+      // Never block checkout on a scoring error — default to available.
+      const message = error instanceof Error ? error.message : "Eligibility check failed";
+      console.warn("Tabby eligibility endpoint error:", message);
+      return { success: true as const, data: { available: true } };
+    }
+  }, { body: PaymentModel.tabbyEligibilityBody })
+  // Public: order status by Tabby payment id. Lets the success page verify the
+  // order was paid (CONFIRMED) before clearing the cart.
+  .get("/tabby/status", async ({ query, set }) => {
+    const paymentId = (query as { payment_id?: string }).payment_id;
+    if (!paymentId) {
+      set.status = 400;
+      return { success: false as const, error: "payment_id is required" };
+    }
+    const orderStatus = await PaymentService.getTabbyOrderStatus(paymentId);
+    return { success: true as const, data: { orderStatus } };
+  })
   .post("/checkout", async ({ body, user }) => {
     try {
       const result = await PaymentService.createCheckoutSession(

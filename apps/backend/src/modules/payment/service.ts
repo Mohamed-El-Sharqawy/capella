@@ -489,6 +489,71 @@ export abstract class PaymentService {
   // Tabby (https://docs.tabby.ai)
   // ---------------------------------------------------------------------------
 
+  /**
+   * Look up the local order status by Tabby payment id. Used by the success
+   * page to confirm the order was actually paid (CONFIRMED via the webhook)
+   * before clearing the cart — so cart-clearing is tied to a verified payment,
+   * not merely to landing on the return route.
+   */
+  static async getTabbyOrderStatus(
+    paymentId: string
+  ): Promise<string | null> {
+    const order = await prisma.order.findUnique({
+      where: { tabbyPaymentId: paymentId },
+      select: { status: true },
+    });
+    return order?.status ?? null;
+  }
+
+  /**
+   * Background pre-scoring (eligibility) check — run before offering Tabby as a
+   * payment option. Calls POST /api/v2/checkout with a minimal payload.
+   *
+   * Fail-safe: any error, timeout, or missing data defaults to `available`
+   * (the authoritative check reruns at session creation, where a rejection
+   * surfaces a clear message instead of a silent dead-end).
+   * https://docs.tabby.ai/pay-in-4-custom-integration/checkout-flow#background-pre-scoring-check
+   */
+  static async checkTabbyEligibility(params: {
+    amount: number;
+    email?: string;
+    phone?: string;
+  }): Promise<{ available: boolean; rejectionReason?: string }> {
+    const merchantCode = process.env.TABBY_MERCHANT_CODE;
+    if (
+      !merchantCode ||
+      merchantCode === "your_tabby_merchant_code" ||
+      process.env.TABBY_ENABLED === "false"
+    ) {
+      return { available: true };
+    }
+    if (!params.email || !params.phone || params.amount <= 0) {
+      return { available: true };
+    }
+    try {
+      const res = await TabbyClient.checkEligibility({
+        amount: params.amount.toFixed(2),
+        currency: CURRENCY,
+        buyer: { email: params.email, phone: params.phone },
+        merchantCode,
+      });
+      if (res.status === "rejected") {
+        return {
+          available: false,
+          rejectionReason:
+            res.configuration?.products?.installments?.rejection_reason,
+        };
+      }
+      return { available: true };
+    } catch (err) {
+      console.warn(
+        "Tabby pre-scoring check failed, defaulting to available:",
+        err
+      );
+      return { available: true };
+    }
+  }
+
   private static async createTabbyCheckout(
     body: PaymentModel["checkoutBody"],
     userId?: string
@@ -500,7 +565,7 @@ export abstract class PaymentService {
     if (!merchantCode) {
       throw new Error("Tabby is not configured. Set TABBY_MERCHANT_CODE in .env");
     }
-    const { cancelUrl, couponCode, locale } = body;
+    const { locale } = body;
     const lang = (locale || "en") === "ar" ? "ar" : "en";
 
     const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TABBY");
@@ -539,12 +604,10 @@ export abstract class PaymentService {
       discount_amount: order.discountAmount.toFixed(2),
       merchant_urls: {
         success: `${MARKETING_URL}/${lang}/checkout/success?method=TABBY`,
-        cancel:
-          cancelUrl ||
-          `${MARKETING_URL}/${lang}/checkout?method=TABBY${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
-        failure:
-          cancelUrl ||
-          `${MARKETING_URL}/${lang}/checkout?method=TABBY${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
+        // Distinct outcome pages — neither clears the cart, and each shows a
+        // specific message (approved wording from the Tabby redirect docs).
+        cancel: `${MARKETING_URL}/${lang}/checkout/cancel?reason=cancel`,
+        failure: `${MARKETING_URL}/${lang}/checkout/cancel?reason=rejected`,
       },
     });
 
@@ -610,8 +673,11 @@ export abstract class PaymentService {
     }
 
     if (payment.status === "AUTHORIZED" || payment.status === "CLOSED") {
-      // Capture the full amount (only possible while AUTHORIZED). Once CLOSED
-      // (already captured, e.g. by a previous webhook) we just finalize.
+      // Capture the full amount. Only an AUTHORIZED payment can be captured; a
+      // CLOSED payment was already captured (e.g. by a duplicate webhook) and
+      // is just finalized here. Capture is idempotent: Tabby dedupes by the
+      // reference_id we send (= order.id), and markOrderPaid guards against
+      // double-finalization via the terminal-status check.
       if (payment.status === "AUTHORIZED") {
         try {
           await TabbyClient.capturePayment(
@@ -619,8 +685,30 @@ export abstract class PaymentService {
             order.total.toFixed(2),
             order.id
           );
+          console.log(`✅ Tabby captured payment ${paymentId} for order ${order.id}`);
         } catch (err) {
-          console.error(`Tabby capture failed for order ${order.id}:`, err);
+          // A concurrent webhook may have captured + closed it first. Re-fetch
+          // the authoritative status before treating this as a real failure.
+          const rechecked = await TabbyClient.retrievePayment(paymentId);
+          if (rechecked.status === "CLOSED") {
+            console.log(`Tabby payment ${paymentId} already captured (CLOSED), finalizing order ${order.id}`);
+          } else {
+            // Genuine capture failure: do NOT confirm the order. Surface it so
+            // the AUTHORIZED payment gets captured manually within Tabby's
+            // 21-day window (otherwise it is never settled).
+            console.error(`❌ Tabby capture failed for order ${order.id}:`, err);
+            try {
+              await EmailService.sendCaptureFailureAlert({
+                orderId: order.id,
+                paymentId,
+                provider: "Tabby",
+                error: err,
+              });
+            } catch (alertErr) {
+              console.error("Failed to send Tabby capture alert:", alertErr);
+            }
+            return { received: true };
+          }
         }
       }
       await this.markOrderPaid(order, {
@@ -641,6 +729,59 @@ export abstract class PaymentService {
     }
 
     return { received: true };
+  }
+
+  /**
+   * Register the Tabby webhook endpoint with Tabby so we receive payment
+   * status events. Without this, Tabby never calls /payments/tabby/webhook, so
+   * AUTHORIZED payments are never captured/settled. Registered per merchant_code
+   * + secret-key pair; the environment (test/live) follows the key.
+   * Safe to call on every boot: Tabby allows up to 4 webhooks per pair and
+   * returns the (possibly duplicate) registration. Configure the same
+   * TABBY_WEBHOOK_SECRET here and in the dashboard so the handler can verify it.
+   */
+  static async registerTabbyWebhook(): Promise<void> {
+    const merchantCode = process.env.TABBY_MERCHANT_CODE;
+    if (!merchantCode || merchantCode === "your_tabby_merchant_code") {
+      console.warn(
+        "⚠️ TABBY_MERCHANT_CODE not set, skipping Tabby webhook registration"
+      );
+      return;
+    }
+
+    // Public URL of this backend's Tabby webhook endpoint.
+    const webhookUrl =
+      process.env.TABBY_WEBHOOK_URL ||
+      (process.env.BACKEND_PUBLIC_URL
+        ? `${process.env.BACKEND_PUBLIC_URL.replace(/\/$/, "")}/api/payments/tabby/webhook`
+        : "");
+
+    if (!webhookUrl) {
+      console.warn(
+        "⚠️ Tabby webhook URL not configured. Set TABBY_WEBHOOK_URL or BACKEND_PUBLIC_URL (e.g. https://api.yourdomain.com) so the webhook can be registered"
+      );
+      return;
+    }
+
+    if (!webhookUrl.startsWith("https://")) {
+      console.warn(
+        `⚠️ Tabby webhook URL must be HTTPS and publicly reachable (${webhookUrl}); skipping registration`
+      );
+      return;
+    }
+
+    const webhookSecret = process.env.TABBY_WEBHOOK_SECRET || undefined;
+
+    try {
+      const result = await TabbyClient.registerWebhook({
+        url: webhookUrl,
+        merchantCode,
+        secret: webhookSecret,
+      });
+      console.log(`✅ Tabby webhook registered: ${result.url} (id: ${result.id})`);
+    } catch (err) {
+      console.error("❌ Tabby webhook registration error:", err);
+    }
   }
 
   // ---------------------------------------------------------------------------

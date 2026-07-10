@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useCart } from "@/contexts/cart-context";
 import { useAuth } from "@/contexts/auth-context";
 import { useOrders } from "@/contexts/orders-context";
+import { usePaymentMethods } from "@/lib/payment-methods";
 import { Link } from "@/i18n/navigation";
 import { trackCheckoutView, trackOrderComplete } from "@/lib/analytics";
 import { fbAddPaymentInfo } from "@/lib/facebook-pixel";
@@ -15,6 +16,7 @@ import {
   useSavedAddresses,
   useCheckoutSubmit,
   useCoupon,
+  useTabbyEligibility,
 } from "./hooks";
 import {
   CheckoutSuccess,
@@ -68,6 +70,25 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
     applyCoupon,
     removeCoupon,
   } = useCoupon(total);
+
+  // Tabby pre-scoring — hide Tabby when Tabby rejects the customer/cart.
+  const paymentMethods = usePaymentMethods();
+  const tabbyEligibility = useTabbyEligibility({
+    amount: total,
+    email: formState.email,
+    phone: formState.phone,
+    enabled: paymentMethods?.tabby ?? false,
+  });
+
+  // If the selected method becomes unavailable mid-flow, fall back to COD.
+  useEffect(() => {
+    if (
+      formState.paymentMethod === "TABBY" &&
+      tabbyEligibility === "unavailable"
+    ) {
+      updateField("paymentMethod", "COD");
+    }
+  }, [formState.paymentMethod, tabbyEligibility, updateField]);
 
   // Submit handler
   const { isSubmitting, orderId, orderSuccess, handleSubmit } = useCheckoutSubmit({
@@ -192,7 +213,13 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
             {/* Guest checkout benefits prompt */}
             {!isAuthenticated && <GuestBenefitsPrompt />}
 
-            <PaymentMethodSection formState={formState} onUpdateField={updateField} />
+            <PaymentMethodSection
+              formState={formState}
+              onUpdateField={updateField}
+              tabbyEligibility={tabbyEligibility}
+              total={total}
+              locale={locale}
+            />
           </div>
 
           {/* Right: Order Summary */}

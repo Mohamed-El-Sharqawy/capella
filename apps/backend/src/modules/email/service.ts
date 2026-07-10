@@ -366,4 +366,49 @@ export abstract class EmailService {
       replyTo: { email: data.email, name: data.name },
     });
   }
+
+  /**
+   * Alert store owners when a Tabby/Tamara payment was AUTHORIZED but could not
+   * be captured. Uncaptured authorizations are never settled, so these must be
+   * resolved manually (capture/cancel) within Tabby's 21-day window.
+   */
+  static async sendCaptureFailureAlert(params: {
+    orderId: string;
+    paymentId: string;
+    provider: string;
+    error: unknown;
+  }) {
+    const owners = getOwnerEmails();
+    if (owners.length === 0) {
+      console.warn("MAILTRAP_OWNERS not set, skipping capture failure alert");
+      return;
+    }
+
+    const errorMsg =
+      params.error instanceof Error ? params.error.message : String(params.error);
+
+    const html = `<html><body style="font-family:Arial,sans-serif;background:#f5f5f5;padding:24px">
+  <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden">
+    <div style="background:#dc2626;color:#fff;padding:20px 24px">
+      <h2 style="margin:0;font-size:18px">⚠️ Payment capture failed — action required</h2>
+    </div>
+    <div style="padding:24px;color:#374151;font-size:14px;line-height:1.6">
+      <p>A payment was <strong>authorized</strong> but could not be captured. The order is NOT settled and must be resolved in the ${params.provider} dashboard within 21 days.</p>
+      <table style="width:100%;border-collapse:collapse;margin:16px 0">
+        <tr><td style="padding:6px 0;color:#6b7280">Order</td><td style="padding:6px 0"><strong>#${params.orderId.slice(-8).toUpperCase()}</strong> (${params.orderId})</td></tr>
+        <tr><td style="padding:6px 0;color:#6b7280">Provider</td><td style="padding:6px 0">${params.provider}</td></tr>
+        <tr><td style="padding:6px 0;color:#6b7280">Payment ID</td><td style="padding:6px 0;font-family:monospace;font-size:12px">${params.paymentId}</td></tr>
+        <tr><td style="padding:6px 0;color:#6b7280">Error</td><td style="padding:6px 0">${errorMsg}</td></tr>
+      </table>
+      <p style="margin:0;color:#6b7280">Capture or cancel this payment manually in the ${params.provider} Merchant Dashboard.</p>
+    </div>
+  </div>
+</body></html>`;
+
+    await sendEmail({
+      to: owners,
+      subject: `⚠️ Capture failed: Order #${params.orderId.slice(-8).toUpperCase()} (${params.provider})`,
+      html,
+    });
+  }
 }

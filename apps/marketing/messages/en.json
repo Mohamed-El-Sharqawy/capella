@@ -237,13 +237,20 @@
       "message": "Thank you for your purchase. Your order has been successfully processed.",
       "orderId": "Order ID",
       "emailSent": "A confirmation email has been sent to your email address.",
-      "continueShopping": "Continue Shopping"
+      "continueShopping": "Continue Shopping",
+      "confirmingTitle": "Confirming your payment…",
+      "confirmingMessage": "We're confirming your payment with Tabby. This only takes a moment — please don't close this page.",
+      "timeoutTitle": "We've received your order",
+      "timeoutMessage": "We're still confirming your payment. You'll receive a confirmation email once it's complete. If you don't hear from us, please contact support."
     },
     "cancel": {
       "title": "Payment Cancelled",
-      "message": "Your payment was not completed. You can try again or choose a different payment method.",
+      "message": "You aborted the payment. Please retry or choose another payment method.",
+      "rejectedTitle": "Payment Not Approved",
+      "rejectedMessage": "Sorry, Tabby is unable to approve this purchase. Please use an alternative payment method for your order.",
       "retry": "Try Again",
-      "backToCart": "Back to Cart"
+      "backToCart": "Back to Cart",
+      "returnToCheckout": "Return to Checkout"
     },
     "reviewOrder": "Review Order",
     "items": "items",
@@ -257,7 +264,8 @@
     "sessionId": "Session ID: ",
     "onlinePayment": "Online Payment",
     "onlinePaymentDesc": "Pay securely via Credit Card, Apple Pay, or Google Pay",
-    "tabbyDesc": "Split into 4 interest-free payments",
+    "tabbyName": "Pay later with Tabby",
+    "tabbyDesc": "4 payments of XX.XX/mo or up to 12 months. Learn more",
     "tamaraDesc": "Pay later or split into 4 instalments",
     "removeCoupon": "Remove coupon",
     "noImage": "No image",

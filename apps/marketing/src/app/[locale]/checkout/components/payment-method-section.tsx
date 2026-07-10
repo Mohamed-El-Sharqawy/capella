@@ -5,17 +5,30 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Banknote, CreditCard, Wallet } from "lucide-react";
 import { usePaymentMethods } from "@/lib/payment-methods";
+import type { TabbyEligibility } from "../hooks";
+import { TabbyCardSnippet } from "./tabby-card-snippet";
 
 interface PaymentMethodSectionProps {
   formState: CheckoutFormState;
   onUpdateField: (field: keyof CheckoutFormState, value: string) => void;
+  tabbyEligibility?: TabbyEligibility;
+  total: number;
+  locale: string;
 }
 
-export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethodSectionProps) {
+export function PaymentMethodSection({
+  formState,
+  onUpdateField,
+  tabbyEligibility = "loading",
+  total,
+  locale,
+}: PaymentMethodSectionProps) {
   const t = useTranslations("checkout");
   const enabled = usePaymentMethods();
   const tabbyEnabled = enabled?.tabby ?? false;
+  const tabbyVisible = tabbyEnabled && tabbyEligibility !== "unavailable";
   const tamaraEnabled = enabled?.tamara ?? false;
+  const tabbySelected = formState.paymentMethod === "TABBY";
 
   const allMethods = [
     {
@@ -33,8 +46,8 @@ export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethod
     {
       id: "TABBY" as const,
       icon: Wallet,
-      label: "Tabby",
-      desc: t("tabbyDesc"),
+      // Official approved payment-method name (EN/AR) from the Tabby docs.
+      label: t("tabbyName"),
       brand: (
         <span className="px-2 py-1 bg-[#39F9D8] text-black text-[11px] font-bold rounded">
           tabby
@@ -55,7 +68,7 @@ export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethod
   ];
 
   const visibleMethods = allMethods.filter((m) => {
-    if (m.id === "TABBY") return tabbyEnabled;
+    if (m.id === "TABBY") return tabbyVisible;
     if (m.id === "TAMARA") return tamaraEnabled;
     return true;
   });
@@ -74,30 +87,38 @@ export function PaymentMethodSection({ formState, onUpdateField }: PaymentMethod
         {visibleMethods.map(({ id, icon: Icon, label, desc, brand }) => {
           const selected = formState.paymentMethod === id;
           return (
-            <div
-              key={id}
-              onClick={() => onUpdateField("paymentMethod", id)}
-              className={cn(
-                "border-2 rounded-lg p-4 cursor-pointer transition-all",
-                selected ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "w-5 h-5 border-2 rounded-full flex items-center justify-center shrink-0",
-                  selected ? "border-black" : "border-gray-300"
-                )}>
-                  {selected && <div className="w-3 h-3 bg-black rounded-full" />}
-                </div>
-                <Icon className="h-5 w-5 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium">{label}</p>
-                    {brand}
+            <div key={id}>
+              <div
+                onClick={() => onUpdateField("paymentMethod", id)}
+                className={cn(
+                  "border-2 rounded-lg p-4 cursor-pointer transition-all",
+                  selected ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-5 h-5 border-2 rounded-full flex items-center justify-center shrink-0",
+                    selected ? "border-black" : "border-gray-300"
+                  )}>
+                    {selected && <div className="w-3 h-3 bg-black rounded-full" />}
                   </div>
-                  <p className="text-sm text-muted-foreground">{desc}</p>
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">{label}</p>
+                      {brand}
+                    </div>
+                    {desc && <p className="text-sm text-muted-foreground">{desc}</p>}
+                  </div>
                 </div>
               </div>
+              {/* Official Tabby Checkout snippet — renders approved copy and
+                  stays compliant if Tabby's wording changes. */}
+              {id === "TABBY" && selected && (
+                <div className="mt-2 pl-8">
+                  <TabbyCardSnippet price={total} locale={locale} />
+                </div>
+              )}
             </div>
           );
         })}

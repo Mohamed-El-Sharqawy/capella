@@ -34,6 +34,11 @@ export const PaymentModel = {
   webhookHeaders: t.Object({
     "x-hmac-signature": t.String(),
   }),
+  tabbyEligibilityBody: t.Object({
+    amount: t.Number({ minimum: 0 }),
+    email: t.Optional(t.String()),
+    phone: t.Optional(t.String()),
+  }),
 } as const;
 
 export type PaymentModel = {
