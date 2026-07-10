@@ -330,18 +330,33 @@ export abstract class PaymentService {
     };
   }
 
+  /**
+   * Resolve the storefront base URL to send the customer back to after payment.
+   * Prefers the request's Origin header — the exact subdomain the customer is
+   * on (e.g. preview.capellauae.com vs capellauae.com) — so return/cancel/success
+   * redirects always land on the same environment the order started from.
+   * Falls back to MARKETING_URL, then localhost (dev).
+   */
+  private static resolveMarketingUrl(origin?: string): string {
+    if (origin && /^https?:\/\//i.test(origin)) {
+      return origin.replace(/\/+$/, "");
+    }
+    return MARKETING_URL.replace(/\/+$/, "");
+  }
+
   static async createCheckoutSession(
     body: PaymentModel["checkoutBody"],
-    userId?: string
+    userId?: string,
+    origin?: string
   ) {
     const method = (body.method as PaymentMethodName | undefined) || "ZIINA";
     switch (method) {
       case "ZIINA":
-        return this.createZiinaCheckout(body, userId);
+        return this.createZiinaCheckout(body, userId, origin);
       case "TABBY":
-        return this.createTabbyCheckout(body, userId);
+        return this.createTabbyCheckout(body, userId, origin);
       case "TAMARA":
-        return this.createTamaraCheckout(body, userId);
+        return this.createTamaraCheckout(body, userId, origin);
       default:
         throw new Error(`Unsupported payment method: ${method}`);
     }
@@ -353,10 +368,12 @@ export abstract class PaymentService {
 
   private static async createZiinaCheckout(
     body: PaymentModel["checkoutBody"],
-    userId?: string
+    userId?: string,
+    origin?: string
   ) {
     const { successUrl, cancelUrl, couponCode, locale } = body;
     const lang = locale || "en";
+    const marketingUrl = this.resolveMarketingUrl(origin);
 
     const { order } = await this.prepareOrder(body, userId, "ZIINA");
 
@@ -365,13 +382,13 @@ export abstract class PaymentService {
       currency_code: CURRENCY,
       success_url:
         successUrl ||
-        `${MARKETING_URL}/${lang}/checkout/success?payment_intent_id={PAYMENT_INTENT_ID}`,
+        `${marketingUrl}/${lang}/checkout/success?payment_intent_id={PAYMENT_INTENT_ID}`,
       cancel_url:
         cancelUrl ||
-        `${MARKETING_URL}/${lang}/checkout?method=ZIINA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
+        `${marketingUrl}/${lang}/checkout?method=ZIINA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
       failure_url:
         cancelUrl ||
-        `${MARKETING_URL}/${lang}/checkout?method=ZIINA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
+        `${marketingUrl}/${lang}/checkout?method=ZIINA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`,
       message: `Order ${order.id}`,
     });
 
@@ -556,7 +573,8 @@ export abstract class PaymentService {
 
   private static async createTabbyCheckout(
     body: PaymentModel["checkoutBody"],
-    userId?: string
+    userId?: string,
+    origin?: string
   ) {
     if (process.env.TABBY_ENABLED === "false") {
       throw new Error("Tabby is currently unavailable. Please choose another payment method.");
@@ -567,6 +585,7 @@ export abstract class PaymentService {
     }
     const { locale } = body;
     const lang = (locale || "en") === "ar" ? "ar" : "en";
+    const marketingUrl = this.resolveMarketingUrl(origin);
 
     const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TABBY");
     const contact = this.getCustomerContact(body);
@@ -603,11 +622,11 @@ export abstract class PaymentService {
       shipping_amount: shippingCost.toFixed(2),
       discount_amount: order.discountAmount.toFixed(2),
       merchant_urls: {
-        success: `${MARKETING_URL}/${lang}/checkout/success?method=TABBY`,
+        success: `${marketingUrl}/${lang}/checkout/success?method=TABBY`,
         // Distinct outcome pages — neither clears the cart, and each shows a
         // specific message (approved wording from the Tabby redirect docs).
-        cancel: `${MARKETING_URL}/${lang}/checkout/cancel?reason=cancel`,
-        failure: `${MARKETING_URL}/${lang}/checkout/cancel?reason=rejected`,
+        cancel: `${marketingUrl}/${lang}/checkout/cancel?reason=cancel`,
+        failure: `${marketingUrl}/${lang}/checkout/cancel?reason=rejected`,
       },
     });
 
@@ -797,7 +816,8 @@ export abstract class PaymentService {
 
   private static async createTamaraCheckout(
     body: PaymentModel["checkoutBody"],
-    userId?: string
+    userId?: string,
+    origin?: string
   ) {
     if (process.env.TAMARA_ENABLED === "false") {
       throw new Error("Tamara is currently unavailable. Please choose another payment method.");
@@ -808,10 +828,11 @@ export abstract class PaymentService {
     const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TAMARA");
     const contact = this.getCustomerContact(body);
     const localePath = (locale || "en") === "ar" ? "ar" : "en";
+    const marketingUrl = this.resolveMarketingUrl(origin);
 
     const cancelUrlResolved =
       cancelUrl ||
-      `${MARKETING_URL}/${localePath}/checkout?method=TAMARA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`;
+      `${marketingUrl}/${localePath}/checkout?method=TAMARA${couponCode ? `&coupon=${couponCode.toUpperCase()}` : ""}`;
 
     const checkout = await TamaraClient.createCheckout({
       order_reference_id: order.id,
@@ -870,7 +891,7 @@ export abstract class PaymentService {
         phone_number: order.shippingPhone || contact.phone,
       },
       merchant_url: {
-        success: `${MARKETING_URL}/${localePath}/checkout/success?method=TAMARA`,
+        success: `${marketingUrl}/${localePath}/checkout/success?method=TAMARA`,
         failure: cancelUrlResolved,
         cancel: cancelUrlResolved,
       },

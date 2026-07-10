@@ -36,11 +36,12 @@ export const payment = new Elysia({ prefix: "/payments" })
     const orderStatus = await PaymentService.getTabbyOrderStatus(paymentId);
     return { success: true as const, data: { orderStatus } };
   })
-  .post("/checkout", async ({ body, user }) => {
+  .post("/checkout", async ({ body, user, headers }) => {
     try {
       const result = await PaymentService.createCheckoutSession(
         body,
-        user?.id
+        user?.id,
+        headers.origin
       );
       return { success: true as const, data: result };
     } catch (error) {
