@@ -245,7 +245,7 @@
     },
     "cancel": {
       "title": "Payment Cancelled",
-      "message": "You aborted the payment. Please retry or choose another payment method.",
+      "message": "You aborted the payment with Tabby. Please retry or choose another payment method.",
       "rejectedTitle": "Payment Not Approved",
       "rejectedMessage": "Sorry, Tabby is unable to approve this purchase. Please use an alternative payment method for your order.",
       "retry": "Try Again",

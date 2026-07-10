@@ -40,7 +40,10 @@ export function LanguageSwitcher({ trigger }: { trigger?: React.ReactNode }) {
 
   const handleLanguageChange = (langCode: string) => {
     setIsOpen(false);
-    router.replace(pathname, { locale: langCode });
+    // Preserve the current query string (method, orderId, payment_id, coupon,
+    // address, …) so switching language keeps the page context intact.
+    const search = window.location.search;
+    router.replace(search ? `${pathname}${search}` : pathname, { locale: langCode });
   };
 
   return (
