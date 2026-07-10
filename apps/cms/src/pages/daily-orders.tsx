@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, ArrowRight, Truck, Clock, ClipboardList, ClipboardCheck } from "lucide-react";
+import { Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, ArrowRight, Truck, Clock, ClipboardList, ClipboardCheck, Trash2 } from "lucide-react";
 import { getShippingCost } from "@ecommerce/shared-utils";
-import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, printPackingSlip, type OrderStatus } from "@/features/orders";
+import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, printPackingSlip, type OrderStatus } from "@/features/orders";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Table,
@@ -55,9 +57,23 @@ export function DailyOrdersPage() {
   const { data: orderDetail, isLoading: isLoadingDetail } = useOrder(selectedOrderId || "");
   const updateStatus = useUpdateOrderStatus();
   const updatePaymentStatus = useUpdateOrderPaymentStatus();
+  const deleteMutation = useDeleteOrder();
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const orders = data?.data?.data || [];
   const meta = data?.data?.meta || { total: 0, page: 1, limit: 50, totalPages: 0 };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteMutation.mutateAsync(deleteTarget);
+      toast.success("Order deleted");
+      setSelectedOrderId(null);
+      setDeleteTarget(null);
+    } catch {
+      toast.error("Failed to delete order");
+    }
+  };
 
   const handleMoveOrder = async (orderId: string) => {
     let nextStatus: OrderStatus;
@@ -212,6 +228,7 @@ export function DailyOrdersPage() {
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => setSelectedOrderId(order.id)}><Eye className="h-4 w-4" /></Button>
                         <Button variant="ghost" size="sm" onClick={() => printPackingSlip(order)} title="Print packing slip"><ClipboardCheck className="h-4 w-4" /></Button>
+                        <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => setDeleteTarget(order.id)} title="Delete order"><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -351,7 +368,10 @@ export function DailyOrdersPage() {
                       </div>
                     </div>
 
-                    <div className="flex justify-end pt-2">
+                    <div className="flex items-center justify-between pt-2">
+                      <Button variant="destructive" size="sm" onClick={() => { setSelectedOrderId(null); setDeleteTarget(od.id); }} disabled={deleteMutation.isPending}>
+                        <Trash2 className="h-4 w-4 mr-2" /> Delete Order
+                      </Button>
                       <Button variant="outline" onClick={() => printPackingSlip(od)}>
                         <ClipboardCheck className="h-4 w-4 mr-2" /> Packing Slip
                       </Button>
@@ -363,6 +383,24 @@ export function DailyOrdersPage() {
           ) : (
             <div className="py-12 text-center text-muted-foreground">Order not found</div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Order</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this order? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isPending}>
+              {deleteMutation.isPending ? (<><Loader2 className="h-4 w-4 animate-spin mr-2" />Deleting...</>) : "Delete Order"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

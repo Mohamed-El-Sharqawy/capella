@@ -780,7 +780,14 @@ export abstract class PaymentService {
       });
       console.log(`✅ Tabby webhook registered: ${result.url} (id: ${result.id})`);
     } catch (err) {
-      console.error("❌ Tabby webhook registration error:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      // Idempotent: Tabby returns 400 "webhook already exists" when this URL was
+      // registered on a previous boot — that's the desired end state, not an error.
+      if (msg.includes("already exists")) {
+        console.log(`✅ Tabby webhook already registered: ${webhookUrl}`);
+      } else {
+        console.error("❌ Tabby webhook registration error:", err);
+      }
     }
   }
 

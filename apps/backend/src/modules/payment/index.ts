@@ -83,7 +83,11 @@ export const payment = new Elysia({ prefix: "/payments" })
   })
   .post("/tabby/webhook", async ({ headers, body, set }) => {
     const sig = headers["x-tabby-auth"];
+    // Behind Cloudflare/CDN the socket peer is the edge (e.g. 162.158.x.x), not
+    // Tabby's server, so the IP allowlist would always warn. CF-Connecting-IP
+    // is the true origin client and matches Tabby's published server IPs.
     const clientIp =
+      headers["cf-connecting-ip"] ||
       headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
       headers["x-real-ip"] ||
       "";
