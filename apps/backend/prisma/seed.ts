@@ -184,12 +184,6 @@ async function main() {
     });
 
     const variant = await prisma.productVariant.create({
-        stoneId: pData.nameEn.includes("Diamond") ? stones[0].id : stones[4].id,
-        clarityId: pData.nameEn.includes("Diamond") ? clarities[0].id : undefined,
-      },
-    });
-
-    const variant = await prisma.productVariant.create({
       data: {
         slug: `${product.slug}-default`,
         productId: product.id,

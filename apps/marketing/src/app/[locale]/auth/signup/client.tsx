@@ -86,8 +86,8 @@ export function SignUpClient({ params }: AuthPageProps) {
                 value={formData.phone}
                 onChange={(e) => {
                   const val = e.target.value.replace(/\D/g, "");
-                  if (!val.startsWith("5") && val.length > 0) return;
-                  if (val.length > 8) return;
+                  if (val.length > 0 && !val.startsWith("5")) return;
+                  if (val.length > 9) return;
                   handlers.handleChange("phone", val);
                 }}
                 placeholder="5X XXX XXXX"

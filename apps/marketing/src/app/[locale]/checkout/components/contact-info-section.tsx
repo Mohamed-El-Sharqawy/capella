@@ -1,5 +1,6 @@
 "use client";
 
+import { Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { CheckoutFormState } from "../types";
 
@@ -52,14 +53,32 @@ export function ContactInfoSection({ formState, onUpdateField }: ContactInfoSect
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">{t("phone")} *</label>
-          <input
-            type="tel"
-            value={formState.phone}
-            onChange={(e) => onUpdateField("phone", e.target.value)}
-            required
-            placeholder={t("phonePlaceholder")}
-            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-          />
+          <div className="flex gap-2" dir="ltr">
+            <input
+              type="tel"
+              value="+971"
+              readOnly
+              className="w-20 px-3 py-3 border rounded-lg bg-gray-50 text-sm font-medium text-muted-foreground"
+            />
+            <div className="flex-1 relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="tel"
+                value={formState.phone}
+                onChange={(e) => {
+                  // UAE mobile only: digits, must start with 5, max 9 digits
+                  // (5 + 8) — the full national number after +971.
+                  const val = e.target.value.replace(/\D/g, "");
+                  if (val.length > 0 && !val.startsWith("5")) return;
+                  if (val.length > 9) return;
+                  onUpdateField("phone", val);
+                }}
+                placeholder="5X XXX XXXX"
+                required
+                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

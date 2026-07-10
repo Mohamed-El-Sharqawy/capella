@@ -73,8 +73,14 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
 
   // Tabby pre-scoring — hide Tabby when Tabby rejects the customer/cart.
   const paymentMethods = usePaymentMethods();
+  // Grand total the customer actually pays (items − discount + shipping).
+  // getShippingCost already returns 0 at/over the 1000 AED threshold, so Tabby
+  // excludes shipping there. Both the pre-scoring check and the TabbyCard
+  // snippet must use this so they match the order summary and the real charge.
+  const roundedDiscount = discountAmount > 0 ? Math.ceil(discountAmount) : 0;
+  const tabbyAmount = total - roundedDiscount + getShippingCost(total);
   const tabbyEligibility = useTabbyEligibility({
-    amount: total,
+    amount: tabbyAmount,
     email: formState.email,
     phone: formState.phone,
     enabled: paymentMethods?.tabby ?? false,
@@ -217,7 +223,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
               formState={formState}
               onUpdateField={updateField}
               tabbyEligibility={tabbyEligibility}
-              total={total}
+              total={tabbyAmount}
               locale={locale}
             />
           </div>
