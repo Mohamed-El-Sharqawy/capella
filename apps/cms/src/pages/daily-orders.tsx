@@ -267,31 +267,31 @@ export function DailyOrdersPage() {
                       <div><div className="text-xs text-muted-foreground">Order ID</div><div className="font-sans text-sm">{od.id}</div></div>
                       <div><div className="text-xs text-muted-foreground">Status</div><Badge className={`${STATUS_COLORS[od.status]} border-0 mt-1`}>{od.status}</Badge></div>
                       <div><div className="text-xs text-muted-foreground flex items-center gap-1"><Calendar className="h-3 w-3" /> Created</div><div className="text-sm">{formatDate(od.createdAt)}</div></div>
-                       <div><div className="text-xs text-muted-foreground">Payment</div>
-                         <div className="flex items-center gap-2 mt-1">
-                           {(() => {
-                             const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
-                             const isRefunded = od.status === "REFUNDED";
-                             const pmBadge = isOnline
-                               ? <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1"><CreditCard className="h-3 w-3" /> {od.paymentMethod}</Badge>
-                               : <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1"><Banknote className="h-3 w-3" /> COD</Badge>;
-                              if (isRefunded) return <>{pmBadge}<Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge></>;
-                              if (isOnline) return <>{pmBadge}{od.paidAt ? <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge> : <Badge className="bg-gray-100 text-gray-600 border-0">Unpaid</Badge>}</>;
-                             return (
-                               <>
-                                 {pmBadge}
-                                 <button onClick={() => handlePaymentToggle(od.id, !!od.paidAt)}>
-                                   {od.paidAt ? (
-                                     <Badge className="bg-green-100 text-green-800 border-0 cursor-pointer">Paid</Badge>
-                                   ) : (
-                                     <Badge className="bg-gray-100 text-gray-600 border-0 cursor-pointer">Unpaid</Badge>
-                                   )}
-                                 </button>
-                               </>
-                             );
-                           })()}
-                         </div>
-                       </div>
+                      <div><div className="text-xs text-muted-foreground">Payment</div>
+                        <div className="flex items-center gap-2 mt-1">
+                          {(() => {
+                            const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
+                            const isRefunded = od.status === "REFUNDED";
+                            const pmBadge = isOnline
+                              ? <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1"><CreditCard className="h-3 w-3" /> {od.paymentMethod}</Badge>
+                              : <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1"><Banknote className="h-3 w-3" /> COD</Badge>;
+                            if (isRefunded) return <>{pmBadge}<Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge></>;
+                            if (isOnline) return <>{pmBadge}{od.paidAt ? <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge> : <Badge className="bg-gray-100 text-gray-600 border-0">Unpaid</Badge>}</>;
+                            return (
+                              <>
+                                {pmBadge}
+                                <button onClick={() => handlePaymentToggle(od.id, !!od.paidAt)}>
+                                  {od.paidAt ? (
+                                    <Badge className="bg-green-100 text-green-800 border-0 cursor-pointer">Paid</Badge>
+                                  ) : (
+                                    <Badge className="bg-gray-100 text-gray-600 border-0 cursor-pointer">Unpaid</Badge>
+                                  )}
+                                </button>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="rounded-lg border p-4">
@@ -322,25 +322,6 @@ export function DailyOrdersPage() {
                         <p className="text-sm text-muted-foreground">{od.note}</p>
                       </div>
                     )}
-
-                    <div className="rounded-lg border p-4">
-                      <h3 className="font-semibold flex items-center gap-2 mb-3"><Package className="h-4 w-4" /> Items ({od.items?.length || 0})</h3>
-                      <div className="space-y-3">
-                        {od.items?.map((item: any, index: number) => (
-                          <div key={index} className="flex items-center gap-4 rounded-lg bg-muted/50 p-3">
-                            {item.imageUrl && <img src={item.imageUrl} alt={item.productNameEn} className="h-14 w-14 rounded-md object-cover" />}
-                            <div className="flex-1">
-                              <div className="font-medium text-sm">{item.productNameEn}</div>
-                              <div className="text-xs text-muted-foreground">{item.variantNameEn}</div>
-                            </div>
-                            <div className="text-right text-sm">
-                              <div className="font-medium">{formatCurrency(item.price)}</div>
-                              <div className="text-muted-foreground">Qty: {item.quantity}</div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
                     <div className="rounded-lg border p-4 bg-muted/30">
                       <div className="space-y-2">

@@ -59,28 +59,6 @@ function buildPackingSlipHtml(order: Order): string {
 
   const totalPieces = (order.items || []).reduce((s, i) => s + i.quantity, 0);
 
-  const itemsHtml = (order.items || [])
-    .map((item) => {
-      const parts = [
-        item.variantNameEn,
-        item.size ? `Size: ${item.size}` : "",
-        item.color ? `Color: ${item.color}` : "",
-      ].filter(Boolean);
-      const subLine = parts.length ? `<div class="item-sub">${esc(parts.join(" · "))}</div>` : "";
-      return `
-        <tr>
-          <td class="check">☐</td>
-          <td>
-            <div class="item-name">${esc(item.productNameEn)}</div>
-            ${subLine}
-          </td>
-          <td class="r sku">${esc(item.sku || "—")}</td>
-          <td class="r qty">${item.quantity}</td>
-          <td class="r check">☐</td>
-        </tr>`;
-    })
-    .join("");
-
   const noteHtml = order.note
     ? `<div class="note"><b>Note:</b> ${esc(order.note)}</div>`
     : "";
@@ -163,20 +141,7 @@ function buildPackingSlipHtml(order: Order): string {
       <div class="phone">Tel: ${esc(order.shippingPhone || "—")}</div>
     </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th style="width:14px"></th>
-        <th>Item</th>
-        <th class="r">SKU</th>
-        <th class="r">Qty</th>
-        <th class="r">Packed</th>
-      </tr>
-    </thead>
-    <tbody>${itemsHtml}</tbody>
-  </table>
-
-  <div class="pieces">Total pieces: <b>${totalPieces}</b></div>
+  <div class="pieces" style="margin-top: 5px;">Total pieces: <b>${totalPieces}</b></div>
 
   ${paymentBox(order)}
 

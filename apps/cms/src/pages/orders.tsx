@@ -373,27 +373,6 @@ export function OrdersPage() {
                 </div>
               )}
 
-              <div className="rounded-lg border p-4">
-                <h3 className="font-semibold flex items-center gap-2 mb-3"><Package className="h-4 w-4" /> Order Items ({od.items?.length || 0})</h3>
-                <div className="space-y-3">
-                  {od.items?.map((item: any, index: number) => (
-                    <div key={index} className="flex items-center gap-4 rounded-lg bg-muted/50 p-3">
-                      {item.imageUrl && <img src={item.imageUrl} alt={item.productNameEn} className="h-16 w-16 rounded-md object-cover" />}
-                      <div className="flex-1">
-                        <div className="font-medium">{item.productNameEn}</div>
-                        <div className="text-sm text-muted-foreground">{item.variantNameEn}{item.size && ` \u2022 Size: ${item.size}`}{item.color && ` \u2022 Color: ${item.color}`}</div>
-                        <div className="text-xs text-muted-foreground">SKU: {item.sku || "-"}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">{formatCurrency(item.price)}</div>
-                        <div className="text-sm text-muted-foreground">Qty: {item.quantity}</div>
-                        <div className="text-sm font-medium text-primary">{formatCurrency(item.price * item.quantity)}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               <div className="rounded-lg border p-4 bg-muted/30">
                 <div className="space-y-2">
                   {(() => {
