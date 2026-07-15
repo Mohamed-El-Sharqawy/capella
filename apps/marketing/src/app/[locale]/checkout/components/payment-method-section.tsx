@@ -4,6 +4,8 @@ import type { CheckoutFormState } from "../types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Banknote, CreditCard, Wallet } from "lucide-react";
+import Image from "next/image";
+import tabbyLogo from "@/assets/tabby_logo.png";
 import { usePaymentMethods } from "@/lib/payment-methods";
 import type { TabbyEligibility } from "../hooks";
 import { TabbyCardSnippet } from "./tabby-card-snippet";
@@ -49,9 +51,13 @@ export function PaymentMethodSection({
       // Official approved payment-method name (EN/AR) from the Tabby docs.
       label: t("tabbyName"),
       brand: (
-        <span className="px-2 py-1 bg-[#39F9D8] text-black text-[11px] font-bold rounded">
-          tabby
-        </span>
+        <Image
+          src={tabbyLogo}
+          alt="tabby"
+          width={46}
+          height={18}
+          className="object-contain"
+        />
       ),
     },
     {
