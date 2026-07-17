@@ -28,7 +28,7 @@ export const PAYMENT_METHODS = ["ZIINA", "COD"] as const;
 /** Flat shipping fee in AED for orders below the free-shipping threshold. */
 export const SHIPPING_COST = 25;
 /** Orders with a subtotal at or above this amount (AED) ship for free. */
-export const FREE_SHIPPING_THRESHOLD = 1000;
+export const FREE_SHIPPING_THRESHOLD = 500;
 
 /**
  * Compute the shipping cost for an order based on its subtotal (the value of
