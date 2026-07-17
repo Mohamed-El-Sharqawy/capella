@@ -6,9 +6,12 @@ import { useTranslations } from "next-intl";
 import { Banknote, CreditCard, Wallet } from "lucide-react";
 import Image from "next/image";
 import tabbyLogo from "@/assets/tabby_logo.png";
+import tamaraLogoEn from "@/assets/tamara_logo_en.png";
+import tamaraLogoAr from "@/assets/tamara_logo_ar.png";
 import { usePaymentMethods } from "@/lib/payment-methods";
 import type { TabbyEligibility } from "../hooks";
 import { TabbyCardSnippet } from "./tabby-card-snippet";
+import { TamaraCheckoutSnippet } from "./tamara-checkout-snippet";
 
 interface PaymentMethodSectionProps {
   formState: CheckoutFormState;
@@ -63,12 +66,15 @@ export function PaymentMethodSection({
     {
       id: "TAMARA" as const,
       icon: Wallet,
-      label: "Tamara",
-      desc: t("tamaraDesc"),
+      label: t("tamaraName"),
       brand: (
-        <span className="px-2 py-1 bg-[#97D700] text-black text-[11px] font-bold rounded">
-          tamara
-        </span>
+        <Image
+          src={locale === "ar" ? tamaraLogoEn : tamaraLogoAr}
+          alt="tamara"
+          width={40}
+          height={20}
+          className="object-contain"
+        />
       ),
     },
   ];
@@ -123,6 +129,11 @@ export function PaymentMethodSection({
               {id === "TABBY" && selected && (
                 <div className="mt-2 pl-8">
                   <TabbyCardSnippet price={total} locale={locale} />
+                </div>
+              )}
+              {id === "TAMARA" && selected && (
+                <div className="mt-2 pl-8">
+                  <TamaraCheckoutSnippet price={total} locale={locale} />
                 </div>
               )}
             </div>
