@@ -38,8 +38,14 @@
  * (first run populates the new column), and is a no-op on subsequent runs.
  *
  * Usage (from repo root):
- *   pnpm migrate:shipping             # dry-run, prints the plan only
- *   pnpm migrate:shipping -- --apply  # writes the changes
+ *   pnpm migrate:shipping                                 # dry-run everything
+ *   pnpm migrate:shipping -- --apply                      # write everything
+ *   pnpm migrate:shipping -- --order-id=cm...             # dry-run one order
+ *   pnpm migrate:shipping -- --order-id=cm... --apply     # repair one order
+ *
+ * The --order-id flag bypasses the post-policy-change date guard so a legacy
+ * order that was mis-charged under a previous threshold can still be repaired
+ * individually, without weakening the guard for the bulk run.
  *
  * ⚠️ Take a `pg_dump` first.
  */
@@ -101,13 +107,21 @@ async function main() {
     `${c.bright}shipping backfill${c.reset} ${c.dim}(threshold=${FREE_SHIPPING_THRESHOLD}, flat=${SHIPPING_COST})${c.reset}`
   );
   log(
-    `${c.yellow}mode: ${apply ? "APPLY (writes)" : "DRY-RUN (no writes)"}${c.reset}\n`
+    `${c.yellow}mode: ${apply ? "APPLY (writes)" : "DRY-RUN (no writes)"}${c.reset}` +
+      (orderIdArg ? `${c.dim}  order=${orderIdArg}${c.reset}` : "") +
+      "\n"
   );
 
   const orders = await prisma.order.findMany({
+    where: orderIdArg ? { id: orderIdArg } : undefined,
     include: { items: true },
     orderBy: { createdAt: "asc" },
   });
+
+  if (orderIdArg && orders.length === 0) {
+    log(`${c.red}order ${orderIdArg} not found${c.reset}`);
+    return;
+  }
 
   log(`scanned ${orders.length} orders\n`);
 
@@ -122,27 +136,41 @@ async function main() {
     let newShipping = expectedShipping;
     let newTotal: number | null = null;
 
+    // Explicit --order-id override: skip the date guard so a legacy order that
+    // was mis-charged under a previous policy can still be repaired. Guard
+    // against accidental misuse by still requiring the implied shipping to
+    // equal the flat SHIPPING_COST (i.e. the row really was charged the flat
+    // fee) — anything else falls through to OTHER for manual review.
+    const forceAffected =
+      !!orderIdArg &&
+      Math.abs(impliedShipping - SHIPPING_COST) < 0.01;
+
     if (Math.abs(impliedShipping - expectedShipping) < 0.01) {
       action = "HEALTHY";
       newShipping = expectedShipping;
       newTotal = null; // already correct
     } else if (
+      (forceAffected || o.createdAt >= POLICY_CHANGE_DATE) &&
       Math.abs(impliedShipping - SHIPPING_COST) < 0.01 &&
       expectedShipping === 0
     ) {
       // Was charged flat shipping that should have been free under the current
-      // 500 threshold. Only treat as AFFECTED if the order was placed on or
-      // after the policy change — earlier orders were correctly charged under
-      // the 1000-threshold policy in effect at the time.
-      if (o.createdAt >= POLICY_CHANGE_DATE) {
-        action = "AFFECTED";
-        newShipping = 0;
-        newTotal = Math.round((itemsSum - discount) * 100) / 100;
-      } else {
-        action = "LEGACY";
-        newShipping = SHIPPING_COST;
-        newTotal = null;
-      }
+      // 500 threshold. Bulk mode only treats post-policy-change orders this
+      // way; the date guard is bypassed when the script was invoked with an
+      // explicit --order-id (and the implied-shipping shape still matches).
+      action = "AFFECTED";
+      newShipping = 0;
+      newTotal = Math.round((itemsSum - discount) * 100) / 100;
+    } else if (
+      !forceAffected &&
+      Math.abs(impliedShipping - SHIPPING_COST) < 0.01 &&
+      expectedShipping === 0
+    ) {
+      // Pre-policy-change order, correctly charged under the old 1000
+      // threshold. Leave the total alone.
+      action = "LEGACY";
+      newShipping = SHIPPING_COST;
+      newTotal = null;
     } else {
       action = "OTHER";
       newShipping = impliedShipping; // preserve whatever was actually charged
