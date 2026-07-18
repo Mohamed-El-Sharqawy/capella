@@ -127,7 +127,34 @@ export abstract class OrderService {
     // Shipping is computed authoritatively from the order subtotal (free at or
     // above FREE_SHIPPING_THRESHOLD). The client-supplied value is ignored.
     const shippingCost = getShippingCost(total);
-    const discountAmount = body.discountAmount ?? 0;
+
+    // Discount is recomputed server-side from the coupon record so a client
+    // can never self-serve a larger discount than the coupon allows. Mirrors
+    // the logic in PaymentService.prepareOrder.
+    let discountAmount = 0;
+    let couponId: string | undefined;
+    if (body.couponCode) {
+      const coupon = await prisma.coupon.findUnique({
+        where: { code: body.couponCode, isActive: true },
+      });
+      if (coupon) {
+        const now = new Date();
+        if (!coupon.expiresAt || coupon.expiresAt > now) {
+          if (coupon.minOrderAmount && total < coupon.minOrderAmount) {
+            throw new Error(
+              `Minimum purchase amount is ${coupon.minOrderAmount} AED`
+            );
+          }
+          if (coupon.discountType === "PERCENTAGE") {
+            discountAmount = (total * coupon.discountValue) / 100;
+          } else {
+            discountAmount = coupon.discountValue;
+          }
+          couponId = coupon.id;
+        }
+      }
+    }
+
     const grandTotal = total - discountAmount + shippingCost;
 
     // If guest order, create or find guest user
@@ -153,20 +180,14 @@ export abstract class OrderService {
       finalUserId = guestUser.id;
     }
 
-    // If coupon code is provided, validate and get coupon ID
-    let couponId: string | undefined;
-    if (body.couponCode) {
-      const coupon = await prisma.coupon.findUnique({
-        where: { code: body.couponCode },
+    // Increment coupon usage count for COD orders (online payments do this
+    // in markOrderPaid once payment is confirmed). couponId was resolved above
+    // while computing the discount.
+    if (couponId) {
+      await prisma.coupon.update({
+        where: { id: couponId },
+        data: { usageCount: { increment: 1 } },
       });
-      if (coupon) {
-        couponId = coupon.id;
-        // Increment coupon usage count
-        await prisma.coupon.update({
-          where: { id: coupon.id },
-          data: { usageCount: { increment: 1 } },
-        });
-      }
     }
 
     const order = await prisma.order.create({

@@ -16,7 +16,6 @@ export const OrderModel = {
     shippingZipCode: t.String({ minLength: 1 }),
     shippingCountry: t.String({ minLength: 1 }),
     shippingPhone: t.Optional(t.String()),
-    shippingCost: t.Optional(t.Number({ minimum: 0 })),
     note: t.Optional(t.String()),
     // Guest fields (required when not logged in)
     guestEmail: t.Optional(t.String({ format: "email" })),
@@ -25,9 +24,10 @@ export const OrderModel = {
     guestPhone: t.Optional(t.String()),
     // Address ID for logged-in users
     addressId: t.Optional(t.String()),
-    // Coupon data
+    // Coupon code — the discount is recomputed server-side from the coupon
+    // record (see OrderService.create). Client-supplied discount amounts are
+    // never trusted.
     couponCode: t.Optional(t.String()),
-    discountAmount: t.Optional(t.Number({ minimum: 0 })),
     fbp: t.Optional(t.String()),
     fbc: t.Optional(t.String()),
   }),
