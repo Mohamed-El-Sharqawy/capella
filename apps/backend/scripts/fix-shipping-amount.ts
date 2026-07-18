@@ -71,6 +71,17 @@ const money = (n: number) => n.toFixed(2);
 
 const apply = process.argv.includes("--apply");
 
+// Optional explicit order id (e.g. --order-id=cm...). When set, the script
+// scopes to that single order AND treats it as AFFECTED regardless of date —
+// so legacy orders that were mis-charged under a previous policy can still be
+// repaired without weakening the date guard for the bulk run. Still refuses
+// to touch orders whose implied shipping isn't exactly the flat SHIPPING_COST
+// (i.e. genuine no-shipping or custom cases need manual review).
+const orderIdArg = (() => {
+  const flag = process.argv.find((a) => a.startsWith("--order-id="));
+  return flag ? flag.slice("--order-id=".length) : undefined;
+})();
+
 interface Plan {
   id: string;
   createdAt: Date;
