@@ -13,6 +13,11 @@ model Order {
   status OrderStatus @default(PENDING)
   total  Float
 
+  // Shipping cost actually applied at checkout (AED). Snapshot at creation so
+  // threshold changes don't retroactively alter what was charged. Read paths
+  // (CMS, invoices, emails) must use this instead of recomputing.
+  shippingAmount Float @default(0)
+
   // Payment fields
   paymentMethod         String?
   ziinaPaymentIntentId  String? @unique

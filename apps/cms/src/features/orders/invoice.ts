@@ -1,4 +1,3 @@
-import { getShippingCost } from "@ecommerce/shared-utils";
 import type { Order } from "@ecommerce/shared-types";
 import { toast } from "sonner";
 
@@ -73,7 +72,7 @@ function buildInvoiceHtml(order: Order): string {
 
   const subtotal = (order.items || []).reduce((s, i) => s + i.price * i.quantity, 0);
   const discount = order.discountAmount || 0;
-  const shipping = getShippingCost(subtotal);
+  const shipping = order.shippingAmount ?? 0;
 
   const discountRow =
     discount > 0

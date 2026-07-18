@@ -194,6 +194,7 @@ export abstract class OrderService {
       data: {
         userId: finalUserId ?? undefined,
         total: grandTotal,
+        shippingAmount: shippingCost,
         discountAmount: discountAmount > 0 ? discountAmount : undefined,
         couponId: couponId,
         paymentMethod: "COD",

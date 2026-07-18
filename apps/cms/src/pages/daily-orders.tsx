@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, ArrowRight, Truck, Clock, ClipboardList, ClipboardCheck, Trash2 } from "lucide-react";
-import { getShippingCost } from "@ecommerce/shared-utils";
 import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, printPackingSlip, type OrderStatus } from "@/features/orders";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -328,7 +327,7 @@ export function DailyOrdersPage() {
                         {(() => {
                           const itemsTotal = (od.items || []).reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
                           const discount = od.discountAmount || 0;
-                          const shipping = getShippingCost(itemsTotal);
+                          const shipping = od.shippingAmount ?? 0;
                           return (
                             <>
                               <div className="flex items-center justify-between text-sm"><span className="text-muted-foreground">Subtotal</span><span>{formatCurrency(itemsTotal)}</span></div>

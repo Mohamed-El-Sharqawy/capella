@@ -27,6 +27,7 @@ export interface Order {
   id: string;
   status: OrderStatus;
   total: number;
+  shippingAmount?: number;
   paymentMethod?: string | null;
   ziinaPaymentIntentId?: string | null;
   tabbyPaymentId?: string | null;

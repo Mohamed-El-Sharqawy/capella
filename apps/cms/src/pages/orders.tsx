@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Search, Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, Trash2, CheckSquare, Square, XSquare, Printer, ClipboardList } from "lucide-react";
-import { ORDER_STATUSES, getShippingCost } from "@ecommerce/shared-utils";
+import { ORDER_STATUSES } from "@ecommerce/shared-utils";
 import type { Order } from "@ecommerce/shared-types";
 import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, useBulkDeleteOrders, printOrderInvoice, printPackingSlip, type OrderStatus } from "@/features/orders";
 import { Button } from "@/components/ui/button";
@@ -378,7 +378,7 @@ export function OrdersPage() {
                   {(() => {
                     const itemsTotal = (od.items || []).reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
                     const discount = od.discountAmount || 0;
-                    const shipping = getShippingCost(itemsTotal);
+                    const shipping = od.shippingAmount ?? 0;
                     const total = od.total;
                     return (
                       <>
