@@ -11,7 +11,7 @@ import {
 const PIXEL_ID = process.env.META_PIXEL_ID;
 const ACCESS_TOKEN = process.env.META_ACCESS_TOKEN;
 const TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE;
-const API_VERSION = process.env.META_API_VERSION || "v21.0";
+const API_VERSION = process.env.META_API_VERSION || "v23.0";
 const IS_PROD = process.env.NODE_ENV === "production";
 const MAX_ATTEMPTS = 3;
 

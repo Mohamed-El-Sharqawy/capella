@@ -44,30 +44,13 @@ export const auth = new Elysia({ prefix: "/auth" })
   )
   .post(
     "/sign-in",
-    async ({ body, jwt, jwtRefresh, request }) => {
+    async ({ body, jwt, jwtRefresh }) => {
       const result = await AuthService.signIn(body);
       if (!result.ok) return status(result.status, { success: false as const, error: result.error });
 
       const user = result.data;
       const accessToken = await jwt.sign({ sub: user.id, role: user.role });
       const refreshToken = await jwtRefresh.sign({ sub: user.id });
-
-      const capiCtx = extractCapiContext(request);
-      const loginEventId = `login_${user.id}`;
-
-      await sendMetaEvent({
-        eventName: "Login",
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone || undefined,
-        userAgent: capiCtx.clientUserAgent,
-        ip: capiCtx.clientIpAddress,
-        eventId: loginEventId,
-        fbp: capiCtx.fbp || body.fbp,
-        fbc: capiCtx.fbc || body.fbc,
-        eventSourceUrl: capiCtx.eventSourceUrl,
-      });
 
       return {
         success: true as const,

@@ -25,6 +25,9 @@ export function FacebookPixel() {
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '${FB_PIXEL_ID}');
+            fbq('track', 'PageView');
+            // autoConfig stays off: manual Advanced Matching via setPixelUser mirrors
+            // the server's normalizePhone/normalizeEmail, so browser and server ph/em hashes always agree.
             fbq('set', 'autoConfig', 'false', '${FB_PIXEL_ID}');
           `,
         }}
