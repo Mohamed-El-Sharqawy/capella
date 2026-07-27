@@ -12,5 +12,5 @@ export const CHECKOUT_ROUTES = {
   SIGNIN: "/auth/signin",
 } as const;
 
-export const DEFAULT_COUNTRY = "United Arab Emirates";
+export const DEFAULT_COUNTRY = "AE";
 export const DEFAULT_ZIP_CODE = "00000";

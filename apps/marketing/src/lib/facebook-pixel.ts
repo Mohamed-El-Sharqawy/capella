@@ -3,6 +3,8 @@
  * Standard events: https://developers.facebook.com/docs/meta-pixel/reference
  */
 
+import { normalizePhone, normalizeEmail } from "@ecommerce/shared-utils";
+
 declare global {
   interface Window {
     fbq: (...args: unknown[]) => void;
@@ -46,8 +48,11 @@ export function setPixelUser(user: {
 }): void {
   if (!FB_PIXEL_ID) return;
   const advancedMatching: Record<string, string> = {};
-  if (user.email) advancedMatching.em = user.email;
-  if (user.phone) advancedMatching.ph = user.phone;
+  if (user.email) advancedMatching.em = normalizeEmail(user.email);
+  if (user.phone) {
+    const ph = normalizePhone(user.phone);
+    if (ph) advancedMatching.ph = ph;
+  }
   if (user.firstName) advancedMatching.fn = user.firstName;
   if (user.lastName) advancedMatching.ln = user.lastName;
   if (user.id) advancedMatching.external_id = user.id;

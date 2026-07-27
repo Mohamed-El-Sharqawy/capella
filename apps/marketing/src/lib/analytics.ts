@@ -52,6 +52,8 @@ async function trackEvent(endpoint: string, data: Record<string, unknown>): Prom
       body: JSON.stringify(data),
       // Use keepalive to ensure request completes even if page navigates
       keepalive: true,
+      credentials: "include",
+      referrerPolicy: "no-referrer-when-downgrade",
     });
   } catch {
     // Silently fail - analytics should never break the app

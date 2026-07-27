@@ -1,4 +1,12 @@
 import crypto from "crypto";
+import {
+  normalizeEmail,
+  normalizeName,
+  normalizePhone,
+  normalizeCity,
+  normalizeZip,
+  normalizeCountry,
+} from "@ecommerce/shared-utils";
 
 const PIXEL_ID = process.env.META_PIXEL_ID;
 const ACCESS_TOKEN = process.env.META_ACCESS_TOKEN;
@@ -9,37 +17,6 @@ const MAX_ATTEMPTS = 3;
 
 function sha256(value: string): string {
   return crypto.createHash("sha256").update(value).digest("hex");
-}
-
-function normalizeEmail(value: string): string {
-  return value.trim().toLowerCase();
-}
-
-function normalizeName(value: string): string {
-  return value.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
-}
-
-// Normalize to E.164-ish digits with country code. UAE-aware: 0XX -> 971XX.
-function normalizePhone(value: string): string {
-  let digits = value.replace(/[^\d]/g, "");
-  if (!digits) return "";
-  if (digits.startsWith("00")) digits = digits.slice(2);
-  if (digits.startsWith("971")) return digits;
-  if (digits.startsWith("0")) return "971" + digits.slice(1);
-  if (digits.length === 9) return "971" + digits;
-  return digits;
-}
-
-function normalizeCity(value: string): string {
-  return value.trim().toLowerCase().replace(/[\s\-.']/g, "");
-}
-
-function normalizeZip(value: string): string {
-  return value.trim().toLowerCase().replace(/[\s-]/g, "");
-}
-
-function normalizeCountry(value: string): string {
-  return value.trim().toLowerCase();
 }
 
 export interface CAPIEvent {

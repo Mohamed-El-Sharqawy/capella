@@ -34,6 +34,8 @@ export function useContactForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, eventId: leadEventId, fbp: getFbp(), fbc: getFbc() }),
+        credentials: "include",
+        referrerPolicy: "no-referrer-when-downgrade",
       });
 
       if (!res.ok) throw new Error("Failed");

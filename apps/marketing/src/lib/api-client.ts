@@ -46,6 +46,8 @@ export async function apiClient<T = unknown>(
   const fetchOptions: RequestInit & { next?: NextFetchRequestConfig } = {
     method,
     headers: requestHeaders,
+    credentials: "include",
+    referrerPolicy: "no-referrer-when-downgrade",
   };
 
   if (body) {

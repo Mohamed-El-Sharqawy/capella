@@ -31,6 +31,28 @@ import { PaymentService } from "./modules/payment/service";
 
 const port = process.env.PORT || 3001;
 
+// CORS origin allowlist. `origin: true` would reflect any origin verbatim —
+// unsafe once `credentials: true` ships (CSRF surface). The function returns
+// true only for known production / staging / dashboard / localhost origins
+// AND any `*.capellauae.com` subdomain (covers PR-preview deployments).
+const PR_SUBDOMAIN_REGEX = /^https:\/\/[a-zA-Z0-9-]+\.capellauae\.com$/;
+const ALLOWED_ORIGINS = new Set<string>([
+  "https://capellauae.com",
+  "https://www.capellauae.com",
+  "https://test.capellauae.com",
+  "https://www.test.capellauae.com",
+  "https://dashboard.capellauae.com",
+  "https://www.dashboard.capellauae.com",
+  "http://localhost:3000",
+  "http://localhost:3001",
+]);
+
+function isAllowedOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return false;
+  return ALLOWED_ORIGINS.has(origin) || PR_SUBDOMAIN_REGEX.test(origin);
+}
+
 const app = new Elysia()
   .onError(({ code, error, set }) => {
     console.error(`[backend] Error ${set.status || 500} (${code}):`, error);
@@ -39,10 +61,17 @@ const app = new Elysia()
   .use(requestLogger)
   .use(
     cors({
-      origin: true,
-      credentials: false,
+      origin: isAllowedOrigin,
+      credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization", "x-session-id"],
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "x-session-id",
+        "x-fbp",
+        "x-fbc",
+        "x-fb-event-id",
+      ],
     })
   )
   .use(
