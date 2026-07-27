@@ -19,6 +19,15 @@ function sha256(value: string): string {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
+export interface CapiContext {
+  clientIpAddress?: string;
+  clientUserAgent?: string;
+  fbp?: string;
+  fbc?: string;
+  eventId?: string;
+  eventSourceUrl?: string;
+}
+
 export interface CAPIEvent {
   eventName: string;
   eventTime?: number;
@@ -44,6 +53,37 @@ export interface CAPIEvent {
   contentType?: string;
   contentName?: string;
   numItems?: number;
+}
+
+export function parseCookie(
+  cookieHeader: string | null,
+  name: string,
+): string | undefined {
+  if (!cookieHeader) return undefined;
+  const match = cookieHeader.match(new RegExp(`(?:^|; )${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]).trim() : undefined;
+}
+
+export function extractCapiContext(request: Request): CapiContext {
+  const headers = request.headers;
+  const cookieHeader = headers.get("cookie");
+
+  const forwardedFor = headers.get("x-forwarded-for");
+  const clientIpAddress = forwardedFor
+    ? forwardedFor.split(",")[0].trim()
+    : headers.get("x-real-ip") || undefined;
+
+  const referer = headers.get("referer") || undefined;
+  const origin = headers.get("origin") || undefined;
+
+  return {
+    clientIpAddress,
+    clientUserAgent: headers.get("user-agent") || undefined,
+    fbp: headers.get("x-fbp") || parseCookie(cookieHeader, "_fbp") || undefined,
+    fbc: headers.get("x-fbc") || parseCookie(cookieHeader, "_fbc") || undefined,
+    eventId: headers.get("x-fb-event-id") || undefined,
+    eventSourceUrl: referer || origin || undefined,
+  };
 }
 
 export async function sendMetaEvent({

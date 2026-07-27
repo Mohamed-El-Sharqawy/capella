@@ -2,6 +2,8 @@
  * Centralized API client for making requests to the backend
  */
 
+import { capiHeaders } from "./capi-headers";
+
 const IS_SERVER = typeof window === 'undefined';
 const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -36,6 +38,7 @@ export async function apiClient<T = unknown>(
 
   const requestHeaders: Record<string, string> = {
     "Content-Type": "application/json",
+    ...capiHeaders(),
     ...headers,
   };
 

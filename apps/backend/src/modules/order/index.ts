@@ -2,15 +2,16 @@ import { Elysia, status } from "elysia";
 import { authPlugin } from "../../plugins/auth";
 import { OrderService } from "./service";
 import { OrderModel } from "./model";
+import { extractCapiContext } from "../../lib/meta-capi";
 
 export const order = new Elysia({ prefix: "/orders" })
   .post(
     "/guest",
-    async ({ body }) => {
+    async ({ body, request }) => {
       if (!body.guestEmail) {
         return status(400, { success: false as const, error: "Guest email is required" });
       }
-      const result = await OrderService.create(body, null);
+      const result = await OrderService.create(body, null, extractCapiContext(request));
       return status(201, { success: true as const, data: result });
     },
     { body: OrderModel.createBody }
@@ -27,8 +28,8 @@ export const order = new Elysia({ prefix: "/orders" })
     if (!result) return status(404, { success: false as const, error: "Order not found" });
     return { success: true as const, data: result };
   }, { isSignIn: true })
-  .post("/", async ({ user, body }) => {
-    const result = await OrderService.create(body, user.id);
+  .post("/", async ({ user, body, request }) => {
+    const result = await OrderService.create(body, user.id, extractCapiContext(request));
     return status(201, { success: true as const, data: result });
   }, { isSignIn: true, body: OrderModel.createBody })
   .put("/:id/status", async ({ params, body }) => {

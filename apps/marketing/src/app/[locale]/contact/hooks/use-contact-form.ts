@@ -5,6 +5,7 @@ import type { ContactFormData, SubmitStatus } from "../types";
 import { INITIAL_FORM_DATA } from "../constants";
 import { fbLead } from "@/lib/facebook-pixel";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
+import { capiHeaders } from "@/lib/capi-headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -32,7 +33,7 @@ export function useContactForm() {
         : `lead_${Date.now()}_${Math.random().toString(36).slice(2)}`;
       const res = await fetch(`${API_URL}/api/contact`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...capiHeaders() },
         body: JSON.stringify({ ...formData, eventId: leadEventId, fbp: getFbp(), fbc: getFbc() }),
         credentials: "include",
         referrerPolicy: "no-referrer-when-downgrade",

@@ -1,16 +1,12 @@
 import { Elysia, status } from "elysia";
 import { ContactModel } from "./model";
 import { EmailService } from "../email/service";
-import { sendMetaEvent } from "../../lib/meta-capi";
+import { sendMetaEvent, extractCapiContext } from "../../lib/meta-capi";
 
 export const contact = new Elysia({ prefix: "/contact" }).post(
   "/",
   async ({ body, request }) => {
-    const userAgent = request.headers.get("user-agent") || undefined;
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      request.headers.get("x-real-ip") ||
-      undefined;
+    const capiCtx = extractCapiContext(request);
 
     await Promise.all([
       EmailService.sendContactNotification({
@@ -26,11 +22,11 @@ export const contact = new Elysia({ prefix: "/contact" }).post(
         phone: body.phone,
         firstName: body.name.split(" ")[0],
         lastName: body.name.split(" ").slice(1).join(" ") || undefined,
-        userAgent,
-        ip,
-        eventId: body.eventId,
-        fbp: body.fbp,
-        fbc: body.fbc,
+        userAgent: capiCtx.clientUserAgent,
+        ip: capiCtx.clientIpAddress,
+        eventId: capiCtx.eventId || body.eventId,
+        fbp: capiCtx.fbp || body.fbp,
+        fbc: capiCtx.fbc || body.fbc,
       }),
     ]);
 

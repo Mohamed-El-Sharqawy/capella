@@ -2,6 +2,7 @@ import { prisma } from "../../lib/prisma";
 import { PAGINATION_DEFAULTS, getShippingCost } from "@ecommerce/shared-utils";
 import { EmailService } from "../email/service";
 import { sendMetaEvent } from "../../lib/meta-capi";
+import type { CapiContext } from "../../lib/meta-capi";
 import type { OrderModel } from "./model";
 
 const ORDER_INCLUDE = {
@@ -85,7 +86,11 @@ export abstract class OrderService {
     return order;
   }
 
-  static async create(body: OrderModel["createBody"], userId?: string | null) {
+  static async create(
+    body: OrderModel["createBody"],
+    userId?: string | null,
+    capiCtx?: CapiContext
+  ) {
     const variantIds = body.items.map((item) => item.variantId);
     const variants = await prisma.productVariant.findMany({
       where: { id: { in: variantIds } },
@@ -280,9 +285,11 @@ export abstract class OrderService {
       currency: "AED",
       orderId: order.id,
       eventId: `order_${order.id}`,
-      fbp: body.fbp,
-      fbc: body.fbc,
-      eventSourceUrl: `${process.env.MARKETING_URL || ""}/checkout`,
+      userAgent: capiCtx?.clientUserAgent,
+      ip: capiCtx?.clientIpAddress,
+      fbp: capiCtx?.fbp || body.fbp,
+      fbc: capiCtx?.fbc || body.fbc,
+      eventSourceUrl: capiCtx?.eventSourceUrl,
     });
 
     return order;

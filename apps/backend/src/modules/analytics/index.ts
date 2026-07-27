@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { authPlugin } from "../../plugins/auth";
 import { analyticsService } from "./service";
-import { sendMetaEvent } from "../../lib/meta-capi";
+import { sendMetaEvent, extractCapiContext } from "../../lib/meta-capi";
 
 export const analyticsController = new Elysia({ prefix: "/analytics" })
   .use(authPlugin)
@@ -143,13 +143,8 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
   // Track quick add to cart (public endpoint)
   .post(
     "/track/cart-add",
-    async ({ body, headers }) => {
-      const sessionId = headers["x-session-id"] as string | undefined;
-      const userAgent = headers["user-agent"] as string | undefined;
-      const ip =
-        (headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
-        (headers["x-real-ip"] as string) ||
-        undefined;
+    async ({ body, request }) => {
+      const sessionId = request.headers.get("x-session-id") || undefined;
 
       await analyticsService.track({
         type: "cart.add",
@@ -161,17 +156,18 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
       // Dual-channel dedup: only fire CAPI when the client forwarded an eventId
       // shared with the pixel. Without a shared id the event would double-count.
       if (body.eventId) {
+        const capiCtx = extractCapiContext(request);
         await sendMetaEvent({
           eventName: "AddToCart",
-          userAgent,
-          ip,
-          fbp: body.fbp,
-          fbc: body.fbc,
+          userAgent: capiCtx.clientUserAgent,
+          ip: capiCtx.clientIpAddress,
+          fbp: capiCtx.fbp || body.fbp,
+          fbc: capiCtx.fbc || body.fbc,
           value: body.value,
           contentIds: body.contentIds,
           contentType: "product",
           contentName: body.contentName,
-          eventId: body.eventId,
+          eventId: capiCtx.eventId || body.eventId,
         });
       }
 
@@ -194,13 +190,8 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
   // Track cart remove (public endpoint)
   .post(
     "/track/cart-remove",
-    async ({ body, headers }) => {
-      const sessionId = headers["x-session-id"] as string | undefined;
-      const userAgent = headers["user-agent"] as string | undefined;
-      const ip =
-        (headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
-        (headers["x-real-ip"] as string) ||
-        undefined;
+    async ({ body, request }) => {
+      const sessionId = request.headers.get("x-session-id") || undefined;
 
       await analyticsService.track({
         type: "cart.remove",
@@ -214,17 +205,18 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
       // deduplicates like AddToCart. Only fires CAPI when the client forwarded
       // an eventId shared with the pixel.
       if (body.eventId) {
+        const capiCtx = extractCapiContext(request);
         await sendMetaEvent({
           eventName: "RemoveFromCart",
-          userAgent,
-          ip,
-          fbp: body.fbp,
-          fbc: body.fbc,
+          userAgent: capiCtx.clientUserAgent,
+          ip: capiCtx.clientIpAddress,
+          fbp: capiCtx.fbp || body.fbp,
+          fbc: capiCtx.fbc || body.fbc,
           value: body.value,
           contentIds: body.contentIds,
           contentType: "product",
           contentName: body.contentName,
-          eventId: body.eventId,
+          eventId: capiCtx.eventId || body.eventId,
         });
       }
 
@@ -322,13 +314,8 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
   // Track checkout view (public endpoint)
   .post(
     "/track/checkout-view",
-    async ({ body, headers }) => {
-      const sessionId = headers["x-session-id"] as string | undefined;
-      const userAgent = headers["user-agent"] as string | undefined;
-      const ip =
-        (headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
-        (headers["x-real-ip"] as string) ||
-        undefined;
+    async ({ body, request }) => {
+      const sessionId = request.headers.get("x-session-id") || undefined;
 
       await analyticsService.track({
         type: "checkout.view",
@@ -339,17 +326,18 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
       // Dual-channel dedup: only fire CAPI when the client forwarded an eventId
       // shared with the pixel. Without a shared id the event would double-count.
       if (body.eventId) {
+        const capiCtx = extractCapiContext(request);
         await sendMetaEvent({
           eventName: "InitiateCheckout",
-          userAgent,
-          ip,
-          fbp: body.fbp,
-          fbc: body.fbc,
+          userAgent: capiCtx.clientUserAgent,
+          ip: capiCtx.clientIpAddress,
+          fbp: capiCtx.fbp || body.fbp,
+          fbc: capiCtx.fbc || body.fbc,
           value: body.cartTotal,
           contentIds: body.contentIds,
           contentType: "product",
           numItems: body.cartItemCount,
-          eventId: body.eventId,
+          eventId: capiCtx.eventId || body.eventId,
         });
       }
 

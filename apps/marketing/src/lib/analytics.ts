@@ -15,6 +15,7 @@ import {
   fbPurchase,
 } from "./facebook-pixel";
 import { getFbp, getFbc } from "./meta-cookies";
+import { capiHeaders } from "./capi-headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -48,6 +49,7 @@ async function trackEvent(endpoint: string, data: Record<string, unknown>): Prom
       headers: {
         "Content-Type": "application/json",
         "x-session-id": sessionId,
+        ...capiHeaders(),
       },
       body: JSON.stringify(data),
       // Use keepalive to ensure request completes even if page navigates

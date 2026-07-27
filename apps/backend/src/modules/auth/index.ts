@@ -2,7 +2,7 @@ import { Elysia, status } from "elysia";
 import { AuthService } from "./service";
 import { AuthModel } from "./model";
 import { jwtPlugin } from "../../plugins/auth";
-import { sendMetaEvent } from "../../lib/meta-capi";
+import { sendMetaEvent, extractCapiContext } from "../../lib/meta-capi";
 
 export const auth = new Elysia({ prefix: "/auth" })
   .use(jwtPlugin)
@@ -16,12 +16,7 @@ export const auth = new Elysia({ prefix: "/auth" })
       const accessToken = await jwt.sign({ sub: user.id, role: user.role });
       const refreshToken = await jwtRefresh.sign({ sub: user.id });
 
-      const userAgent = request.headers.get("user-agent") || undefined;
-      const ip =
-        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-        request.headers.get("x-real-ip") ||
-        undefined;
-
+      const capiCtx = extractCapiContext(request);
       const regEventId = `register_${user.id}`;
 
       await sendMetaEvent({
@@ -30,11 +25,11 @@ export const auth = new Elysia({ prefix: "/auth" })
         firstName: body.firstName,
         lastName: body.lastName,
         phone: body.phone,
-        userAgent,
-        ip,
+        userAgent: capiCtx.clientUserAgent,
+        ip: capiCtx.clientIpAddress,
         eventId: regEventId,
-        fbp: body.fbp,
-        fbc: body.fbc,
+        fbp: capiCtx.fbp || body.fbp,
+        fbc: capiCtx.fbc || body.fbc,
       });
 
       return {
@@ -56,12 +51,7 @@ export const auth = new Elysia({ prefix: "/auth" })
       const accessToken = await jwt.sign({ sub: user.id, role: user.role });
       const refreshToken = await jwtRefresh.sign({ sub: user.id });
 
-      const userAgent = request.headers.get("user-agent") || undefined;
-      const ip =
-        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-        request.headers.get("x-real-ip") ||
-        undefined;
-
+      const capiCtx = extractCapiContext(request);
       const loginEventId = `login_${user.id}`;
 
       await sendMetaEvent({
@@ -70,11 +60,11 @@ export const auth = new Elysia({ prefix: "/auth" })
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone || undefined,
-        userAgent,
-        ip,
+        userAgent: capiCtx.clientUserAgent,
+        ip: capiCtx.clientIpAddress,
         eventId: loginEventId,
-        fbp: body.fbp,
-        fbc: body.fbc,
+        fbp: capiCtx.fbp || body.fbp,
+        fbc: capiCtx.fbc || body.fbc,
       });
 
       return {
