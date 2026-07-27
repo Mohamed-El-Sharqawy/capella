@@ -2,6 +2,7 @@ import { Elysia, status } from "elysia";
 import { authPlugin } from "../../plugins/auth";
 import { PaymentService } from "./service";
 import { PaymentModel } from "./model";
+import { extractCapiContext } from "../../lib/meta-capi";
 
 export const payment = new Elysia({ prefix: "/payments" })
   .use(authPlugin)
@@ -36,12 +37,13 @@ export const payment = new Elysia({ prefix: "/payments" })
     const orderStatus = await PaymentService.getTabbyOrderStatus(paymentId);
     return { success: true as const, data: { orderStatus } };
   })
-  .post("/checkout", async ({ body, user, headers }) => {
+  .post("/checkout", async ({ body, user, headers, request }) => {
     try {
       const result = await PaymentService.createCheckoutSession(
         body,
         user?.id,
-        headers.origin
+        headers.origin,
+        extractCapiContext(request),
       );
       return { success: true as const, data: result };
     } catch (error) {

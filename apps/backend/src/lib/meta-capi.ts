@@ -64,6 +64,20 @@ export function parseCookie(
   return match ? decodeURIComponent(match[1]).trim() : undefined;
 }
 
+export function fbcFromFbclid(
+  referer: string | undefined,
+): string | undefined {
+  if (!referer) return undefined;
+  try {
+    const url = new URL(referer);
+    const fbclid = url.searchParams.get("fbclid");
+    if (!fbclid) return undefined;
+    return `fb.1.${Date.now()}.${fbclid}`;
+  } catch {
+    return undefined;
+  }
+}
+
 export function extractCapiContext(request: Request): CapiContext {
   const headers = request.headers;
   const cookieHeader = headers.get("cookie");
@@ -80,10 +94,63 @@ export function extractCapiContext(request: Request): CapiContext {
     clientIpAddress,
     clientUserAgent: headers.get("user-agent") || undefined,
     fbp: headers.get("x-fbp") || parseCookie(cookieHeader, "_fbp") || undefined,
-    fbc: headers.get("x-fbc") || parseCookie(cookieHeader, "_fbc") || undefined,
+    fbc:
+      headers.get("x-fbc") ||
+      parseCookie(cookieHeader, "_fbc") ||
+      fbcFromFbclid(referer) ||
+      undefined,
     eventId: headers.get("x-fb-event-id") || undefined,
     eventSourceUrl: referer || origin || undefined,
   };
+}
+
+export type CapiContextRecord = {
+  fbp?: string | null;
+  fbc?: string | null;
+  clientIpAddress?: string | null;
+  clientUserAgent?: string | null;
+  eventSourceUrl?: string | null;
+};
+
+export function capiContextFromRecord(
+  rec: CapiContextRecord | null | undefined,
+): CapiContext | undefined {
+  if (!rec || typeof rec !== "object") return undefined;
+  const has = Boolean(
+    rec.fbp ||
+      rec.fbc ||
+      rec.clientIpAddress ||
+      rec.clientUserAgent ||
+      rec.eventSourceUrl,
+  );
+  if (!has) return undefined;
+  return {
+    fbp: rec.fbp || undefined,
+    fbc: rec.fbc || undefined,
+    clientIpAddress: rec.clientIpAddress || undefined,
+    clientUserAgent: rec.clientUserAgent || undefined,
+    eventSourceUrl: rec.eventSourceUrl || undefined,
+  };
+}
+
+export function capiContextFromOrder(order: {
+  capiContext?: unknown;
+} | null | undefined): CapiContext | undefined {
+  if (!order || !order.capiContext) return undefined;
+  return capiContextFromRecord(order.capiContext as CapiContextRecord);
+}
+
+export function capiMetadataFields(
+  capiCtx?: CapiContext,
+): Record<string, string> {
+  if (!capiCtx) return {};
+  const fields: Record<string, string> = {};
+  if (capiCtx.fbp) fields.fbp = capiCtx.fbp;
+  if (capiCtx.fbc) fields.fbc = capiCtx.fbc;
+  if (capiCtx.clientIpAddress) fields.clientIpAddress = capiCtx.clientIpAddress;
+  if (capiCtx.clientUserAgent) fields.clientUserAgent = capiCtx.clientUserAgent;
+  if (capiCtx.eventSourceUrl) fields.eventSourceUrl = capiCtx.eventSourceUrl;
+  return fields;
 }
 
 export async function sendMetaEvent({

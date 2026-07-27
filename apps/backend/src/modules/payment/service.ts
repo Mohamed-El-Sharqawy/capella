@@ -4,7 +4,12 @@ import { ZiinaClient } from "./ziina-client";
 import { TabbyClient } from "./tabby-client";
 import { TamaraClient, money as tamaraMoney } from "./tamara-client";
 import { EmailService } from "../email/service";
-import { sendMetaEvent } from "../../lib/meta-capi";
+import {
+  sendMetaEvent,
+  capiContextFromOrder,
+  capiMetadataFields,
+  type CapiContext,
+} from "../../lib/meta-capi";
 import { getShippingCost } from "@ecommerce/shared-utils";
 import type { PaymentModel } from "./model";
 
@@ -51,7 +56,8 @@ export abstract class PaymentService {
   private static async prepareOrder(
     body: PaymentModel["checkoutBody"],
     userId: string | undefined,
-    paymentMethod: PaymentMethodName
+    paymentMethod: PaymentMethodName,
+    capiCtx?: CapiContext,
   ): Promise<PreparedOrder> {
     const { items, couponCode, ...shippingData } = body;
 
@@ -143,6 +149,9 @@ export abstract class PaymentService {
         note: shippingData.note,
         fbp: (shippingData as any).fbp || null,
         fbc: (shippingData as any).fbc || null,
+        ...(Object.keys(capiMetadataFields(capiCtx)).length > 0
+          ? { capiContext: capiMetadataFields(capiCtx) }
+          : {}),
         items: {
           create: items.map((item) => {
             const variant = variants.find((v) => v.id === item.variantId)!;
@@ -264,6 +273,12 @@ export abstract class PaymentService {
       ]);
     }
 
+    const persistedCtx = capiContextFromOrder(order);
+    const ctx: CapiContext = persistedCtx ?? {
+      fbp: order.fbp || undefined,
+      fbc: order.fbc || undefined,
+    };
+
     await sendMetaEvent({
       eventName: "Purchase",
       email: customerEmail,
@@ -279,9 +294,11 @@ export abstract class PaymentService {
       currency: CURRENCY,
       orderId: order.id,
       eventId: `order_${order.id}`,
-      fbp: order.fbp || undefined,
-      fbc: order.fbc || undefined,
-      eventSourceUrl: `${MARKETING_URL}/checkout`,
+      userAgent: ctx.clientUserAgent,
+      ip: ctx.clientIpAddress,
+      fbp: ctx.fbp,
+      fbc: ctx.fbc,
+      eventSourceUrl: ctx.eventSourceUrl,
     });
 
     console.log(`Order ${order.id} marked as CONFIRMED (paid via ${provider.paymentMethod})`);
@@ -348,16 +365,17 @@ export abstract class PaymentService {
   static async createCheckoutSession(
     body: PaymentModel["checkoutBody"],
     userId?: string,
-    origin?: string
+    origin?: string,
+    capiCtx?: CapiContext,
   ) {
     const method = (body.method as PaymentMethodName | undefined) || "ZIINA";
     switch (method) {
       case "ZIINA":
-        return this.createZiinaCheckout(body, userId, origin);
+        return this.createZiinaCheckout(body, userId, origin, capiCtx);
       case "TABBY":
-        return this.createTabbyCheckout(body, userId, origin);
+        return this.createTabbyCheckout(body, userId, origin, capiCtx);
       case "TAMARA":
-        return this.createTamaraCheckout(body, userId, origin);
+        return this.createTamaraCheckout(body, userId, origin, capiCtx);
       default:
         throw new Error(`Unsupported payment method: ${method}`);
     }
@@ -370,13 +388,14 @@ export abstract class PaymentService {
   private static async createZiinaCheckout(
     body: PaymentModel["checkoutBody"],
     userId?: string,
-    origin?: string
+    origin?: string,
+    capiCtx?: CapiContext,
   ) {
     const { successUrl, cancelUrl, couponCode, locale } = body;
     const lang = locale || "en";
     const marketingUrl = this.resolveMarketingUrl(origin);
 
-    const { order } = await this.prepareOrder(body, userId, "ZIINA");
+    const { order } = await this.prepareOrder(body, userId, "ZIINA", capiCtx);
 
     const paymentIntent = await ZiinaClient.createPaymentIntent({
       amount: Math.round(order.total * 100),
@@ -575,7 +594,8 @@ export abstract class PaymentService {
   private static async createTabbyCheckout(
     body: PaymentModel["checkoutBody"],
     userId?: string,
-    origin?: string
+    origin?: string,
+    capiCtx?: CapiContext,
   ) {
     if (process.env.TABBY_ENABLED === "false") {
       throw new Error("Tabby is currently unavailable. Please choose another payment method.");
@@ -588,7 +608,7 @@ export abstract class PaymentService {
     const lang = (locale || "en") === "ar" ? "ar" : "en";
     const marketingUrl = this.resolveMarketingUrl(origin);
 
-    const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TABBY");
+    const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TABBY", capiCtx);
     const contact = this.getCustomerContact(body);
 
     const session = await TabbyClient.createCheckoutSession({
@@ -818,7 +838,8 @@ export abstract class PaymentService {
   private static async createTamaraCheckout(
     body: PaymentModel["checkoutBody"],
     userId?: string,
-    origin?: string
+    origin?: string,
+    capiCtx?: CapiContext,
   ) {
     if (process.env.TAMARA_ENABLED === "false") {
       throw new Error("Tamara is currently unavailable. Please choose another payment method.");
@@ -826,7 +847,7 @@ export abstract class PaymentService {
     const { cancelUrl, couponCode, locale } = body;
     const lang = (locale || "en") === "ar" ? "ar_SA" : "en_US";
 
-    const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TAMARA");
+    const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TAMARA", capiCtx);
     const contact = this.getCustomerContact(body);
     const localePath = (locale || "en") === "ar" ? "ar" : "en";
     const marketingUrl = this.resolveMarketingUrl(origin);

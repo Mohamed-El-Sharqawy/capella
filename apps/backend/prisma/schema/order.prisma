@@ -56,6 +56,10 @@ model Order {
   note  String? @db.Text
   fbp   String?
   fbc   String?
+  // Full browser context (fbp/fbc/IP/UA/eventSourceUrl) captured at checkout
+  // creation. Rehydrated by `capiContextFromOrder` on webhook Purchase paths
+  // where the PSP-sourced request carries none of the browser identity.
+  capiContext Json?
   items OrderItem[]
 
   createdAt DateTime @default(now())

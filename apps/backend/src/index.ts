@@ -74,6 +74,36 @@ const app = new Elysia()
       ],
     })
   )
+  // Server-side `_fbc` persistence for ITP / ad-blocker resilience (guide §7).
+  // When a user lands on the storefront from a Meta ad, the URL carries
+  // `?fbclid=...`. The browser Pixel normally writes `_fbc` from that, but
+  // ad blockers prevent fbevents.js from running and iOS Safari ITP caps
+  // JS-written cookies to 7 days — both lose ad attribution for any later
+  // CAPI event. This hook reconstructs `_fbc` server-side as a first-party
+  // HTTP cookie (immune to ITP's JS cap), so deferred Purchases retain ad
+  // attribution up to the 90-day window. Never overrides a canonical
+  // Pixel-written `_fbc` already present on the request.
+  .onAfterHandle(({ request, set }) => {
+    const referer = request.headers.get("referer");
+    if (!referer) return;
+    let fbclid: string | null = null;
+    try {
+      fbclid = new URL(referer).searchParams.get("fbclid");
+    } catch {
+      return;
+    }
+    if (!fbclid) return;
+
+    const cookieHeader = request.headers.get("cookie") || "";
+    if (/(?:^|; )_fbc=/.test(cookieHeader)) return;
+
+    const value = `fb.1.${Date.now()}.${fbclid}`;
+    set.headers = set.headers ?? {};
+    if (!set.headers["Set-Cookie"]) {
+      set.headers["Set-Cookie"] =
+        `_fbc=${value}; Path=/; SameSite=Lax; Secure; HttpOnly; Max-Age=7776000`;
+    }
+  })
   .use(
     swagger({
       documentation: {
@@ -125,6 +155,13 @@ const app = new Elysia()
 
 PaymentService.registerWebhook();
 PaymentService.registerTabbyWebhook();
+
+if (process.env.NODE_ENV === "production" && process.env.META_TEST_EVENT_CODE) {
+  console.warn(
+    "[CAPI] META_TEST_EVENT_CODE is set in production — sendMetaEvent will ignore it, " +
+      "but you should remove the env var to avoid the per-call warning noise."
+  );
+}
 
 console.log(`E-Commerce API is running at http://localhost:${port}`);
 console.log(`Swagger docs at http://localhost:${port}/swagger`);
