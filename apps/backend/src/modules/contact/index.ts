@@ -27,6 +27,7 @@ export const contact = new Elysia({ prefix: "/contact" }).post(
         eventId: capiCtx.eventId || body.eventId,
         fbp: capiCtx.fbp || body.fbp,
         fbc: capiCtx.fbc || body.fbc,
+        eventSourceUrl: capiCtx.eventSourceUrl,
       }),
     ]);
 

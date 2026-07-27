@@ -168,6 +168,7 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
           contentType: "product",
           contentName: body.contentName,
           eventId: capiCtx.eventId || body.eventId,
+          eventSourceUrl: capiCtx.eventSourceUrl,
         });
       }
 
@@ -217,6 +218,7 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
           contentType: "product",
           contentName: body.contentName,
           eventId: capiCtx.eventId || body.eventId,
+          eventSourceUrl: capiCtx.eventSourceUrl,
         });
       }
 
@@ -338,6 +340,7 @@ export const analyticsController = new Elysia({ prefix: "/analytics" })
           contentType: "product",
           numItems: body.cartItemCount,
           eventId: capiCtx.eventId || body.eventId,
+          eventSourceUrl: capiCtx.eventSourceUrl,
         });
       }
 

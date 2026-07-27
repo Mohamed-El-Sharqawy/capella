@@ -205,7 +205,7 @@ export async function sendMetaEvent({
   if (state) userData.st = sha256(normalizeCountry(state));
   if (zipCode) userData.zp = sha256(normalizeZip(zipCode));
   if (country) userData.country = sha256(normalizeCountry(country));
-  if (externalId) userData.external_id = sha256(normalizeEmail(externalId));
+  if (externalId) userData.external_id = sha256((externalId || "").trim());
   if (ip) userData.client_ip_address = ip;
   if (userAgent) userData.client_user_agent = userAgent;
   if (fbp) userData.fbp = fbp;

@@ -30,6 +30,7 @@ export const auth = new Elysia({ prefix: "/auth" })
         eventId: regEventId,
         fbp: capiCtx.fbp || body.fbp,
         fbc: capiCtx.fbc || body.fbc,
+        eventSourceUrl: capiCtx.eventSourceUrl,
       });
 
       return {
@@ -65,6 +66,7 @@ export const auth = new Elysia({ prefix: "/auth" })
         eventId: loginEventId,
         fbp: capiCtx.fbp || body.fbp,
         fbc: capiCtx.fbc || body.fbc,
+        eventSourceUrl: capiCtx.eventSourceUrl,
       });
 
       return {
