@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import {
   CURRENCY,
+  toContentId,
   normalizeEmail,
   normalizeName,
   normalizePhone,
@@ -29,6 +30,36 @@ export interface CapiContext {
   eventSourceUrl?: string;
 }
 
+export interface CapiContentItem {
+  id: string;
+  quantity: number;
+  item_price?: number;
+}
+
+export interface CapiOrderItemInput {
+  variantId: string;
+  sku?: string | null;
+  quantity: number;
+  price: number;
+}
+
+export interface CapiItemsPayload {
+  contentIds: string[];
+  contents: CapiContentItem[];
+  numItems: number;
+}
+
+export function buildCapiItems(items: CapiOrderItemInput[]): CapiItemsPayload {
+  const contentIds = items.map((i) => toContentId({ id: i.variantId, sku: i.sku }));
+  const contents: CapiContentItem[] = items.map((i) => ({
+    id: toContentId({ id: i.variantId, sku: i.sku }),
+    quantity: i.quantity,
+    item_price: i.price,
+  }));
+  const numItems = items.reduce((sum, i) => sum + i.quantity, 0);
+  return { contentIds, contents, numItems };
+}
+
 export interface CAPIEvent {
   eventName: string;
   eventTime?: number;
@@ -53,6 +84,7 @@ export interface CAPIEvent {
   contentIds?: string[];
   contentType?: string;
   contentName?: string;
+  contents?: CapiContentItem[];
   numItems?: number;
   /** Free-form flow label (e.g. "cart-add", "cod", "webhook") — included in dedup logs, no PII. */
   source?: string;
@@ -180,6 +212,7 @@ export async function sendMetaEvent({
   contentIds,
   contentType,
   contentName,
+  contents,
   numItems,
   source,
 }: CAPIEvent) {
@@ -245,6 +278,7 @@ export async function sendMetaEvent({
       ...(contentIds && { content_ids: contentIds }),
       ...(contentType && { content_type: contentType }),
       ...(contentName && { content_name: contentName }),
+      ...(contents && { contents }),
       ...(numItems != null && { num_items: numItems }),
     },
   };

@@ -1,7 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { PAGINATION_DEFAULTS, getShippingCost, CURRENCY } from "@ecommerce/shared-utils";
 import { EmailService } from "../email/service";
-import { sendMetaEvent } from "../../lib/meta-capi";
+import { sendMetaEvent, buildCapiItems } from "../../lib/meta-capi";
 import type { CapiContext } from "../../lib/meta-capi";
 import type { OrderModel } from "./model";
 
@@ -270,6 +270,15 @@ export abstract class OrderService {
       ]);
     }
 
+    const itemsPayload = buildCapiItems(
+      order.items.map((i) => ({
+        variantId: i.variantId,
+        sku: i.sku,
+        quantity: i.quantity,
+        price: i.price,
+      })),
+    );
+
     await sendMetaEvent({
       eventName: "Purchase",
       email: customerEmail,
@@ -291,6 +300,10 @@ export abstract class OrderService {
       fbp: capiCtx?.fbp || body.fbp,
       fbc: capiCtx?.fbc || body.fbc,
       eventSourceUrl: capiCtx?.eventSourceUrl,
+      contentIds: itemsPayload.contentIds,
+      contents: itemsPayload.contents,
+      numItems: itemsPayload.numItems,
+      contentType: "product",
     });
 
     return order;

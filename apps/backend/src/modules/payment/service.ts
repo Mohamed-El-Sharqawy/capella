@@ -6,6 +6,7 @@ import { TamaraClient, money as tamaraMoney } from "./tamara-client";
 import { EmailService } from "../email/service";
 import {
   sendMetaEvent,
+  buildCapiItems,
   capiContextFromOrder,
   capiMetadataFields,
   type CapiContext,
@@ -278,6 +279,15 @@ export abstract class PaymentService {
       fbc: order.fbc || undefined,
     };
 
+    const itemsPayload = buildCapiItems(
+      order.items.map((i) => ({
+        variantId: i.variantId,
+        sku: i.sku,
+        quantity: i.quantity,
+        price: i.price,
+      })),
+    );
+
     await sendMetaEvent({
       eventName: "Purchase",
       email: customerEmail,
@@ -299,6 +309,10 @@ export abstract class PaymentService {
       fbp: ctx.fbp,
       fbc: ctx.fbc,
       eventSourceUrl: ctx.eventSourceUrl,
+      contentIds: itemsPayload.contentIds,
+      contents: itemsPayload.contents,
+      numItems: itemsPayload.numItems,
+      contentType: "product",
     });
 
     console.log(`Order ${order.id} marked as CONFIRMED (paid via ${provider.paymentMethod})`);
