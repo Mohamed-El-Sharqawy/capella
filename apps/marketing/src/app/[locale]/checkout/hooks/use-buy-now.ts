@@ -30,6 +30,7 @@ export function useBuyNow() {
         productNameAr: product.nameAr,
         variantNameEn: variant.nameEn,
         variantNameAr: variant.nameAr,
+        sku: variant.sku,
         price: variant.price,
         compareAtPrice: variant.compareAtPrice,
         imageUrl: variant.images?.[0]?.url,

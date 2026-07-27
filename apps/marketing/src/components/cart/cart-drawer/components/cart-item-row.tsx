@@ -76,7 +76,7 @@ export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove 
               e.stopPropagation();
               onRemove(item.variantId);
               const productName = isArabic ? item.productNameAr : item.productNameEn;
-              trackCartRemove(item.productId, item.variantId, productName, item.price);
+              trackCartRemove(item.productId, item.variantId, productName, item.price, item.sku);
             }}
             className="text-xs text-red-500 hover:underline px-2 py-1 cursor-pointer"
           >

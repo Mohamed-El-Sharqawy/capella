@@ -33,7 +33,7 @@ export function useProductActions(product: Product, locale: string) {
       const cartItem = createCartItemFromVariant(selectedVariant, product, quantity);
       addItem(cartItem);
       const productName = locale === "ar" ? product.nameAr : product.nameEn;
-      trackQuickAddToCart(product.id, selectedVariant.id, productName, selectedVariant.price, quantity);
+      trackQuickAddToCart(product.id, selectedVariant.id, productName, selectedVariant.price, quantity, selectedVariant.sku);
     },
     [addItem, product, quantity, locale]
   );

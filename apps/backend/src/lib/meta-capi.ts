@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import {
+  CURRENCY,
   normalizeEmail,
   normalizeName,
   normalizePhone,
@@ -53,6 +54,8 @@ export interface CAPIEvent {
   contentType?: string;
   contentName?: string;
   numItems?: number;
+  /** Free-form flow label (e.g. "cart-add", "cod", "webhook") — included in dedup logs, no PII. */
+  source?: string;
 }
 
 export function parseCookie(
@@ -166,7 +169,7 @@ export async function sendMetaEvent({
   country,
   externalId,
   value,
-  currency = "AED",
+  currency = CURRENCY,
   orderId,
   eventId,
   userAgent,
@@ -178,6 +181,7 @@ export async function sendMetaEvent({
   contentType,
   contentName,
   numItems,
+  source,
 }: CAPIEvent) {
   if (!PIXEL_ID || !ACCESS_TOKEN) {
     console.warn("META_PIXEL_ID or META_ACCESS_TOKEN not set, skipping CAPI event");
@@ -264,6 +268,13 @@ export async function sendMetaEvent({
       testMode: !!useTestCode,
     });
   }
+
+  // Dedup-health signal: always logged (no PII). Correlate with Events Manager's
+  // "Deduplicated" ratio — a missing/empty fbp here means browser/server identity
+  // linkage is broken for this event, which is the #1 dedup-failure cause.
+  console.log(
+    `[CAPI] dispatch event=${eventName} event_id=${eventId || "-"} src=${source || "-"} order=${orderId || "-"} fbp_present=${Boolean(fbp)} fbc_present=${Boolean(fbc)} value=${value ?? "-"} ${currency}`,
+  );
 
   const url = `https://graph.facebook.com/${API_VERSION}/${PIXEL_ID}/events?access_token=${ACCESS_TOKEN}`;
 

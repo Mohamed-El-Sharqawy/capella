@@ -117,7 +117,7 @@ export function ProductCardWithVariants({
       nameAr: product.nameAr,
     });
     addItem(newCartItem);
-    trackQuickAddToCart(product.id, variantToAdd.id, name, variantToAdd.price, 1);
+    trackQuickAddToCart(product.id, variantToAdd.id, name, variantToAdd.price, 1, variantToAdd.sku);
 
     setTimeout(() => {
       setIsAdding(false);

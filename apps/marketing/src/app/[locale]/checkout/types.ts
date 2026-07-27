@@ -22,6 +22,8 @@ export interface BuyNowItem {
   productNameAr: string;
   variantNameEn: string;
   variantNameAr: string;
+  // For Meta content_id parity (cap-<sku>).
+  sku?: string | null;
   price: number;
   compareAtPrice?: number | null;
   imageUrl?: string;
@@ -49,6 +51,8 @@ export interface CheckoutItem {
   quantity: number;
   productNameEn: string;
   productNameAr: string;
+  // For Meta content_id parity (cap-<sku>).
+  sku?: string | null;
   price: number;
   compareAtPrice?: number | null;
   imageUrl?: string;

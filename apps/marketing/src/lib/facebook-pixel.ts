@@ -3,7 +3,7 @@
  * Standard events: https://developers.facebook.com/docs/meta-pixel/reference
  */
 
-import { normalizePhone, normalizeEmail } from "@ecommerce/shared-utils";
+import { normalizePhone, normalizeEmail, CURRENCY } from "@ecommerce/shared-utils";
 
 declare global {
   interface Window {
@@ -90,7 +90,7 @@ export function fbViewContent(params: {
     content_name: params.contentName,
     content_type: params.contentType,
     value: params.value,
-    currency: params.currency || "AED",
+    currency: params.currency || CURRENCY,
   });
 }
 
@@ -124,7 +124,7 @@ export function fbAddToCart(params: {
     content_name: params.contentName,
     content_type: "product",
     value: params.value,
-    currency: params.currency || "AED",
+    currency: params.currency || CURRENCY,
     contents: [
       {
         id: params.contentId,
@@ -154,7 +154,7 @@ export function fbRemoveFromCart(params: {
     content_ids: [params.contentId],
     content_name: params.contentName,
     value: params.value,
-    currency: params.currency || "AED",
+    currency: params.currency || CURRENCY,
   };
 
   if (params.eventId) {
@@ -177,7 +177,7 @@ export function fbInitiateCheckout(params: {
   const eventData = {
     content_ids: params.contentIds,
     value: params.value,
-    currency: params.currency || "AED",
+    currency: params.currency || CURRENCY,
     num_items: params.numItems,
   };
 
@@ -199,7 +199,7 @@ export function fbAddPaymentInfo(params: {
   fbq("track", "AddPaymentInfo", {
     content_ids: params.contentIds,
     value: params.value,
-    currency: params.currency || "AED",
+    currency: params.currency || CURRENCY,
   });
 }
 
@@ -219,7 +219,7 @@ export function fbPurchase(params: {
     content_name: params.contentName,
     content_type: "product",
     value: params.value,
-    currency: params.currency || "AED",
+    currency: params.currency || CURRENCY,
     num_items: params.numItems,
     order_id: params.orderId,
   };
@@ -259,7 +259,7 @@ export function fbAddToWishlist(params: {
     content_ids: [params.contentId],
     content_name: params.contentName,
     value: params.value,
-    currency: params.currency || "AED",
+    currency: params.currency || CURRENCY,
   });
 }
 
@@ -273,7 +273,7 @@ export function fbLead(params?: {
 }): void {
   const eventData = {
     value: params?.value,
-    currency: params?.currency || "AED",
+    currency: params?.currency || CURRENCY,
   };
 
   if (params?.eventId) {
@@ -294,7 +294,7 @@ export function fbCompleteRegistration(params?: {
 }): void {
   const eventData = {
     value: params?.value,
-    currency: params?.currency || "AED",
+    currency: params?.currency || CURRENCY,
     status: params?.status || "registered",
   };
 

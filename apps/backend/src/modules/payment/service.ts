@@ -10,11 +10,10 @@ import {
   capiMetadataFields,
   type CapiContext,
 } from "../../lib/meta-capi";
-import { getShippingCost } from "@ecommerce/shared-utils";
+import { getShippingCost, CURRENCY } from "@ecommerce/shared-utils";
 import type { PaymentModel } from "./model";
 
 const MARKETING_URL = process.env.MARKETING_URL || "http://localhost:3000";
-const CURRENCY = "AED";
 
 export type PaymentMethodName = "ZIINA" | "TABBY" | "TAMARA";
 
@@ -294,6 +293,7 @@ export abstract class PaymentService {
       currency: CURRENCY,
       orderId: order.id,
       eventId: `order_${order.id}`,
+      source: "webhook",
       userAgent: ctx.clientUserAgent,
       ip: ctx.clientIpAddress,
       fbp: ctx.fbp,

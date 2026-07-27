@@ -144,7 +144,8 @@ export function QuickViewModal({
       selectedVariant.id,
       isArabic ? product.nameAr : product.nameEn,
       selectedVariant.price,
-      quantity
+      quantity,
+      selectedVariant.sku
     );
     onClose();
   };

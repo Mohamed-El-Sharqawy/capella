@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma";
-import { PAGINATION_DEFAULTS, getShippingCost } from "@ecommerce/shared-utils";
+import { PAGINATION_DEFAULTS, getShippingCost, CURRENCY } from "@ecommerce/shared-utils";
 import { EmailService } from "../email/service";
 import { sendMetaEvent } from "../../lib/meta-capi";
 import type { CapiContext } from "../../lib/meta-capi";
@@ -282,9 +282,10 @@ export abstract class OrderService {
       country: body.shippingCountry,
       externalId: order.userId || undefined,
       value: grandTotal,
-      currency: "AED",
+      currency: CURRENCY,
       orderId: order.id,
       eventId: `order_${order.id}`,
+      source: "cod",
       userAgent: capiCtx?.clientUserAgent,
       ip: capiCtx?.clientIpAddress,
       fbp: capiCtx?.fbp || body.fbp,

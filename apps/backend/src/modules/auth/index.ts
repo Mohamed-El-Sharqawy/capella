@@ -31,6 +31,7 @@ export const auth = new Elysia({ prefix: "/auth" })
         fbp: capiCtx.fbp || body.fbp,
         fbc: capiCtx.fbc || body.fbc,
         eventSourceUrl: capiCtx.eventSourceUrl,
+        source: "sign-up",
       });
 
       return {

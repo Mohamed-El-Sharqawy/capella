@@ -16,6 +16,7 @@ import {
 } from "./facebook-pixel";
 import { getFbp, getFbc } from "./meta-cookies";
 import { capiHeaders } from "./capi-headers";
+import { toContentId } from "@ecommerce/shared-utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -76,19 +77,20 @@ function genEventId(): string {
  * Track product page view
  */
 export function trackProductView(
-  productId: string, 
+  productId: string,
   productSlug?: string,
   productName?: string,
   price?: number
 ): void {
   if (!dedup(`product_${productId}`)) return;
   trackEvent("product-view", { productId, productSlug });
-  
-  // Facebook Pixel
+
+  // Catalog feed's `item_group_id` is the raw product.id — match it via
+  // content_type: 'product_group' so Meta can correlate ViewContent with the PDP.
   fbViewContent({
     contentId: productId,
     contentName: productName || productSlug || productId,
-    contentType: "product",
+    contentType: "product_group",
     value: price,
   });
 }
@@ -128,13 +130,17 @@ export function trackSearch(query: string, resultsCount: number, productIds?: st
  * Track quick add to cart from product card
  */
 export function trackQuickAddToCart(
-  productId: string, 
+  productId: string,
   variantId: string,
   productName?: string,
   price?: number,
-  quantity?: number
+  quantity?: number,
+  sku?: string | null
 ): void {
   const eventId = genEventId();
+  // Format the catalog-correlatable content_id once here; downstream Pixel + CAPI
+  // share the same pre-formatted string so Meta DPA can match this event.
+  const contentId = toContentId({ id: variantId, sku });
   trackEvent("cart-add", {
     productId,
     variantId,
@@ -142,14 +148,14 @@ export function trackQuickAddToCart(
     fbp: getFbp(),
     fbc: getFbc(),
     value: price,
-    contentIds: [variantId],
+    contentIds: [contentId],
     contentName: productName || productId,
     eventId,
   });
-  
+
   // Facebook Pixel
   fbAddToCart({
-    contentId: variantId,
+    contentId,
     contentName: productName || productId,
     value: price || 0,
     quantity: quantity || 1,
@@ -161,26 +167,28 @@ export function trackQuickAddToCart(
  * Track remove from cart
  */
 export function trackCartRemove(
-  productId: string, 
+  productId: string,
   variantId: string,
   productName?: string,
-  price?: number
+  price?: number,
+  sku?: string | null
 ): void {
   const eventId = genEventId();
+  const contentId = toContentId({ id: variantId, sku });
   trackEvent("cart-remove", {
     productId,
     variantId,
     fbp: getFbp(),
     fbc: getFbc(),
     value: price,
-    contentIds: [variantId],
+    contentIds: [contentId],
     contentName: productName || productId,
     eventId,
   });
-  
+
   // Facebook Pixel
   fbRemoveFromCart({
-    contentId: variantId,
+    contentId,
     contentName: productName || productId,
     value: price || 0,
     eventId,
@@ -219,23 +227,24 @@ export function trackWishlistToggle(
  * Track checkout page view
  */
 export function trackCheckoutView(
-  cartItemCount: number, 
+  cartItemCount: number,
   cartTotal: number,
-  variantIds?: string[]
+  items?: { variantId: string; sku?: string | null }[]
 ): void {
   const eventId = genEventId();
+  const contentIds = (items || []).map((i) => toContentId({ id: i.variantId, sku: i.sku }));
   trackEvent("checkout-view", {
     cartItemCount,
     cartTotal,
     fbp: getFbp(),
     fbc: getFbc(),
-    contentIds: variantIds || [],
+    contentIds,
     eventId,
   });
-  
+
   // Facebook Pixel
   fbInitiateCheckout({
-    contentIds: variantIds || [],
+    contentIds,
     value: cartTotal,
     numItems: cartItemCount,
     eventId,
@@ -260,16 +269,16 @@ export function trackCheckoutAbandon(step: string, cartItemCount: number, cartTo
  * Track order completion
  */
 export function trackOrderComplete(
-  orderId: string, 
-  total: number, 
+  orderId: string,
+  total: number,
   itemCount: number,
-  variantIds?: string[]
+  items?: { variantId: string; sku?: string | null }[]
 ): void {
   trackEvent("order-complete", { orderId, total, itemCount });
-  
+
   // Facebook Pixel
   fbPurchase({
-    contentIds: variantIds || [],
+    contentIds: (items || []).map((i) => toContentId({ id: i.variantId, sku: i.sku })),
     value: total,
     numItems: itemCount,
     orderId,

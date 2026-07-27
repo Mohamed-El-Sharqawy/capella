@@ -8,6 +8,8 @@ export interface CartItem {
   productNameAr: string;
   variantNameEn: string;
   variantNameAr: string;
+  // Carried so Meta content_ids can be formatted as `cap-<sku>` (catalog parity).
+  sku?: string | null;
   price: number;
   compareAtPrice?: number | null;
   quantity: number;
@@ -108,6 +110,7 @@ export function createCartItemFromVariant(
     productNameAr: product.nameAr,
     variantNameEn: variant.nameEn,
     variantNameAr: variant.nameAr,
+    sku: variant.sku,
     price: variant.price,
     compareAtPrice: variant.compareAtPrice,
     quantity,

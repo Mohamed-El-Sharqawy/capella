@@ -10,6 +10,7 @@ import { usePaymentMethods } from "@/lib/payment-methods";
 import { Link } from "@/i18n/navigation";
 import { trackCheckoutView, trackOrderComplete } from "@/lib/analytics";
 import { fbAddPaymentInfo } from "@/lib/facebook-pixel";
+import { CURRENCY, toContentId } from "@ecommerce/shared-utils";
 import {
   useCheckoutForm,
   useBuyNow,
@@ -138,8 +139,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   useEffect(() => {
     if (!cartLoading && !authLoading && items.length > 0 && !hasTrackedCheckout.current) {
       hasTrackedCheckout.current = true;
-      const variantIds = items.map((item) => item.variantId);
-      trackCheckoutView(items.length, total, variantIds);
+      trackCheckoutView(items.length, total, items);
     }
   }, [cartLoading, authLoading, items.length, total]);
 
@@ -153,8 +153,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
       }
       hasTrackedOrder.current = true;
       sessionStorage.setItem(purchaseKey, "1");
-      const variantIds = items.map((item) => item.variantId);
-      trackOrderComplete(orderId, total, items.length, variantIds);
+      trackOrderComplete(orderId, total, items.length, items);
     }
   }, [orderSuccess, orderId, total, items.length]);
 
@@ -162,11 +161,10 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   useEffect(() => {
     if (formState.paymentMethod && items.length > 0 && !hasTrackedPayment.current) {
       hasTrackedPayment.current = true;
-      const variantIds = items.map((item) => item.variantId);
       fbAddPaymentInfo({
-        contentIds: variantIds,
+        contentIds: items.map((i) => toContentId({ id: i.variantId, sku: i.sku })),
         value: total,
-        currency: "AED",
+        currency: CURRENCY,
       });
     }
   }, [formState.paymentMethod]);

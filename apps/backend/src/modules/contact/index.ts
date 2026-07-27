@@ -28,6 +28,7 @@ export const contact = new Elysia({ prefix: "/contact" }).post(
         fbp: capiCtx.fbp || body.fbp,
         fbc: capiCtx.fbc || body.fbc,
         eventSourceUrl: capiCtx.eventSourceUrl,
+        source: "contact-form",
       }),
     ]);
 

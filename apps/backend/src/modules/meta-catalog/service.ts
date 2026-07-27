@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/prisma";
+import { CURRENCY, toContentId } from "@ecommerce/shared-utils";
 
-const CURRENCY = "AED";
 const MAX_ADDITIONAL_IMAGES = 10;
 const MAX_TITLE_LENGTH = 150;
 const MAX_DESCRIPTION_LENGTH = 5000;
@@ -155,8 +155,9 @@ function buildRow(product: FeedProduct, variant: FeedProduct["variants"][number]
   const imageUrls = collectImageUrls(variant, product);
   if (imageUrls.length === 0) return null;
 
-  const rawId = variant.sku ? `cap-${variant.sku}` : `cap-${variant.id}`;
-  const id = rawId.slice(0, MAX_ID_LENGTH);
+  // Single source of truth: `toContentId` in shared-utils. Every Pixel/CAPI event
+  // emits the same string so Meta can correlate events with this feed row.
+  const id = toContentId({ sku: variant.sku, id: variant.id }).slice(0, MAX_ID_LENGTH);
 
   const description = truncateAtWord(
     cleanText(product.descriptionEn || product.shortDescriptionEn),
