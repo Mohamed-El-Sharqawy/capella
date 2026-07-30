@@ -10,7 +10,7 @@ import { organizationJsonLd, webSiteJsonLd } from "@/lib/json-ld";
 import "../globals.css";
 import { Header, Footer, WhatsAppButton, ScrollToTop } from "@/components/layout";
 import { CartDrawer } from "@/components/cart/cart-drawer";
-import { FacebookPixel, PageViewTracker } from "@/components/analytics";
+import { FacebookPixel, PageViewTracker, GtmScript } from "@/components/analytics";
 import { Providers } from "./providers";
 
 const inter = Inter({
@@ -115,6 +115,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd()) }}
         />
         <FacebookPixel />
+        <GtmScript />
       </head>
       <body className={`${inter.variable} ${playfair.variable} ${cairo.variable} ${montserrat.variable} font-primary`} style={{ '--font-primary': isRtl ? 'var(--font-arabic), sans-serif' : 'var(--font-montserrat), serif' } as React.CSSProperties}>
         <NextIntlClientProvider messages={messages}>

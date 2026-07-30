@@ -1,0 +1,76 @@
+# =============================================================================
+# Self-hosted server-side GTM (sGTM) — Coolify deployment definition.
+# Verified 2026-07-30 against official Google docs + live GCR registry query.
+#
+# Deploy in Coolify as a "Docker Compose" resource pointing at this file.
+# Domain (metrics.capellauae.com) + SSL (Let's Encrypt) are configured in the
+# Coolify UI under the resource's Domains settings; Coolify's Traefik proxy
+# fronts the exposed run port (8080). Do NOT publish 8080 to the host directly.
+#
+# IMPORTANT (verified): the OFFICIAL Google image reads only CONTAINER_CONFIG
+# (+ PORT, PREVIEW_SERVER_URL). It does NOT read GA4_* / META_* env vars — those
+# credentials are entered into the server tags in the GTM UI and get compiled
+# into CONTAINER_CONFIG on publish. See apps/sgtm/.env + GTM_DASHBOARD_PLAYBOOK.md.
+# =============================================================================
+
+services:
+  sgtm:
+    # Official image (NOT gcr.io/google-tag-server — that is not public).
+    # Pin a specific tag; bump deliberately. Current stable: 4.4.0 (2026-07-22).
+    # Browse tags: https://console.cloud.google.com/gcr/images/cloud-tagging-10302018/global/gtm-cloud-image
+    # Release notes: https://developers.google.com/tag-platform/tag-manager/server-side/release-notes
+    image: gcr.io/cloud-tagging-10302018/gtm-cloud-image:4.4.0
+    container_name: capella-sgtm
+    restart: unless-stopped
+    expose:
+      - "8080" # Coolify Traefik fronts this; do NOT publish to host
+    environment:
+      # From GTM UI: server container workspace -> click container ID (top-right)
+      # -> "Manually provision tagging server" -> copy "Container Config".
+      # Paste that string as SGTM_CONTAINER_CONFIG in Coolify's env panel.
+      CONTAINER_CONFIG: ${SGTM_CONTAINER_CONFIG}
+      PORT: "8080"
+      # Uncomment ONLY if you enable the optional preview service below:
+      # PREVIEW_SERVER_URL: ${SGTM_PREVIEW_SERVER_URL}
+    volumes:
+      - sgtm-tmp:/tmp
+    healthcheck:
+      # Image is distroless (Node only at /nodejs/bin/node; no sh/curl/wget).
+      # Health endpoint is /healthy (returns "ok"), NOT /healthz. Exec form (no shell).
+      test: ["CMD", "/nodejs/bin/node", "-e", "fetch('http://localhost:8080/healthy').then(r=>{process.exit(r.ok?0:1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0" # official guidance: at most 1 vCPU
+          memory: 1G
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # OPTIONAL preview server (for live server-side debugging via GTM Preview).
+  # v1 can skip this — production works without it; only the GTM Preview debugger
+  # would be inert (validate via GA4 DebugView + Meta Test Events instead).
+  # To enable: uncomment, front it at metrics-preview.capellauae.com (own cert),
+  # set PREVIEW_SERVER_URL above, and add SGTM_PREVIEW_SERVER_URL to Coolify env.
+  # Must be exactly 1 instance; proxy timeout > 20s.
+  # ───────────────────────────────────────────────────────────────────────────
+  # sgtm-preview:
+  #   image: gcr.io/cloud-tagging-10302018/gtm-cloud-image:4.4.0
+  #   container_name: capella-sgtm-preview
+  #   restart: unless-stopped
+  #   expose:
+  #     - "8081"
+  #   environment:
+  #     CONTAINER_CONFIG: ${SGTM_CONTAINER_CONFIG} # SAME value as production
+  #     RUN_AS_PREVIEW_SERVER: "true"
+  #     PORT: "8081"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: "0.5"
+  #         memory: 512M
+
+volumes:
+  sgtm-tmp:

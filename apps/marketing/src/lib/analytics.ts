@@ -17,6 +17,17 @@ import {
 import { getFbp, getFbc } from "./meta-cookies";
 import { capiHeaders } from "./capi-headers";
 import { toContentId } from "@ecommerce/shared-utils";
+import {
+  gtmViewItem,
+  gtmViewItemList,
+  gtmSearch,
+  gtmAddToCart,
+  gtmRemoveFromCart,
+  gtmAddToWishlist,
+  gtmBeginCheckout,
+  gtmPurchase,
+  gtmCheckoutAbandon,
+} from "./gtm";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -93,6 +104,12 @@ export function trackProductView(
     contentType: "product_group",
     value: price,
   });
+
+  gtmViewItem({
+    itemId: productId,
+    itemName: productName || productSlug,
+    value: price,
+  });
 }
 
 /**
@@ -111,6 +128,11 @@ export function trackCollectionView(
     contentId: collectionId,
     contentName: collectionName || collectionSlug || collectionId,
   });
+
+  gtmViewItemList({
+    itemId: collectionId,
+    itemName: collectionName || collectionSlug,
+  });
 }
 
 /**
@@ -123,6 +145,11 @@ export function trackSearch(query: string, resultsCount: number, productIds?: st
   fbSearch({
     searchString: query,
     contentIds: productIds,
+  });
+
+  gtmSearch({
+    searchString: query,
+    items: productIds?.map((id) => ({ item_id: id })),
   });
 }
 
@@ -161,6 +188,14 @@ export function trackQuickAddToCart(
     quantity: quantity || 1,
     eventId,
   });
+
+  gtmAddToCart({
+    eventId,
+    itemId: contentId,
+    itemName: productName || productId,
+    value: price || 0,
+    quantity: quantity || 1,
+  });
 }
 
 /**
@@ -193,6 +228,13 @@ export function trackCartRemove(
     value: price || 0,
     eventId,
   });
+
+  gtmRemoveFromCart({
+    eventId,
+    itemId: contentId,
+    itemName: productName || productId,
+    value: price || 0,
+  });
 }
 
 /**
@@ -218,6 +260,12 @@ export function trackWishlistToggle(
     fbAddToWishlist({
       contentId: productId,
       contentName: productName || productId,
+      value: price,
+    });
+
+    gtmAddToWishlist({
+      itemId: productId,
+      itemName: productName || productId,
       value: price,
     });
   }
@@ -249,6 +297,12 @@ export function trackCheckoutView(
     numItems: cartItemCount,
     eventId,
   });
+
+  gtmBeginCheckout({
+    eventId,
+    value: cartTotal,
+    items: (items || []).map((i) => ({ item_id: toContentId({ id: i.variantId, sku: i.sku }) })),
+  });
 }
 
 /**
@@ -263,6 +317,12 @@ export function trackCheckoutStep(step: "shipping" | "payment" | "review", data?
  */
 export function trackCheckoutAbandon(step: string, cartItemCount: number, cartTotal: number): void {
   trackEvent("checkout-abandon", { step, cartItemCount, cartTotal });
+
+  gtmCheckoutAbandon({
+    step,
+    value: cartTotal,
+    items: [],
+  });
 }
 
 /**
@@ -276,11 +336,19 @@ export function trackOrderComplete(
 ): void {
   trackEvent("order-complete", { orderId, total, itemCount });
 
+  const gtmItems = (items || []).map((i) => ({ item_id: toContentId({ id: i.variantId, sku: i.sku }) }));
+
   // Facebook Pixel
   fbPurchase({
-    contentIds: (items || []).map((i) => toContentId({ id: i.variantId, sku: i.sku })),
+    contentIds: gtmItems.map((i) => i.item_id),
     value: total,
     numItems: itemCount,
     orderId,
+  });
+
+  gtmPurchase({
+    orderId,
+    value: total,
+    items: gtmItems,
   });
 }

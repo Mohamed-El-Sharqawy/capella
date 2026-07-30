@@ -11,6 +11,7 @@ import {
 import type { User } from "@ecommerce/shared-types";
 import { apiGet, apiPost } from "@/lib/api-client";
 import { fbCompleteRegistration, setPixelUser, clearPixelUser } from "@/lib/facebook-pixel";
+import { gtmSignUp } from "@/lib/gtm";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
 const AUTH_STORAGE_KEY = "auth_tokens";
 
@@ -177,6 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       setUser(data.data.user);
       fbCompleteRegistration({ eventId: data.data.eventId });
+      gtmSignUp({ eventId: data.data.eventId });
       return { success: true };
     } catch (err) {
       return { success: false, error: err instanceof Error ? err.message : "Network error" };
