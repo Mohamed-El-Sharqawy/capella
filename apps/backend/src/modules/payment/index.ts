@@ -37,6 +37,19 @@ export const payment = new Elysia({ prefix: "/payments" })
     const orderStatus = await PaymentService.getTabbyOrderStatus(paymentId);
     return { success: true as const, data: { orderStatus } };
   })
+  // Public: order status by order id. Lets the success page verify an online
+  // payment (Ziina/Tabby/Tamara) was confirmed by the webhook before firing the
+  // browser Purchase event. Order IDs are unguessable cuids; only status is
+  // returned (no PII), so this is safe to expose without auth.
+  .get("/order-status", async ({ query, set }) => {
+    const orderId = (query as { orderId?: string }).orderId;
+    if (!orderId) {
+      set.status = 400;
+      return { success: false as const, error: "orderId is required" };
+    }
+    const orderStatus = await PaymentService.getOrderStatus(orderId);
+    return { success: true as const, data: { orderStatus } };
+  })
   .post("/checkout", async ({ body, user, headers, request }) => {
     try {
       const result = await PaymentService.createCheckoutSession(

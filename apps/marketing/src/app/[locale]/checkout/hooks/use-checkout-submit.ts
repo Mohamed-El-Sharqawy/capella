@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
 import { apiPost } from "@/lib/api-client";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
+import { savePendingPurchase } from "@/lib/analytics";
 import type { CheckoutFormState, CheckoutItem } from "../types";
 import { DEFAULT_COUNTRY, DEFAULT_ZIP_CODE, getShippingCost } from "../constants";
 
@@ -50,6 +51,12 @@ export function useCheckoutSubmit({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderId, setOrderId] = useQueryState("orderId", parseAsString);
   const orderSuccess = !!orderId;
+  const [completedOrder, setCompletedOrder] = useState<{
+    orderId: string;
+    total: number;
+    itemCount: number;
+    items: CheckoutItem[];
+  } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,7 +114,7 @@ export function useCheckoutSubmit({
         locale,
       } : orderData;
 
-      const data = await apiPost<{ data: { id?: string; orderNumber?: string; url?: string } }>(
+      const data = await apiPost<{ data: { id?: string; orderId?: string; orderNumber?: string; url?: string } }>(
         endpoint,
         payload,
         { token: token || undefined }
@@ -123,13 +130,38 @@ export function useCheckoutSubmit({
         }
       }
 
-      // If online payment, redirect to the provider-hosted checkout URL
+      // If online payment, redirect to the provider-hosted checkout URL.
+      // Persist the order snapshot first so the success page (loaded after the
+      // provider redirect) can fire the browser Purchase with the real value —
+      // only once the webhook confirms the payment (see success/page.tsx).
       if (isOnlinePayment && data.data?.url) {
+        const onlineOrderId = data.data.orderId || data.data.id || data.data.orderNumber;
+        if (onlineOrderId) {
+          savePendingPurchase({
+            orderId: onlineOrderId,
+            total: subtotal - roundedDiscount + getShippingCost(subtotal),
+            itemCount: items.length,
+            items: items.map((i) => ({ variantId: i.variantId, sku: i.sku })),
+          });
+        }
         window.location.href = data.data.url;
         return;
       }
 
       // Codes below only run for non-Ziina (COD) orders
+
+      // Snapshot order value/items BEFORE clearCart() empties the cart context.
+      // The success-state effect in client.tsx previously read total/items from
+      // useCart() after it was zeroed, firing the browser Pixel Purchase with
+      // value=0 (Meta rejects values that are not greater than 0).
+      const createdOrderId = data.data?.id || data.data?.orderNumber || null;
+      setCompletedOrder({
+        orderId: createdOrderId ?? "",
+        total: subtotal - roundedDiscount + getShippingCost(subtotal),
+        itemCount: items.length,
+        items,
+      });
+
       if (!isBuyNow) {
         clearCart();
       }
@@ -140,7 +172,7 @@ export function useCheckoutSubmit({
       }
 
       // Set orderId last - this triggers the success state
-      setOrderId(data.data?.id || data.data?.orderNumber || null);
+      setOrderId(createdOrderId);
     } catch (error) {
       console.error("Checkout error:", error);
       toast.error(`${t("orderFailed")} ${t("tryAgain")}`);
@@ -153,6 +185,7 @@ export function useCheckoutSubmit({
     isSubmitting,
     orderId,
     orderSuccess,
+    completedOrder,
     handleSubmit,
   };
 }

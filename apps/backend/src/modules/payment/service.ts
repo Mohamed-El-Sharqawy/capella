@@ -556,6 +556,14 @@ export abstract class PaymentService {
     return order?.status ?? null;
   }
 
+  static async getOrderStatus(orderId: string): Promise<string | null> {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { status: true },
+    });
+    return order?.status ?? null;
+  }
+
   /**
    * Background pre-scoring (eligibility) check — run before offering Tabby as a
    * payment option. Calls POST /api/v2/checkout with a minimal payload.

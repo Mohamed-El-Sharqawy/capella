@@ -352,3 +352,44 @@ export function trackOrderComplete(
     items: gtmItems,
   });
 }
+
+export interface PendingPurchase {
+  orderId: string;
+  total: number;
+  itemCount: number;
+  items: { variantId: string; sku?: string | null }[];
+}
+
+const PENDING_PURCHASE_KEY = "pending_purchase";
+
+/**
+ * Persist the order snapshot before redirecting to a hosted payment provider
+ * (Ziina/Tabby/Tamara). sessionStorage survives same-origin redirects, so the
+ * success page can recover the value/items after the customer returns — the
+ * cart context is unreachable there and the provider's URL carries no totals.
+ */
+export function savePendingPurchase(p: PendingPurchase): void {
+  try {
+    sessionStorage.setItem(PENDING_PURCHASE_KEY, JSON.stringify(p));
+  } catch {
+    // sessionStorage may be unavailable (private mode) — non-fatal.
+  }
+}
+
+export function getPendingPurchase(): PendingPurchase | null {
+  try {
+    const raw = sessionStorage.getItem(PENDING_PURCHASE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as PendingPurchase;
+  } catch {
+    return null;
+  }
+}
+
+export function clearPendingPurchase(): void {
+  try {
+    sessionStorage.removeItem(PENDING_PURCHASE_KEY);
+  } catch {
+    // no-op
+  }
+}

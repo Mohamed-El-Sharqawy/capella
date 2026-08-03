@@ -99,7 +99,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   }, [formState.paymentMethod, tabbyEligibility, updateField]);
 
   // Submit handler
-  const { isSubmitting, orderId, orderSuccess, handleSubmit } = useCheckoutSubmit({
+  const { isSubmitting, orderId, orderSuccess, completedOrder, handleSubmit } = useCheckoutSubmit({
     items,
     formState,
     isBuyNow,
@@ -146,17 +146,22 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
 
   // Track order completion
   useEffect(() => {
-    if (orderSuccess && orderId && !hasTrackedOrder.current) {
-      const purchaseKey = `purchase_tracked_${orderId}`;
+    if (orderSuccess && completedOrder && !hasTrackedOrder.current) {
+      const purchaseKey = `purchase_tracked_${completedOrder.orderId}`;
       if (sessionStorage.getItem(purchaseKey)) {
         hasTrackedOrder.current = true;
         return;
       }
       hasTrackedOrder.current = true;
       sessionStorage.setItem(purchaseKey, "1");
-      trackOrderComplete(orderId, total, items.length, items);
+      trackOrderComplete(
+        completedOrder.orderId,
+        completedOrder.total,
+        completedOrder.itemCount,
+        completedOrder.items,
+      );
     }
-  }, [orderSuccess, orderId, total, items.length]);
+  }, [orderSuccess, completedOrder]);
 
   // Track payment method selection
   useEffect(() => {
