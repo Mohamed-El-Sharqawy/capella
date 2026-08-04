@@ -8,10 +8,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useOrders } from "@/contexts/orders-context";
 import { usePaymentMethods } from "@/lib/payment-methods";
 import { Link } from "@/i18n/navigation";
-import { trackCheckoutView, trackOrderComplete } from "@/lib/analytics";
-import { fbAddPaymentInfo } from "@/lib/facebook-pixel";
-import { gtmAddPaymentInfo } from "@/lib/gtm";
-import { CURRENCY, toContentId } from "@ecommerce/shared-utils";
+import { trackCheckoutView, trackOrderComplete, trackAddPaymentInfo } from "@/lib/analytics";
 import {
   useCheckoutForm,
   useBuyNow,
@@ -167,15 +164,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   useEffect(() => {
     if (formState.paymentMethod && items.length > 0 && !hasTrackedPayment.current) {
       hasTrackedPayment.current = true;
-      fbAddPaymentInfo({
-        contentIds: items.map((i) => toContentId({ id: i.variantId, sku: i.sku })),
-        value: total,
-        currency: CURRENCY,
-      });
-      gtmAddPaymentInfo({
-        value: total,
-        items: items.map((i) => ({ item_id: toContentId({ id: i.variantId, sku: i.sku }) })),
-      });
+      trackAddPaymentInfo(items, total);
     }
   }, [formState.paymentMethod]);
 

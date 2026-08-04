@@ -11,6 +11,7 @@ import {
   fbRemoveFromCart,
   fbSearch,
   fbAddToWishlist,
+  fbAddPaymentInfo,
   fbInitiateCheckout,
   fbPurchase,
 } from "./facebook-pixel";
@@ -24,6 +25,7 @@ import {
   gtmAddToCart,
   gtmRemoveFromCart,
   gtmAddToWishlist,
+  gtmAddPaymentInfo,
   gtmBeginCheckout,
   gtmPurchase,
   gtmCheckoutAbandon,
@@ -95,6 +97,7 @@ export function trackProductView(
 ): void {
   if (!dedup(`product_${productId}`)) return;
   trackEvent("product-view", { productId, productSlug });
+  const eventId = genEventId();
 
   // Catalog feed's `item_group_id` is the raw product.id — match it via
   // content_type: 'product_group' so Meta can correlate ViewContent with the PDP.
@@ -103,12 +106,14 @@ export function trackProductView(
     contentName: productName || productSlug || productId,
     contentType: "product_group",
     value: price,
+    eventId,
   });
 
   gtmViewItem({
     itemId: productId,
     itemName: productName || productSlug,
     value: price,
+    eventId,
   });
 }
 
@@ -122,16 +127,19 @@ export function trackCollectionView(
 ): void {
   if (!dedup(`collection_${collectionId}`)) return;
   trackEvent("collection-view", { collectionId, collectionSlug });
+  const eventId = genEventId();
   
   // Facebook Pixel
   fbViewCategory({
     contentId: collectionId,
     contentName: collectionName || collectionSlug || collectionId,
+    eventId,
   });
 
   gtmViewItemList({
     itemId: collectionId,
     itemName: collectionName || collectionSlug,
+    eventId,
   });
 }
 
@@ -140,16 +148,19 @@ export function trackCollectionView(
  */
 export function trackSearch(query: string, resultsCount: number, productIds?: string[]): void {
   trackEvent("search", { query, resultsCount });
+  const eventId = genEventId();
   
   // Facebook Pixel
   fbSearch({
     searchString: query,
     contentIds: productIds,
+    eventId,
   });
 
   gtmSearch({
     searchString: query,
     items: productIds?.map((id) => ({ item_id: id })),
+    eventId,
   });
 }
 
@@ -257,18 +268,44 @@ export function trackWishlistToggle(
   
   // Facebook Pixel - only track add (no standard remove event)
   if (action === "add") {
+    const eventId = genEventId();
     fbAddToWishlist({
       contentId: productId,
       contentName: productName || productId,
       value: price,
+      eventId,
     });
 
     gtmAddToWishlist({
       itemId: productId,
       itemName: productName || productId,
       value: price,
+      eventId,
     });
   }
+}
+
+/**
+ * Track payment method selection
+ */
+export function trackAddPaymentInfo(
+  items: { variantId: string; sku?: string | null }[],
+  total: number
+): void {
+  const eventId = genEventId();
+  const contentIds = items.map((i) => toContentId({ id: i.variantId, sku: i.sku }));
+
+  fbAddPaymentInfo({
+    contentIds,
+    value: total,
+    eventId,
+  });
+
+  gtmAddPaymentInfo({
+    value: total,
+    items: contentIds.map((item_id) => ({ item_id })),
+    eventId,
+  });
 }
 
 /**

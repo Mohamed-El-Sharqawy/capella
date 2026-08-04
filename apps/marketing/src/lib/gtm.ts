@@ -82,13 +82,16 @@ function sessionUserData(): Record<string, string | undefined> {
 }
 
 /** Standard GA4 `view_item` (product detail view). */
+/** Standard GA4 `view_item`. Shares event_id with the Meta Pixel for dedup. */
 export function gtmViewItem(params: {
   itemId: string;
   itemName?: string;
   value?: number;
+  eventId?: string;
 }): void {
   pushToDataLayer({
     event: "view_item",
+    event_id: params.eventId,
     ecommerce: {
       currency: CURRENCY,
       value: params.value,
@@ -97,10 +100,11 @@ export function gtmViewItem(params: {
   });
 }
 
-/** Standard GA4 `view_item_list` (collection/category view). */
-export function gtmViewItemList(params: { itemId: string; itemName?: string }): void {
+/** Standard GA4 `view_item_list`. Shares event_id with the Meta Pixel for dedup. */
+export function gtmViewItemList(params: { itemId: string; itemName?: string; eventId?: string }): void {
   pushToDataLayer({
     event: "view_item_list",
+    event_id: params.eventId,
     ecommerce: {
       currency: CURRENCY,
       items: [{ item_id: params.itemId, item_name: params.itemName }],
@@ -108,10 +112,11 @@ export function gtmViewItemList(params: { itemId: string; itemName?: string }): 
   });
 }
 
-/** Standard GA4 `search`. */
-export function gtmSearch(params: { searchString: string; items?: GtmItem[] }): void {
+/** Standard GA4 `search`. Shares event_id with the Meta Pixel for dedup. */
+export function gtmSearch(params: { searchString: string; items?: GtmItem[]; eventId?: string }): void {
   pushToDataLayer({
     event: "search",
+    event_id: params.eventId,
     search_term: params.searchString,
     ecommerce: params.items ? { currency: CURRENCY, items: params.items } : null,
   });
@@ -157,14 +162,16 @@ export function gtmRemoveFromCart(params: {
   });
 }
 
-/** Standard GA4 `add_to_wishlist`. */
+/** Standard GA4 `add_to_wishlist`. Shares event_id with the Meta Pixel for dedup. */
 export function gtmAddToWishlist(params: {
   itemId: string;
   itemName?: string;
   value?: number;
+  eventId?: string;
 }): void {
   pushToDataLayer({
     event: "add_to_wishlist",
+    event_id: params.eventId,
     ecommerce: {
       currency: CURRENCY,
       value: params.value,
@@ -191,10 +198,11 @@ export function gtmBeginCheckout(params: {
   });
 }
 
-/** Standard GA4 `add_payment_info`. */
-export function gtmAddPaymentInfo(params: { value: number; items: GtmItem[] }): void {
+/** Standard GA4 `add_payment_info`. Shares event_id with the Meta Pixel for dedup. */
+export function gtmAddPaymentInfo(params: { value: number; items: GtmItem[]; eventId?: string }): void {
   pushToDataLayer({
     event: "add_payment_info",
+    event_id: params.eventId,
     ecommerce: {
       currency: CURRENCY,
       value: params.value,

@@ -84,14 +84,21 @@ export function fbViewContent(params: {
   contentType: "product" | "product_group";
   value?: number;
   currency?: string;
+  eventId?: string;
 }): void {
-  fbq("track", "ViewContent", {
+  const eventData = {
     content_ids: [params.contentId],
     content_name: params.contentName,
     content_type: params.contentType,
     value: params.value,
     currency: params.currency || CURRENCY,
-  });
+  };
+
+  if (params.eventId) {
+    fbq("track", "ViewContent", eventData, { eventID: params.eventId });
+  } else {
+    fbq("track", "ViewContent", eventData);
+  }
 }
 
 /**
@@ -100,12 +107,19 @@ export function fbViewContent(params: {
 export function fbViewCategory(params: {
   contentId: string;
   contentName: string;
+  eventId?: string;
 }): void {
-  fbq("track", "ViewContent", {
+  const eventData = {
     content_ids: [params.contentId],
     content_name: params.contentName,
     content_type: "product_group",
-  });
+  };
+
+  if (params.eventId) {
+    fbq("track", "ViewContent", eventData, { eventID: params.eventId });
+  } else {
+    fbq("track", "ViewContent", eventData);
+  }
 }
 
 /**
@@ -195,12 +209,19 @@ export function fbAddPaymentInfo(params: {
   contentIds: string[];
   value: number;
   currency?: string;
+  eventId?: string;
 }): void {
-  fbq("track", "AddPaymentInfo", {
+  const eventData = {
     content_ids: params.contentIds,
     value: params.value,
     currency: params.currency || CURRENCY,
-  });
+  };
+
+  if (params.eventId) {
+    fbq("track", "AddPaymentInfo", eventData, { eventID: params.eventId });
+  } else {
+    fbq("track", "AddPaymentInfo", eventData);
+  }
 }
 
 /**
@@ -239,11 +260,18 @@ export function fbPurchase(params: {
 export function fbSearch(params: {
   searchString: string;
   contentIds?: string[];
+  eventId?: string;
 }): void {
-  fbq("track", "Search", {
+  const eventData = {
     search_string: params.searchString,
     content_ids: params.contentIds,
-  });
+  };
+
+  if (params.eventId) {
+    fbq("track", "Search", eventData, { eventID: params.eventId });
+  } else {
+    fbq("track", "Search", eventData);
+  }
 }
 
 /**
@@ -254,13 +282,20 @@ export function fbAddToWishlist(params: {
   contentName: string;
   value?: number;
   currency?: string;
+  eventId?: string;
 }): void {
-  fbq("track", "AddToWishlist", {
+  const eventData = {
     content_ids: [params.contentId],
     content_name: params.contentName,
     value: params.value,
     currency: params.currency || CURRENCY,
-  });
+  };
+
+  if (params.eventId) {
+    fbq("track", "AddToWishlist", eventData, { eventID: params.eventId });
+  } else {
+    fbq("track", "AddToWishlist", eventData);
+  }
 }
 
 /**
