@@ -73,7 +73,7 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   // Tabby pre-scoring — hide Tabby when Tabby rejects the customer/cart.
   const paymentMethods = usePaymentMethods();
   // Grand total the customer actually pays (items − discount + shipping).
-  // getShippingCost already returns 0 at/over the 500 AED threshold, so Tabby
+  // getShippingCost already returns 0 at/over the 600 AED threshold, so Tabby
   // excludes shipping there. Both the pre-scoring check and the TabbyCard
   // snippet must use this so they match the order summary and the real charge.
   const roundedDiscount = discountAmount > 0 ? Math.ceil(discountAmount) : 0;

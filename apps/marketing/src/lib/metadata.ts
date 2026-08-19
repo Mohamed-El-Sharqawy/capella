@@ -317,12 +317,12 @@ export const STATIC_PAGE_METADATA = {
     en: {
       title: "Shipping Policy - Capella",
       description:
-        "Fast shipping across UAE. Free delivery on orders over 500 AED. Track your order and get updates. Capella delivery info.",
+        "Fast shipping across UAE. Free delivery on orders over 600 AED. Track your order and get updates. Capella delivery info.",
     },
     ar: {
       title: "سياسة الشحن - كابيلا",
       description:
-        "شحن سريع في جميع أنحاء الإمارات. توصيل مجاني للطلبات فوق 500 درهم. تتبع طلبك واحصل على التحديثات. معلومات توصيل كابيلا.",
+        "شحن سريع في جميع أنحاء الإمارات. توصيل مجاني للطلبات فوق 600 درهم. تتبع طلبك واحصل على التحديثات. معلومات توصيل كابيلا.",
     },
   },
 } as const;
