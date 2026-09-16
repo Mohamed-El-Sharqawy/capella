@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import type { ContactFormData, SubmitStatus } from "../types";
 import { INITIAL_FORM_DATA } from "../constants";
 import { fbLead } from "@/lib/facebook-pixel";
+import { ttSubmitForm } from "@/lib/tiktok-pixel";
 import { gtmGenerateLead } from "@/lib/gtm";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
 import { capiHeaders } from "@/lib/capi-headers";
@@ -43,6 +44,9 @@ export function useContactForm() {
       if (!res.ok) throw new Error("Failed");
 
       fbLead({ eventId: leadEventId });
+      // Same event_id the backend forwards to Meta CAPI - the future TikTok
+      // Events API event must reuse it to dedup against this browser event.
+      ttSubmitForm({ eventId: leadEventId });
       gtmGenerateLead({ eventId: leadEventId });
       setSubmitStatus("success");
       setFormData(INITIAL_FORM_DATA);

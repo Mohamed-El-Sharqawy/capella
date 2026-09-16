@@ -2,8 +2,9 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
+# Install pnpm - pinned to major 10: pnpm 11 hard-fails on dependency build
+# scripts (ERR_PNPM_IGNORED_BUILDS) even with the pnpm-workspace.yaml allowlist.
+RUN npm install -g pnpm@10
 
 # Install dependencies
 FROM base AS deps

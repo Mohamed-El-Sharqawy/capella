@@ -11,6 +11,7 @@ import {
 import type { User } from "@ecommerce/shared-types";
 import { apiGet, apiPost } from "@/lib/api-client";
 import { fbCompleteRegistration, setPixelUser, clearPixelUser } from "@/lib/facebook-pixel";
+import { ttCompleteRegistration, ttIdentify, ttClearIdentify } from "@/lib/tiktok-pixel";
 import { gtmSignUp } from "@/lib/gtm";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
 const AUTH_STORAGE_KEY = "auth_tokens";
@@ -76,10 +77,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Keep the Meta Pixel Advanced Matching in sync with the authenticated user.
-  // One effect covers session restore, sign-in, sign-up, and logout. Attaches
-  // em/ph/fn/ln/external_id to all subsequent pixel events (raises EMQ) without
-  // relying on Automatic Advanced Matching (autoConfig), which we keep disabled.
+  // Keep Meta Advanced Matching + TikTok identify in sync with the authenticated
+  // user. One effect covers session restore, sign-in, sign-up, and logout.
+  // Meta: attaches em/ph/fn/ln/external_id to all subsequent pixel events (raises
+  // EMQ) without relying on Automatic Advanced Matching (autoConfig), which we
+  // keep disabled. TikTok: ttIdentify SHA-256 hashes the same shared-utils
+  // normalized values before ttq.identify, so browser and future server Events
+  // API hashes stay byte-identical.
   useEffect(() => {
     if (user) {
       setPixelUser({
@@ -89,8 +93,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         firstName: user.firstName,
         lastName: user.lastName,
       });
+      void ttIdentify({
+        id: user.id,
+        email: user.email,
+        phone: user.phone,
+      });
     } else {
       clearPixelUser();
+      ttClearIdentify();
     }
   }, [user]);
 
@@ -178,6 +188,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       setUser(data.data.user);
       fbCompleteRegistration({ eventId: data.data.eventId });
+      // Server-generated regEventId - the future TikTok Events API event must
+      // reuse it to dedup against this browser event.
+      ttCompleteRegistration({ eventId: data.data.eventId });
       gtmSignUp({ eventId: data.data.eventId });
       return { success: true };
     } catch (err) {

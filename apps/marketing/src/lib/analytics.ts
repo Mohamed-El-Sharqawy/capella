@@ -1,7 +1,7 @@
 /**
  * Analytics tracking utilities for the marketing app
  * Sends events to the backend for storage and analysis
- * Also triggers Facebook Pixel events
+ * Also triggers Facebook Pixel, TikTok Pixel and GTM events
  */
 
 import {
@@ -15,6 +15,16 @@ import {
   fbInitiateCheckout,
   fbPurchase,
 } from "./facebook-pixel";
+import {
+  ttViewContent,
+  ttAddToCart,
+  ttRemoveFromCart,
+  ttSearch,
+  ttAddToWishlist,
+  ttAddPaymentInfo,
+  ttInitiateCheckout,
+  ttCompletePayment,
+} from "./tiktok-pixel";
 import { getFbp, getFbc } from "./meta-cookies";
 import { capiHeaders } from "./capi-headers";
 import { toContentId } from "@ecommerce/shared-utils";
@@ -96,12 +106,20 @@ export function trackProductView(
   price?: number
 ): void {
   if (!dedup(`product_${productId}`)) return;
-  trackEvent("product-view", { productId, productSlug });
   const eventId = genEventId();
+  trackEvent("product-view", { productId, productSlug, eventId });
 
   // Catalog feed's `item_group_id` is the raw product.id — match it via
   // content_type: 'product_group' so Meta can correlate ViewContent with the PDP.
   fbViewContent({
+    contentId: productId,
+    contentName: productName || productSlug || productId,
+    contentType: "product_group",
+    value: price,
+    eventId,
+  });
+
+  ttViewContent({
     contentId: productId,
     contentName: productName || productSlug || productId,
     contentType: "product_group",
@@ -126,13 +144,21 @@ export function trackCollectionView(
   collectionName?: string
 ): void {
   if (!dedup(`collection_${collectionId}`)) return;
-  trackEvent("collection-view", { collectionId, collectionSlug });
   const eventId = genEventId();
-  
+  trackEvent("collection-view", { collectionId, collectionSlug, eventId });
+
   // Facebook Pixel
   fbViewCategory({
     contentId: collectionId,
     contentName: collectionName || collectionSlug || collectionId,
+    eventId,
+  });
+
+  // TikTok has no category event — ViewContent with product_group.
+  ttViewContent({
+    contentId: collectionId,
+    contentName: collectionName || collectionSlug || collectionId,
+    contentType: "product_group",
     eventId,
   });
 
@@ -147,11 +173,17 @@ export function trackCollectionView(
  * Track search query
  */
 export function trackSearch(query: string, resultsCount: number, productIds?: string[]): void {
-  trackEvent("search", { query, resultsCount });
   const eventId = genEventId();
-  
+  trackEvent("search", { query, resultsCount, eventId });
+
   // Facebook Pixel
   fbSearch({
+    searchString: query,
+    contentIds: productIds,
+    eventId,
+  });
+
+  ttSearch({
     searchString: query,
     contentIds: productIds,
     eventId,
@@ -200,6 +232,14 @@ export function trackQuickAddToCart(
     eventId,
   });
 
+  ttAddToCart({
+    contentId,
+    contentName: productName || productId,
+    price: price || 0,
+    quantity: quantity || 1,
+    eventId,
+  });
+
   gtmAddToCart({
     eventId,
     itemId: contentId,
@@ -240,6 +280,15 @@ export function trackCartRemove(
     eventId,
   });
 
+  // TikTok custom event - same event_id contract as the Meta RemoveFromCart
+  // CAPI so the future server Events API call dedups against it.
+  ttRemoveFromCart({
+    contentId,
+    contentName: productName || productId,
+    value: price || 0,
+    eventId,
+  });
+
   gtmRemoveFromCart({
     eventId,
     itemId: contentId,
@@ -264,15 +313,22 @@ export function trackWishlistToggle(
   productName?: string,
   price?: number
 ): void {
-  trackEvent(`wishlist-${action}`, { productId });
-  
+  const eventId = action === "add" ? genEventId() : undefined;
+  trackEvent(`wishlist-${action}`, { productId, eventId });
+
   // Facebook Pixel - only track add (no standard remove event)
-  if (action === "add") {
-    const eventId = genEventId();
+  if (action === "add" && eventId) {
     fbAddToWishlist({
       contentId: productId,
       contentName: productName || productId,
       value: price,
+      eventId,
+    });
+
+    ttAddToWishlist({
+      contentId: productId,
+      contentName: productName || productId,
+      price,
       eventId,
     });
 
@@ -296,6 +352,12 @@ export function trackAddPaymentInfo(
   const contentIds = items.map((i) => toContentId({ id: i.variantId, sku: i.sku }));
 
   fbAddPaymentInfo({
+    contentIds,
+    value: total,
+    eventId,
+  });
+
+  ttAddPaymentInfo({
     contentIds,
     value: total,
     eventId,
@@ -329,6 +391,13 @@ export function trackCheckoutView(
 
   // Facebook Pixel
   fbInitiateCheckout({
+    contentIds,
+    value: cartTotal,
+    numItems: cartItemCount,
+    eventId,
+  });
+
+  ttInitiateCheckout({
     contentIds,
     value: cartTotal,
     numItems: cartItemCount,
@@ -377,6 +446,15 @@ export function trackOrderComplete(
 
   // Facebook Pixel
   fbPurchase({
+    contentIds: gtmItems.map((i) => i.item_id),
+    value: total,
+    numItems: itemCount,
+    orderId,
+  });
+
+  // CompletePayment is TikTok's purchase-equivalent; order-completion here is
+  // post-payment, so no separate PlaceAnOrder event.
+  ttCompletePayment({
     contentIds: gtmItems.map((i) => i.item_id),
     value: total,
     numItems: itemCount,
