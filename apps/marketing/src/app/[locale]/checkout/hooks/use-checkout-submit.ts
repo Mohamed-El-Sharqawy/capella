@@ -9,6 +9,7 @@ import { useCart } from "@/contexts/cart-context";
 import { apiPost } from "@/lib/api-client";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
 import { savePendingPurchase } from "@/lib/analytics";
+import { getOutOfStockIssues } from "@/lib/stock";
 import type { CheckoutFormState, CheckoutItem } from "../types";
 import { DEFAULT_COUNTRY, DEFAULT_ZIP_CODE, getShippingCost } from "../constants";
 
@@ -29,6 +30,8 @@ interface UseCheckoutSubmitOptions {
   appliedCoupon?: CouponData | null;
   discountAmount?: number;
   onOrderSuccess?: () => void;
+  /** Called when the backend rejects the order because stock ran out. */
+  onOutOfStock?: () => Promise<void> | void;
   locale: string;
 }
 
@@ -42,9 +45,11 @@ export function useCheckoutSubmit({
   appliedCoupon,
   discountAmount = 0,
   onOrderSuccess,
+  onOutOfStock,
   locale,
 }: UseCheckoutSubmitOptions) {
   const t = useTranslations("checkout");
+  const tStock = useTranslations("stock");
   const { isAuthenticated, getAccessToken } = useAuth();
   const { clearCart } = useCart();
 
@@ -175,7 +180,13 @@ export function useCheckoutSubmit({
       setOrderId(createdOrderId);
     } catch (error) {
       console.error("Checkout error:", error);
-      toast.error(`${t("orderFailed")} ${t("tryAgain")}`);
+      if (getOutOfStockIssues(error)) {
+        // Someone bought the last units after this customer added them.
+        toast.error(isBuyNow ? tStock("buyNowUnavailable") : tStock("checkoutStockChanged"));
+        await onOutOfStock?.();
+      } else {
+        toast.error(`${t("orderFailed")} ${t("tryAgain")}`);
+      }
     } finally {
       setIsSubmitting(false);
     }

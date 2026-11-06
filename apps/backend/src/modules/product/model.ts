@@ -97,6 +97,9 @@ export const ProductModel = {
     sortOrder: t.Optional(t.String()),
     availability: t.Optional(t.String()),
   }),
+  availabilityBody: t.Object({
+    variantIds: t.Array(t.String(), { minItems: 1, maxItems: 100 }),
+  }),
   relatedProductsBody: t.Object({
     collectionIds: t.Array(t.String()),
     excludeProductIds: t.Array(t.String()),

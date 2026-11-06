@@ -13,6 +13,12 @@ import {
 } from "../../lib/meta-capi";
 import { getShippingCost, CURRENCY } from "@ecommerce/shared-utils";
 import type { PaymentModel } from "./model";
+import {
+  assertInStock,
+  decrementStock,
+  OutOfStockError,
+  releaseOrderStock,
+} from "../../lib/stock";
 
 const MARKETING_URL = process.env.MARKETING_URL || "http://localhost:3000";
 
@@ -26,7 +32,7 @@ interface ProviderDescriptor {
 
 type VariantWithProduct = Prisma.ProductVariantGetPayload<{
   include: {
-    product: { select: { nameEn: true; nameAr: true } };
+    product: { select: { nameEn: true; nameAr: true; isActive: true } };
     images: {
       orderBy: { position: "asc" };
       take: number;
@@ -47,6 +53,13 @@ interface PreparedOrder {
   shippingCost: number;
 }
 
+class AlreadyProcessedError extends Error {}
+
+/** Filled by prepareOrder so a failed provider call can release the hold. */
+interface CheckoutAttempt {
+  orderId?: string;
+}
+
 export abstract class PaymentService {
   // ---------------------------------------------------------------------------
   // Shared helpers
@@ -58,6 +71,7 @@ export abstract class PaymentService {
     userId: string | undefined,
     paymentMethod: PaymentMethodName,
     capiCtx?: CapiContext,
+    attempt?: CheckoutAttempt,
   ): Promise<PreparedOrder> {
     const { items, couponCode, ...shippingData } = body;
 
@@ -65,7 +79,7 @@ export abstract class PaymentService {
     const variants = await prisma.productVariant.findMany({
       where: { id: { in: variantIds } },
       include: {
-        product: { select: { nameEn: true, nameAr: true } },
+        product: { select: { nameEn: true, nameAr: true, isActive: true } },
         images: {
           orderBy: { position: "asc" },
           take: 1,
@@ -74,19 +88,10 @@ export abstract class PaymentService {
       },
     });
 
-    if (variants.length !== items.length) {
-      throw new Error("Some variants not found");
-    }
-
-    for (const item of items) {
-      const variant = variants.find((v) => v.id === item.variantId);
-      if (!variant) {
-        throw new Error(`Variant ${item.variantId} not found`);
-      }
-      if (variant.stock < item.quantity) {
-        throw new Error(`Insufficient stock for ${variant.product.nameEn}`);
-      }
-    }
+    // Missing, inactive or out-of-stock variants are all reported as
+    // OUT_OF_STOCK so the storefront can refresh the cart and tell the
+    // customer exactly which items to remove/adjust.
+    assertInStock(items, variants);
 
     let subtotal = 0;
     items.forEach((item) => {
@@ -124,54 +129,136 @@ export abstract class PaymentService {
       throw new Error("Invalid order total");
     }
 
-    const order = await prisma.order.create({
-      data: {
-        userId: userId || null,
-        guestEmail: shippingData.guestEmail,
-        guestFirstName: shippingData.guestFirstName,
-        guestLastName: shippingData.guestLastName,
-        guestPhone: shippingData.guestPhone,
-        status: "PENDING",
-        total: totalAmount,
-        shippingAmount: shippingCost,
-        discountAmount,
-        couponId: couponDbId || null,
-        paymentMethod,
-        shippingFirstName: shippingData.shippingFirstName,
-        shippingLastName: shippingData.shippingLastName,
-        shippingStreet: shippingData.shippingStreet,
-        shippingCity: shippingData.shippingCity,
-        shippingState: shippingData.shippingState,
-        shippingZipCode: shippingData.shippingZipCode,
-        shippingCountry: shippingData.shippingCountry,
-        shippingPhone: shippingData.shippingPhone,
-        addressId: shippingData.addressId,
-        note: shippingData.note,
-        fbp: (shippingData as any).fbp || null,
-        fbc: (shippingData as any).fbc || null,
-        ...(Object.keys(capiMetadataFields(capiCtx)).length > 0
-          ? { capiContext: capiMetadataFields(capiCtx) }
-          : {}),
-        items: {
-          create: items.map((item) => {
-            const variant = variants.find((v) => v.id === item.variantId)!;
-            return {
-              variantId: item.variantId,
-              productNameEn: variant.product.nameEn,
-              productNameAr: variant.product.nameAr,
-              variantNameEn: variant.nameEn,
-              variantNameAr: variant.nameAr,
-              sku: variant.sku,
-              quantity: item.quantity,
-              price: variant.price,
-              imageUrl: variant.images[0]?.image?.url || null,
-            };
-          }),
+    // Create the PENDING order and hold its units in one transaction, so the
+    // stock can't be sold to someone else while this customer is paying. The
+    // hold is released if the payment is cancelled/fails/expires (see
+    // cancelPendingOrder and releaseExpiredReservations).
+    const order = await prisma.$transaction(async (tx) => {
+      await decrementStock(tx, items);
+      return tx.order.create({
+        data: {
+          stockReserved: true,
+          userId: userId || null,
+          guestEmail: shippingData.guestEmail,
+          guestFirstName: shippingData.guestFirstName,
+          guestLastName: shippingData.guestLastName,
+          guestPhone: shippingData.guestPhone,
+          status: "PENDING",
+          total: totalAmount,
+          shippingAmount: shippingCost,
+          discountAmount,
+          couponId: couponDbId || null,
+          paymentMethod,
+          shippingFirstName: shippingData.shippingFirstName,
+          shippingLastName: shippingData.shippingLastName,
+          shippingStreet: shippingData.shippingStreet,
+          shippingCity: shippingData.shippingCity,
+          shippingState: shippingData.shippingState,
+          shippingZipCode: shippingData.shippingZipCode,
+          shippingCountry: shippingData.shippingCountry,
+          shippingPhone: shippingData.shippingPhone,
+          addressId: shippingData.addressId,
+          note: shippingData.note,
+          fbp: (shippingData as any).fbp || null,
+          fbc: (shippingData as any).fbc || null,
+          ...(Object.keys(capiMetadataFields(capiCtx)).length > 0
+            ? { capiContext: capiMetadataFields(capiCtx) }
+            : {}),
+          items: {
+            create: items.map((item) => {
+              const variant = variants.find((v) => v.id === item.variantId)!;
+              return {
+                variantId: item.variantId,
+                productNameEn: variant.product.nameEn,
+                productNameAr: variant.product.nameAr,
+                variantNameEn: variant.nameEn,
+                variantNameAr: variant.nameAr,
+                sku: variant.sku,
+                quantity: item.quantity,
+                price: variant.price,
+                imageUrl: variant.images[0]?.image?.url || null,
+              };
+            }),
+          },
         },
-      },
+      });
     });
 
+    if (attempt) attempt.orderId = order.id;
+
     return { order, variants, subtotal, discountAmount, shippingCost };
+  }
+
+  /**
+   * The customer came back from the payment page without paying (cancel /
+   * back button). Release the hold now instead of waiting for expiry, so
+   * the units show as available again (including in their own cart).
+   * Only unpaid online PENDING orders are affected; a payment that still
+   * completes afterwards is handled by markOrderPaid (re-reserve or refund).
+   */
+  static async releaseAbandonedCheckout(orderId: string): Promise<boolean> {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      select: { id: true, status: true, paymentMethod: true, paidAt: true },
+    });
+    if (!order || order.status !== "PENDING" || order.paidAt || order.paymentMethod === "COD") {
+      return false;
+    }
+    const released = await releaseOrderStock(order.id, {
+      onlyIfStatus: "PENDING",
+      nextStatus: "CANCELLED",
+    });
+    if (released) console.log(`Order ${order.id} cancelled: customer returned without paying`);
+    return released;
+  }
+
+  /**
+   * Cancel unpaid online orders whose stock hold is older than
+   * STOCK_RESERVATION_MINUTES (default 30) and return their units. Covers
+   * customers who close the tab on the payment page (no webhook ever comes).
+   */
+  static async releaseExpiredReservations(): Promise<number> {
+    const minutes = Number(process.env.STOCK_RESERVATION_MINUTES) || 30;
+    const cutoff = new Date(Date.now() - minutes * 60_000);
+    const expired = await prisma.order.findMany({
+      where: {
+        status: "PENDING",
+        stockReserved: true,
+        paidAt: null,
+        paymentMethod: { not: "COD" },
+        createdAt: { lt: cutoff },
+      },
+      select: { id: true },
+      take: 200,
+    });
+    let count = 0;
+    for (const { id } of expired) {
+      if (await releaseOrderStock(id, { onlyIfStatus: "PENDING", nextStatus: "CANCELLED" })) count++;
+    }
+    if (count > 0) console.log(`Released stock for ${count} expired unpaid order(s)`);
+    return count;
+  }
+
+  /** Tell the customer their paid order was refunded because stock ran out. */
+  private static async notifyOutOfStockRefund(
+    order: OrderWithRelations,
+    paymentMethod: PaymentMethodName,
+  ) {
+    const customerEmail = order.user?.email || order.guestEmail || "";
+    if (!customerEmail) return;
+    const customerName = order.user
+      ? `${order.user.firstName} ${order.user.lastName}`
+      : `${order.guestFirstName || ""} ${order.guestLastName || ""}`.trim();
+    try {
+      await EmailService.sendStatusUpdate({
+        orderId: order.id,
+        customerName,
+        customerEmail,
+        newStatus: "REFUNDED",
+      });
+    } catch (emailErr) {
+      console.error(`Failed to send out-of-stock refund email (${paymentMethod}):`, emailErr);
+    }
   }
 
   /**
@@ -185,42 +272,63 @@ export abstract class PaymentService {
   ) {
     if (!order) return;
 
-    const TERMINAL_STATUSES = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED", "REFUNDED"];
-    if (TERMINAL_STATUSES.includes(order.status)) {
+    // Already finalized (paid, or refunded): duplicate webhook.
+    const FINAL_STATUSES = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "REFUNDED"];
+    if (FINAL_STATUSES.includes(order.status)) {
       console.log(`Order ${order.id} already processed (${order.status}), skipping duplicate webhook`);
       return;
     }
 
-    for (const item of order.items) {
-      const variant = await prisma.productVariant.findUnique({
-        where: { id: item.variantId },
-      });
-      if (!variant || variant.stock < item.quantity) {
-        console.error(`Insufficient stock for variant ${item.variantId}, refunding`);
-        try {
-          if (provider.refund) await provider.refund(order.total);
-        } catch (refundErr) {
-          console.error("Refund failed:", refundErr);
-        }
-        await prisma.order.update({
-          where: { id: order.id },
-          data: { status: "REFUNDED" },
+    // Three cases, each claimed with a conditional update so concurrent
+    // webhooks can't double-process:
+    //  - PENDING with a stock hold (normal): units were reserved at checkout,
+    //    just confirm.
+    //  - PENDING without a hold (legacy order) or CANCELLED (the hold expired
+    //    or the customer abandoned, then paid anyway): take the units now; if
+    //    they've been sold meanwhile, refund instead.
+    const lines = order.items.map((i) => ({ variantId: i.variantId, quantity: i.quantity }));
+    try {
+      await prisma.$transaction(async (tx) => {
+        const confirmedHeld = await tx.order.updateMany({
+          where: { id: order.id, status: "PENDING", stockReserved: true },
+          data: { status: "CONFIRMED", paidAt: new Date() },
         });
+        if (confirmedHeld.count === 1) return;
+
+        const claimed = await tx.order.updateMany({
+          where: {
+            id: order.id,
+            status: { in: ["PENDING", "CANCELLED"] },
+            stockReserved: false,
+          },
+          data: { status: "CONFIRMED", paidAt: new Date(), stockReserved: true },
+        });
+        if (claimed.count === 0) throw new AlreadyProcessedError();
+        await decrementStock(tx, lines);
+      });
+    } catch (err) {
+      if (err instanceof AlreadyProcessedError) {
+        console.log(`Order ${order.id} finalized by a concurrent webhook, skipping`);
         return;
       }
-    }
+      if (!(err instanceof OutOfStockError)) throw err;
 
-    for (const item of order.items) {
-      await prisma.productVariant.update({
-        where: { id: item.variantId },
-        data: { stock: { decrement: item.quantity } },
+      console.error(
+        `Insufficient stock for order ${order.id} after payment, refunding:`,
+        err.items,
+      );
+      try {
+        if (provider.refund) await provider.refund(order.total);
+      } catch (refundErr) {
+        console.error("Refund failed:", refundErr);
+      }
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { status: "REFUNDED", stockReserved: false },
       });
+      await this.notifyOutOfStockRefund(order, provider.paymentMethod);
+      return;
     }
-
-    await prisma.order.update({
-      where: { id: order.id },
-      data: { status: "CONFIRMED", paidAt: new Date() },
-    });
 
     if (order.couponId) {
       const { CouponService } = await import("../coupon/service");
@@ -325,10 +433,19 @@ export abstract class PaymentService {
   ) {
     if (!order) return;
     if (order.status === "PENDING") {
-      await prisma.order.update({
-        where: { id: order.id },
-        data: { status: "CANCELLED" },
+      // Atomically cancel + return held units (no-op if a concurrent webhook
+      // already moved the order on).
+      const released = await releaseOrderStock(order.id, {
+        onlyIfStatus: "PENDING",
+        nextStatus: "CANCELLED",
       });
+      if (!released) {
+        // Legacy order without a stock hold: just cancel it.
+        await prisma.order.updateMany({
+          where: { id: order.id, status: "PENDING" },
+          data: { status: "CANCELLED" },
+        });
+      }
       console.log(`Order ${order.id} marked as CANCELLED (${reason})`);
     }
   }
@@ -383,15 +500,30 @@ export abstract class PaymentService {
     capiCtx?: CapiContext,
   ) {
     const method = (body.method as PaymentMethodName | undefined) || "ZIINA";
-    switch (method) {
-      case "ZIINA":
-        return this.createZiinaCheckout(body, userId, origin, capiCtx);
-      case "TABBY":
-        return this.createTabbyCheckout(body, userId, origin, capiCtx);
-      case "TAMARA":
-        return this.createTamaraCheckout(body, userId, origin, capiCtx);
-      default:
-        throw new Error(`Unsupported payment method: ${method}`);
+    const attempt: CheckoutAttempt = {};
+    try {
+      switch (method) {
+        case "ZIINA":
+          return await this.createZiinaCheckout(body, userId, origin, capiCtx, attempt);
+        case "TABBY":
+          return await this.createTabbyCheckout(body, userId, origin, capiCtx, attempt);
+        case "TAMARA":
+          return await this.createTamaraCheckout(body, userId, origin, capiCtx, attempt);
+        default:
+          throw new Error(`Unsupported payment method: ${method}`);
+      }
+    } catch (err) {
+      // The order (and its stock hold) was created but the provider session
+      // failed (e.g. Tabby rejected the customer): give the units back.
+      if (attempt.orderId) {
+        await releaseOrderStock(attempt.orderId, {
+          onlyIfStatus: "PENDING",
+          nextStatus: "CANCELLED",
+        }).catch((releaseErr) =>
+          console.error(`Failed to release stock for order ${attempt.orderId}:`, releaseErr),
+        );
+      }
+      throw err;
     }
   }
 
@@ -404,12 +536,13 @@ export abstract class PaymentService {
     userId?: string,
     origin?: string,
     capiCtx?: CapiContext,
+    attempt?: CheckoutAttempt,
   ) {
     const { successUrl, cancelUrl, couponCode, locale } = body;
     const lang = locale || "en";
     const marketingUrl = this.resolveMarketingUrl(origin);
 
-    const { order } = await this.prepareOrder(body, userId, "ZIINA", capiCtx);
+    const { order } = await this.prepareOrder(body, userId, "ZIINA", capiCtx, attempt);
 
     const paymentIntent = await ZiinaClient.createPaymentIntent({
       amount: Math.round(order.total * 100),
@@ -618,6 +751,7 @@ export abstract class PaymentService {
     userId?: string,
     origin?: string,
     capiCtx?: CapiContext,
+    attempt?: CheckoutAttempt,
   ) {
     if (process.env.TABBY_ENABLED === "false") {
       throw new Error("Tabby is currently unavailable. Please choose another payment method.");
@@ -630,7 +764,7 @@ export abstract class PaymentService {
     const lang = (locale || "en") === "ar" ? "ar" : "en";
     const marketingUrl = this.resolveMarketingUrl(origin);
 
-    const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TABBY", capiCtx);
+    const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TABBY", capiCtx, attempt);
     const contact = this.getCustomerContact(body);
 
     const session = await TabbyClient.createCheckoutSession({
@@ -862,6 +996,7 @@ export abstract class PaymentService {
     userId?: string,
     origin?: string,
     capiCtx?: CapiContext,
+    attempt?: CheckoutAttempt,
   ) {
     if (process.env.TAMARA_ENABLED === "false") {
       throw new Error("Tamara is currently unavailable. Please choose another payment method.");
@@ -869,7 +1004,7 @@ export abstract class PaymentService {
     const { cancelUrl, couponCode, locale } = body;
     const lang = (locale || "en") === "ar" ? "ar_SA" : "en_US";
 
-    const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TAMARA", capiCtx);
+    const { order, variants, shippingCost } = await this.prepareOrder(body, userId, "TAMARA", capiCtx, attempt);
     const contact = this.getCustomerContact(body);
     const localePath = (locale || "en") === "ar" ? "ar" : "en";
     const marketingUrl = this.resolveMarketingUrl(origin);

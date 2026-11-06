@@ -2,6 +2,7 @@ import { Elysia, status } from "elysia";
 import { authPlugin } from "../../plugins/auth";
 import { ProductService } from "./service";
 import { ProductModel } from "./model";
+import { getAvailability } from "../../lib/stock";
 
 export const product = new Elysia({ prefix: "/products" })
   // Public routes
@@ -13,6 +14,12 @@ export const product = new Elysia({ prefix: "/products" })
     const result = await ProductService.getRelatedProducts(body);
     return { success: true as const, data: result };
   }, { body: ProductModel.relatedProductsBody })
+  // Live purchasable quantity per variant. The storefront calls this to
+  // re-validate a cart (stored in localStorage) before/at checkout.
+  .post("/availability", async ({ body }) => {
+    const data = await getAvailability(body.variantIds);
+    return { success: true as const, data };
+  }, { body: ProductModel.availabilityBody })
   .get("/:slug", async ({ params }) => {
     const product = await ProductService.getBySlug(params.slug);
     if (!product) return status(404, { success: false as const, error: "Product not found" });

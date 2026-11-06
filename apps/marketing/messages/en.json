@@ -250,7 +250,9 @@
       "rejectedMessage": "Sorry, Tabby is unable to approve this purchase. Please use an alternative payment method for your order.",
       "retry": "Try Again",
       "backToCart": "Back to Cart",
-      "returnToCheckout": "Return to Checkout"
+      "returnToCheckout": "Return to Checkout",
+      "soldOutTitle": "Sorry, this item just sold out",
+      "soldOutMessage": "Your payment went through, but the last piece sold out before we could confirm your order. We've refunded the full amount to your original payment method, and you'll receive an email shortly. Refunds can take a few business days to appear."
     },
     "reviewOrder": "Review Order",
     "items": "items",
@@ -642,8 +644,8 @@
     },
     "cartTab": {
       "title": "Cart",
-    "emptyCart": "Your cart is empty",
-    "emptyCartDesc": "Looks like you haven't added any items yet. Explore our collections and find something you love.",
+      "emptyCart": "Your cart is empty",
+      "emptyCartDesc": "Looks like you haven't added any items yet. Explore our collections and find something you love.",
       "startShopping": "Start Shopping",
       "product": "Product",
       "price": "Price",
@@ -738,5 +740,18 @@
     },
     "exploreCollection": "Explore Our Collection",
     "shopNow": "Shop Now"
+  },
+  "stock": {
+    "outOfStock": "Out of stock",
+    "soldOut": "Sold out",
+    "onlyLeft": "Only {count} left",
+    "outOfStockToast": "Sorry, this item is out of stock.",
+    "maxInCart": "Only {count} available, and they're already in your bag.",
+    "partialAdded": "Only {count} added, that's all we have left.",
+    "itemSoldOut": "{name} is now sold out. Please remove it to continue.",
+    "quantityReduced": "Only {count} of {name} left. We updated your bag.",
+    "removeUnavailable": "Some items are sold out or have limited stock. Remove or adjust them to continue.",
+    "checkoutStockChanged": "Some items in your order are no longer available. We updated your bag. Please review it and try again.",
+    "buyNowUnavailable": "Sorry, this item is no longer available in the requested quantity."
   }
 }

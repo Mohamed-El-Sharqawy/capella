@@ -23,10 +23,17 @@ interface PageProps {
 type Phase = "confirming" | "success" | "timeout";
 
 const CONFIRMED_STATUSES = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED"];
-const FAILED_STATUSES = ["CANCELLED", "REFUNDED"];
 
 const POLL_TIMEOUT_MS = 45000;
 const POLL_INTERVAL = 2500;
+/**
+ * How long to keep "confirming" after seeing CANCELLED. The provider only
+ * sends customers here after they pay, but if they took longer than the stock
+ * hold (30 min by default) the order was already cancelled when they land.
+ * The payment webhook then re-confirms it (or refunds if the item sold out)
+ * within seconds, so CANCELLED isn't final here until this grace passes.
+ */
+const CANCELLED_GRACE_MS = 30000;
 
 export default function CheckoutSuccessPage({ params, searchParams }: PageProps) {
   const { locale } = React.use(params);
@@ -69,6 +76,7 @@ export default function CheckoutSuccessPage({ params, searchParams }: PageProps)
     let active = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const start = Date.now();
+    let cancelledSince: number | null = null;
 
     const poll = async () => {
       if (!active) return;
@@ -94,11 +102,24 @@ export default function CheckoutSuccessPage({ params, searchParams }: PageProps)
           setPhase("success");
           return;
         }
-        if (orderStatus && FAILED_STATUSES.includes(orderStatus)) {
+        // Paid, but the item sold out meanwhile: the backend refunded it.
+        if (orderStatus === "REFUNDED") {
           clearPendingPurchase();
-          window.location.replace(`/${locale}/checkout/cancel?reason=rejected`);
+          window.location.replace(`/${locale}/checkout/cancel?reason=soldout`);
           return;
         }
+        if (orderStatus === "CANCELLED") {
+          cancelledSince ??= Date.now();
+          const graceOver = Date.now() - cancelledSince >= CANCELLED_GRACE_MS;
+          if (graceOver || Date.now() - start >= POLL_TIMEOUT_MS + CANCELLED_GRACE_MS) {
+            clearPendingPurchase();
+            window.location.replace(`/${locale}/checkout/cancel?reason=rejected`);
+            return;
+          }
+          timer = setTimeout(poll, POLL_INTERVAL);
+          return;
+        }
+        cancelledSince = null;
         if (Date.now() - start >= POLL_TIMEOUT_MS) {
           setPhase("timeout");
           return;

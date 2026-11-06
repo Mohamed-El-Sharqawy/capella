@@ -5,9 +5,12 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { CART_ROUTES } from "../constants";
 import type { OrderSummaryProps } from "../types";
+import { useCart } from "@/contexts/cart-context";
+import { CheckoutBlockedNotice } from "@/components/cart/stock-notice";
 
 export function OrderSummary({ total }: OrderSummaryProps) {
   const t = useTranslations("cart");
+  const { hasUnavailableItems } = useCart();
 
   return (
     <div className="bg-gray-50 rounded-lg p-6 sticky top-4">
@@ -16,13 +19,27 @@ export function OrderSummary({ total }: OrderSummaryProps) {
         <span className="text-xl font-bold">AED {total.toLocaleString()}</span>
       </div>
 
-      <Link
-        href={CART_ROUTES.CHECKOUT}
-        className="w-full py-3 bg-black text-white text-center font-medium rounded flex items-center justify-center gap-2 hover:bg-gray-800 transition"
-      >
-        <CreditCard className="h-4 w-4" />
-        {t("checkout")}
-      </Link>
+      {hasUnavailableItems ? (
+        <>
+          <button
+            type="button"
+            disabled
+            className="w-full py-3 bg-neutral-300 text-neutral-600 text-center font-medium rounded flex items-center justify-center gap-2 cursor-not-allowed"
+          >
+            <CreditCard className="h-4 w-4" />
+            {t("checkout")}
+          </button>
+          <CheckoutBlockedNotice className="mt-2 text-center" />
+        </>
+      ) : (
+        <Link
+          href={CART_ROUTES.CHECKOUT}
+          className="w-full py-3 bg-black text-white text-center font-medium rounded flex items-center justify-center gap-2 hover:bg-gray-800 transition"
+        >
+          <CreditCard className="h-4 w-4" />
+          {t("checkout")}
+        </Link>
+      )}
 
       <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
         <Shield className="h-4 w-4" />

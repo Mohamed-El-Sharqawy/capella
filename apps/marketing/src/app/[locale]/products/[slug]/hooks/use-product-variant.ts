@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import type { UniqueColor, UniqueSize, SizeAvailability } from "../types";
+import { getAvailableStock, isVariantInStock, firstInStockVariant, isColorSoldOut as colorSoldOut } from "@/lib/stock";
 
 export function useProductVariant(product: Product) {
   const router = useRouter();
@@ -30,7 +31,8 @@ export function useProductVariant(product: Product) {
       if (variant) return variant;
     }
 
-    return product.variants?.[0] ?? null;
+    // No explicit choice in the URL: open on something that can be bought.
+    return firstInStockVariant(product.variants);
   }, [product.variants, searchParams]);
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(getInitialVariant);
@@ -82,16 +84,23 @@ export function useProductVariant(product: Product) {
         (v) => v.size?.id === sizeId && (!selectedVariant?.color || v.color?.id === selectedVariant.color?.id)
       );
       if (!variant) return { available: false, inStock: false, stock: 0 };
-      return { available: true, inStock: variant.stock > 0, stock: variant.stock };
+      const stock = getAvailableStock(variant);
+      return { available: true, inStock: stock > 0, stock };
     },
     [product.variants, selectedVariant?.color]
   );
 
   const handleColorSelect = useCallback(
     (colorId: string) => {
-      const variant = product.variants?.find(
-        (v) => v.color?.id === colorId && (!selectedVariant?.size || v.size?.id === selectedVariant.size?.id)
-      );
+      // Prefer the same size in stock, then any in-stock variant of this
+      // colour, then the same size even if sold out (so the page says so).
+      const ofColor = product.variants?.filter((v) => v.color?.id === colorId) ?? [];
+      const sameSize = (v: ProductVariant) => !selectedVariant?.size || v.size?.id === selectedVariant.size?.id;
+      const variant =
+        ofColor.find((v) => sameSize(v) && isVariantInStock(v)) ??
+        ofColor.find(isVariantInStock) ??
+        ofColor.find(sameSize) ??
+        ofColor[0];
       if (variant) {
         setSelectedVariant(variant);
         setSelectedImageIndex(0);
@@ -114,8 +123,14 @@ export function useProductVariant(product: Product) {
     [product.variants, selectedVariant?.color, updateURL]
   );
 
+  const isColorSoldOut = useCallback(
+    (colorId: string) => colorSoldOut(product.variants, colorId),
+    [product.variants]
+  );
+
   return {
     selectedVariant,
+    isColorSoldOut,
     selectedImageIndex,
     setSelectedImageIndex,
     uniqueColors,

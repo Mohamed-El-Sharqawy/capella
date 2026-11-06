@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/contexts/cart-context";
 import { useSuggestedProducts, useOrderNote } from "./hooks";
@@ -15,7 +16,12 @@ import type { CartPageClientProps } from "./types";
 
 export function CartPageClient({ locale }: CartPageClientProps) {
   const t = useTranslations("cart");
-  const { items, total, updateQuantity, removeItem } = useCart();
+  const { items, total, updateQuantity, removeItem, refreshStock } = useCart();
+
+  // Re-validate against live stock whenever the cart page is opened.
+  useEffect(() => {
+    refreshStock();
+  }, [refreshStock]);
   const suggestedProducts = useSuggestedProducts(items);
   const { orderNote, setOrderNote } = useOrderNote();
 

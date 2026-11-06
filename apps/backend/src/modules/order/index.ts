@@ -3,6 +3,17 @@ import { authPlugin } from "../../plugins/auth";
 import { OrderService } from "./service";
 import { OrderModel } from "./model";
 import { extractCapiContext } from "../../lib/meta-capi";
+import { OutOfStockError, outOfStockBody } from "../../lib/stock";
+
+/** Run an order-creating call, mapping a stock shortfall to HTTP 409. */
+async function withStockGuard<T>(fn: () => Promise<T>) {
+  try {
+    return { ok: true as const, value: await fn() };
+  } catch (error) {
+    if (error instanceof OutOfStockError) return { ok: false as const, error };
+    throw error;
+  }
+}
 
 export const order = new Elysia({ prefix: "/orders" })
   .post(
@@ -11,8 +22,11 @@ export const order = new Elysia({ prefix: "/orders" })
       if (!body.guestEmail) {
         return status(400, { success: false as const, error: "Guest email is required" });
       }
-      const result = await OrderService.create(body, null, extractCapiContext(request));
-      return status(201, { success: true as const, data: result });
+      const result = await withStockGuard(() =>
+        OrderService.create(body, null, extractCapiContext(request))
+      );
+      if (!result.ok) return status(409, outOfStockBody(result.error));
+      return status(201, { success: true as const, data: result.value });
     },
     { body: OrderModel.createBody }
   )
@@ -29,13 +43,17 @@ export const order = new Elysia({ prefix: "/orders" })
     return { success: true as const, data: result };
   }, { isSignIn: true })
   .post("/", async ({ user, body, request }) => {
-    const result = await OrderService.create(body, user.id, extractCapiContext(request));
-    return status(201, { success: true as const, data: result });
+    const result = await withStockGuard(() =>
+      OrderService.create(body, user.id, extractCapiContext(request))
+    );
+    if (!result.ok) return status(409, outOfStockBody(result.error));
+    return status(201, { success: true as const, data: result.value });
   }, { isSignIn: true, body: OrderModel.createBody })
   .put("/:id/status", async ({ params, body }) => {
-    const result = await OrderService.updateStatus(params.id, body.status);
-    if (!result) return status(404, { success: false as const, error: "Order not found" });
-    return { success: true as const, data: result };
+    const result = await withStockGuard(() => OrderService.updateStatus(params.id, body.status));
+    if (!result.ok) return status(409, outOfStockBody(result.error));
+    if (!result.value) return status(404, { success: false as const, error: "Order not found" });
+    return { success: true as const, data: result.value };
   }, { isAdmin: true, body: OrderModel.updateStatusBody })
   .put("/:id/payment", async ({ params, body }) => {
     const result = await OrderService.updatePaymentStatus(params.id, body.paid);

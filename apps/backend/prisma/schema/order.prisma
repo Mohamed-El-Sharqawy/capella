@@ -25,6 +25,14 @@ model Order {
   tamaraCheckoutId      String? @unique
   paidAt                DateTime?
 
+  // True while this order's units are deducted from variant stock. Set when
+  // a COD order is placed or an online checkout session starts (the units are
+  // held while the customer pays); cleared when the order is cancelled/
+  // refunded or an unpaid online hold expires. Restocking keys off this flag,
+  // never off status alone, so stock is returned exactly once. Legacy orders
+  // (pre-flag) default to false and are never restocked automatically.
+  stockReserved         Boolean @default(false)
+
   // Coupon applied to order
   coupon   Coupon? @relation(fields: [couponId], references: [id])
   couponId String?
@@ -68,6 +76,7 @@ model Order {
   @@index([userId])
   @@index([couponId])
   @@index([status])
+  @@index([status, stockReserved, createdAt])
   @@index([guestEmail])
   @@index([ziinaPaymentIntentId])
   @@index([tabbyPaymentId])

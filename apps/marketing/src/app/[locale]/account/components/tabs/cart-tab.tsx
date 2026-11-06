@@ -5,11 +5,12 @@ import { ShoppingBag, Trash2 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/contexts/cart-context";
+import { CartItemStockNotice, CheckoutBlockedNotice, isAtStockLimit } from "@/components/cart/stock-notice";
 import type { CartTabProps } from "../../types";
 
 export function CartTab({ locale }: CartTabProps) {
   const t = useTranslations("account.cartTab");
-  const { items: cartItems, total: cartTotal, removeItem, updateQuantity } = useCart();
+  const { items: cartItems, total: cartTotal, removeItem, updateQuantity, hasUnavailableItems } = useCart();
   const isArabic = locale === "ar";
 
   if (cartItems.length === 0) {
@@ -115,11 +116,13 @@ export function CartTab({ locale }: CartTabProps) {
                     <span className="w-8 text-center text-sm">{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                      className="w-6 h-6 border rounded text-xs hover:bg-gray-100"
+                      disabled={isAtStockLimit(item)}
+                      className="w-6 h-6 border rounded text-xs hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       +
                     </button>
                   </div>
+                  <CartItemStockNotice item={item} className="mt-1" />
                 </td>
                 <td className="px-4 py-3 text-right font-medium">
                   AED {(item.price * item.quantity).toLocaleString()}
@@ -142,12 +145,25 @@ export function CartTab({ locale }: CartTabProps) {
           <p className="text-sm text-muted-foreground">{t("subtotal")}</p>
           <p className="text-xl font-bold">AED {cartTotal.toLocaleString()}</p>
         </div>
-        <Link
-          href="/checkout"
-          className="px-6 py-3 bg-black text-white font-medium rounded hover:bg-gray-800 transition"
-        >
-          {t("checkout")}
-        </Link>
+        {hasUnavailableItems ? (
+          <div className="flex flex-col items-end gap-1">
+            <button
+              type="button"
+              disabled
+              className="px-6 py-3 bg-neutral-300 text-neutral-600 font-medium rounded cursor-not-allowed"
+            >
+              {t("checkout")}
+            </button>
+            <CheckoutBlockedNotice className="max-w-xs text-right" />
+          </div>
+        ) : (
+          <Link
+            href="/checkout"
+            className="px-6 py-3 bg-black text-white font-medium rounded hover:bg-gray-800 transition"
+          >
+            {t("checkout")}
+          </Link>
+        )}
       </div>
     </div>
   );

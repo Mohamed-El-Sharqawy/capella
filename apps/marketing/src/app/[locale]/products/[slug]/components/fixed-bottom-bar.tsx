@@ -12,6 +12,8 @@ interface FixedBottomBarProps {
   imageUrl?: string;
   selectedVariant: ProductVariant | null;
   quantity: number;
+  availableStock: number;
+  maxQuantity: number;
   onIncrement: () => void;
   onDecrement: () => void;
   onAddToCart: () => void;
@@ -25,13 +27,17 @@ export function FixedBottomBar({
   imageUrl,
   selectedVariant,
   quantity,
+  availableStock,
+  maxQuantity,
   onIncrement,
   onDecrement,
   onAddToCart,
   locale,
 }: FixedBottomBarProps) {
   const t = useTranslations("product");
+  const tStock = useTranslations("stock");
   const isArabic = locale === "ar";
+  const isSoldOut = !selectedVariant || availableStock <= 0;
 
   return (
     <div
@@ -63,27 +69,31 @@ export function FixedBottomBar({
           </div>
 
           {/* Quantity */}
-          <div className="flex items-center border rounded">
-            <button
-              onClick={onDecrement}
-              className="w-8 h-8 flex items-center justify-center hover:bg-gray-100"
-            >
-              <Minus className="h-3 w-3" />
-            </button>
-            <span className="w-8 text-center text-sm">{quantity}</span>
-            <button
-              onClick={onIncrement}
-              className="w-8 h-8 flex items-center justify-center hover:bg-gray-100"
-            >
-              <Plus className="h-3 w-3" />
-            </button>
-          </div>
+          {!isSoldOut && (
+            <div className="flex items-center border rounded">
+              <button
+                onClick={onDecrement}
+                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100"
+              >
+                <Minus className="h-3 w-3" />
+              </button>
+              <span className="w-8 text-center text-sm">{quantity}</span>
+              <button
+                onClick={onIncrement}
+                disabled={quantity >= maxQuantity}
+                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Plus className="h-3 w-3" />
+              </button>
+            </div>
+          )}
 
           <button
             onClick={onAddToCart}
-            className="px-6 py-2 bg-black text-white text-sm font-medium rounded hover:bg-gray-800 transition"
+            disabled={isSoldOut}
+            className="px-6 py-2 bg-black text-white text-sm font-medium rounded hover:bg-gray-800 transition disabled:bg-neutral-300 disabled:text-neutral-600 disabled:cursor-not-allowed"
           >
-            {t("addToCart")}
+            {isSoldOut ? tStock("soldOut") : t("addToCart")}
           </button>
         </div>
       </div>

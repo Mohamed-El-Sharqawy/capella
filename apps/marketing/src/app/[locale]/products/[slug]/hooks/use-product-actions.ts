@@ -1,27 +1,41 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/cart-context";
 import { useFavourites } from "@/contexts/favourites-context";
 import { useWishlist } from "@/contexts/wishlist-context";
 import { createCartItemFromVariant } from "@/lib/cart";
+import { getAvailableStock } from "@/lib/stock";
 import { trackQuickAddToCart, trackFavouriteToggle, trackWishlistToggle } from "@/lib/analytics";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import { DEFAULT_QUANTITY, MIN_QUANTITY } from "../constants";
 
-export function useProductActions(product: Product, locale: string) {
+export function useProductActions(
+  product: Product,
+  locale: string,
+  selectedVariant: ProductVariant | null = null,
+) {
   const router = useRouter();
+  const tStock = useTranslations("stock");
   const { items: cartItems, addItem, updateQuantity } = useCart();
   const { favouriteIds, addFavourite, removeFavourite } = useFavourites();
   const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
 
   const [quantity, setQuantity] = useState(DEFAULT_QUANTITY);
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
+  // Never let the quantity picker go above what's in stock.
+  const availableStock = getAvailableStock(selectedVariant);
+  const maxQuantity = Math.max(MIN_QUANTITY, availableStock);
+
+  useEffect(() => {
+    setQuantity((q) => Math.min(q, maxQuantity));
+  }, [maxQuantity]);
 
   const incrementQuantity = useCallback(() => {
-    setQuantity((q) => q + 1);
-  }, []);
+    setQuantity((q) => Math.min(maxQuantity, q + 1));
+  }, [maxQuantity]);
 
   const decrementQuantity = useCallback(() => {
     setQuantity((q) => Math.max(MIN_QUANTITY, q - 1));
@@ -30,12 +44,17 @@ export function useProductActions(product: Product, locale: string) {
   const handleAddToCart = useCallback(
     (selectedVariant: ProductVariant | null) => {
       if (!selectedVariant) return;
+      if (getAvailableStock(selectedVariant) <= 0) {
+        toast.error(tStock("outOfStockToast"));
+        return;
+      }
       const cartItem = createCartItemFromVariant(selectedVariant, product, quantity);
-      addItem(cartItem);
+      const added = addItem(cartItem);
+      if (added === 0) return;
       const productName = locale === "ar" ? product.nameAr : product.nameEn;
-      trackQuickAddToCart(product.id, selectedVariant.id, productName, selectedVariant.price, quantity, selectedVariant.sku);
+      trackQuickAddToCart(product.id, selectedVariant.id, productName, selectedVariant.price, added, selectedVariant.sku);
     },
-    [addItem, product, quantity, locale]
+    [addItem, product, quantity, locale, tStock]
   );
 
   // Get cart item for selected variant
@@ -58,6 +77,10 @@ export function useProductActions(product: Product, locale: string) {
   const handleBuyNow = useCallback(
     (selectedVariant: ProductVariant | null) => {
       if (!selectedVariant) return;
+      if (getAvailableStock(selectedVariant) < quantity) {
+        toast.error(tStock("buyNowUnavailable"));
+        return;
+      }
       const params = new URLSearchParams({
         buyNow: "true",
         variantId: selectedVariant.id,
@@ -66,7 +89,7 @@ export function useProductActions(product: Product, locale: string) {
       });
       router.push(`/${locale}/checkout?${params.toString()}`);
     },
-    [locale, product.slug, quantity, router]
+    [locale, product.slug, quantity, router, tStock]
   );
 
   const isFavourite = favouriteIds.includes(product.id);
@@ -95,6 +118,8 @@ export function useProductActions(product: Product, locale: string) {
   return {
     quantity,
     setQuantity,
+    availableStock,
+    maxQuantity,
     incrementQuantity,
     decrementQuantity,
     handleAddToCart,

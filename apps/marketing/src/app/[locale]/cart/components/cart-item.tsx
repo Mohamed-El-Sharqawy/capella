@@ -5,6 +5,7 @@ import { Trash2, Minus, Plus } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type { CartItemDisplayProps } from "../types";
+import { CartItemStockNotice, isAtStockLimit } from "@/components/cart/stock-notice";
 
 export function CartItem({ item, locale, onRemove, onUpdateQuantity }: CartItemDisplayProps) {
   const t = useTranslations("cart");
@@ -42,6 +43,7 @@ export function CartItem({ item, locale, onRemove, onUpdateQuantity }: CartItemD
             {item.colorNameEn && (isArabic ? item.colorNameAr : item.colorNameEn)}
             {item.sizeNameEn && ` / ${isArabic ? item.sizeNameAr : item.sizeNameEn}`}
           </p>
+          <CartItemStockNotice item={item} className="mt-1" />
           <button
             onClick={() => onRemove(item.variantId)}
             className="text-sm text-red-600 hover:underline mt-2 flex items-center gap-1"
@@ -78,7 +80,8 @@ export function CartItem({ item, locale, onRemove, onUpdateQuantity }: CartItemD
           <span className="w-10 text-center text-sm">{item.quantity}</span>
           <button
             onClick={() => onUpdateQuantity(item.variantId, item.quantity + 1)}
-            className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition"
+            disabled={isAtStockLimit(item)}
+            className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Plus className="h-3 w-3" />
           </button>

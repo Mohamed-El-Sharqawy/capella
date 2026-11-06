@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Loader2, Shield, Tag, X, Check, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { CartItemStockNotice } from "@/components/cart/stock-notice";
 import type { CheckoutItem } from "../types";
 import { FREE_SHIPPING_THRESHOLD, getShippingCost } from "../constants";
 
@@ -30,6 +31,9 @@ interface OrderSummarySectionProps {
   total: number;
   locale: string;
   isSubmitting: boolean;
+  /** Some items are sold out / short on stock: placing the order is blocked. */
+  isStockBlocked?: boolean;
+  stockBlockedMessage?: string;
   appliedCoupon?: CouponData | null;
   discountAmount?: number;
   couponProps?: CouponSectionProps;
@@ -40,6 +44,8 @@ export function OrderSummarySection({
   total,
   locale,
   isSubmitting,
+  isStockBlocked = false,
+  stockBlockedMessage,
   appliedCoupon,
   discountAmount = 0,
   couponProps,
@@ -82,6 +88,7 @@ export function OrderSummarySection({
               <p className="text-xs text-muted-foreground">
                 {t("qty")} {item.quantity}
               </p>
+              <CartItemStockNotice item={item} />
             </div>
             <p className="text-sm font-medium">{t("aed")} {(item.price * item.quantity).toLocaleString()}</p>
           </div>
@@ -210,9 +217,15 @@ export function OrderSummarySection({
         </div>
       )}
 
+      {isStockBlocked && stockBlockedMessage && (
+        <p className="mt-4 text-sm text-red-600" role="alert">
+          {stockBlockedMessage}
+        </p>
+      )}
+
       <button
         type="submit"
-        disabled={isSubmitting}
+        disabled={isSubmitting || isStockBlocked}
         className="w-full mt-4 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {isSubmitting ? (

@@ -1,5 +1,17 @@
 import { prisma } from "../../lib/prisma";
 import type { CartModel } from "./model";
+import { availableQuantity, OutOfStockError } from "../../lib/stock";
+
+async function assertCanHold(variantId: string, quantity: number) {
+  const variant = await prisma.productVariant.findUnique({
+    where: { id: variantId },
+    select: { id: true, stock: true, isActive: true, product: { select: { isActive: true } } },
+  });
+  const available = availableQuantity(variant);
+  if (available < quantity) {
+    throw new OutOfStockError([{ variantId, requested: quantity, available }]);
+  }
+}
 
 const CART_INCLUDE = {
   items: {
@@ -39,6 +51,8 @@ export abstract class CartService {
       where: { cartId_variantId: { cartId: cart.id, variantId: body.variantId } },
     });
 
+    await assertCanHold(body.variantId, (existingItem?.quantity ?? 0) + body.quantity);
+
     if (existingItem) {
       await prisma.cartItem.update({
         where: { id: existingItem.id },
@@ -68,6 +82,8 @@ export abstract class CartService {
       where: { id: itemId, cartId: cart.id },
     });
     if (!item) return null;
+
+    await assertCanHold(item.variantId, body.quantity);
 
     await prisma.cartItem.update({
       where: { id: itemId },

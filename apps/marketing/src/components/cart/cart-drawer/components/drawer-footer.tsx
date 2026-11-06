@@ -3,9 +3,12 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type { DrawerFooterProps } from "../types";
+import { useCart } from "@/contexts/cart-context";
+import { CheckoutBlockedNotice } from "@/components/cart/stock-notice";
 
 export function DrawerFooter({ total, itemCount, onClose }: DrawerFooterProps) {
   const t = useTranslations("cartDrawer");
+  const { hasUnavailableItems } = useCart();
 
   if (itemCount === 0) return null;
 
@@ -23,14 +26,25 @@ export function DrawerFooter({ total, itemCount, onClose }: DrawerFooterProps) {
         >
           {t("viewCart")}
         </Link>
-        <Link
-          href="/checkout"
-          onClick={onClose}
-          className="py-2.5 bg-black text-white text-center rounded hover:bg-gray-800 transition font-medium"
-        >
-          {t("checkout")}
-        </Link>
+        {hasUnavailableItems ? (
+          <button
+            type="button"
+            disabled
+            className="py-2.5 bg-neutral-300 text-neutral-600 text-center rounded font-medium cursor-not-allowed"
+          >
+            {t("checkout")}
+          </button>
+        ) : (
+          <Link
+            href="/checkout"
+            onClick={onClose}
+            className="py-2.5 bg-black text-white text-center rounded hover:bg-gray-800 transition font-medium"
+          >
+            {t("checkout")}
+          </Link>
+        )}
       </div>
+      {hasUnavailableItems && <CheckoutBlockedNotice />}
     </div>
   );
 }

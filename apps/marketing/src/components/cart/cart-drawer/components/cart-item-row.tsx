@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { trackCartRemove } from "@/lib/analytics";
 import type { CartItemRowProps } from "../types";
+import { CartItemStockNotice, isAtStockLimit } from "@/components/cart/stock-notice";
 
 export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove }: CartItemRowProps) {
   const t = useTranslations("cartDrawer");
@@ -54,6 +55,8 @@ export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove 
           </span>
         </div>
 
+        <CartItemStockNotice item={item} className="mt-1" />
+
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center border rounded">
             <button
@@ -65,7 +68,8 @@ export function CartItemRow({ item, locale, onClose, onUpdateQuantity, onRemove 
             <span className="w-8 text-center text-sm">{item.quantity}</span>
             <button
               onClick={() => onUpdateQuantity(item.variantId, item.quantity + 1)}
-              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition cursor-pointer"
+              disabled={isAtStockLimit(item)}
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>

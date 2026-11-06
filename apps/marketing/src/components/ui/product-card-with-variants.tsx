@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import { useCart } from "@/contexts/cart-context";
 import { createCartItemFromVariant } from "@/lib/cart";
+import { getAvailableStock, firstInStockVariant, isColorSoldOut, isVariantInStock } from "@/lib/stock";
+import { SoldOutSlash } from "./sold-out-slash";
 import { trackQuickAddToCart } from "@/lib/analytics";
 import { QuickViewModal } from "./quick-view-modal";
 import { Badge } from "./badge";
@@ -23,10 +25,11 @@ export function ProductCardWithVariants({
   locale,
 }: ProductCardWithVariantsProps) {
   const t = useTranslations("product");
+  const tStock = useTranslations("stock");
   const { items: cartItems, addItem, updateQuantity } = useCart();
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    product.variants?.[0] ?? null
+    firstInStockVariant(product.variants)
   );
   const [isCardHovered, setIsCardHovered] = useState(false);
   const [isImageHovered, setIsImageHovered] = useState(false);
@@ -39,6 +42,11 @@ export function ProductCardWithVariants({
     if (!selectedVariant) return null;
     return cartItems.find((item) => item.variantId === selectedVariant.id);
   }, [cartItems, selectedVariant]);
+
+  const selectedStock = getAvailableStock(selectedVariant);
+  const isSelectedSoldOut = selectedStock <= 0;
+  const isProductSoldOut = !product.variants?.some((v) => getAvailableStock(v) > 0);
+  const canIncrement = !!cartItem && cartItem.quantity < selectedStock;
 
   const isArabic = locale === "ar";
   const name = isArabic ? product.nameAr : product.nameEn;
@@ -75,7 +83,8 @@ export function ProductCardWithVariants({
     .sort((a, b) => a.position - b.position);
 
   const handleColorHover = (colorId: string) => {
-    const variant = product.variants?.find((v) => v.color?.id === colorId);
+    const ofColor = product.variants?.filter((v) => v.color?.id === colorId) ?? [];
+    const variant = ofColor.find(isVariantInStock) ?? ofColor[0];
     if (variant) {
       setSelectedVariant(variant);
     }
@@ -109,6 +118,8 @@ export function ProductCardWithVariants({
       }
     }
 
+    if (getAvailableStock(variantToAdd) <= 0) return;
+
     setIsAdding(true);
     const newCartItem = createCartItemFromVariant(variantToAdd, {
       id: product.id,
@@ -116,7 +127,10 @@ export function ProductCardWithVariants({
       nameEn: product.nameEn,
       nameAr: product.nameAr,
     });
-    addItem(newCartItem);
+    if (addItem(newCartItem) === 0) {
+      setIsAdding(false);
+      return;
+    }
     trackQuickAddToCart(product.id, variantToAdd.id, name, variantToAdd.price, 1, variantToAdd.sku);
 
     setTimeout(() => {
@@ -127,7 +141,7 @@ export function ProductCardWithVariants({
   };
 
   const handleIncrement = () => {
-    if (cartItem && selectedVariant) {
+    if (cartItem && selectedVariant && canIncrement) {
       updateQuantity(selectedVariant.id, cartItem.quantity + 1);
     }
   };
@@ -199,6 +213,12 @@ export function ProductCardWithVariants({
                 </Badge>
               )}
 
+              {isProductSoldOut && (
+                <Badge variant="secondary" size="default" className="shadow-md border-none bg-neutral-900/85 text-white uppercase">
+                  {tStock("soldOut")}
+                </Badge>
+              )}
+
               {product.isFeatured && (
                 <Badge variant="secondary" size="default" className="flex items-center border-none shadow-md p-1.5 bg-white/90 backdrop-blur-sm">
                   <Star className="h-3 w-3 fill-[#B8860B] text-[#B8860B]" />
@@ -227,7 +247,8 @@ export function ProductCardWithVariants({
                         <span className="w-8 text-center text-xs font-semibold tabular-nums">{cartItem.quantity}</span>
                         <button
                           onClick={handleIncrement}
-                          className="w-9 h-9 flex items-center justify-center rounded-full cursor-pointer hover:bg-neutral-100 transition-all duration-200 active:scale-90"
+                          disabled={!canIncrement}
+                          className="w-9 h-9 flex items-center justify-center rounded-full cursor-pointer hover:bg-neutral-100 transition-all duration-200 active:scale-90 disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <Plus className="h-3.5 w-3.5" />
                         </button>
@@ -246,7 +267,7 @@ export function ProductCardWithVariants({
                     <>
                       <button
                         onClick={handleQuickAdd}
-                        disabled={isAdding}
+                        disabled={isAdding || isSelectedSoldOut}
                         className="flex-1 flex items-center justify-center gap-2 py-3 font-semibold uppercase cursor-pointer bg-background text-foreground hover:bg-black hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
                         style={{ fontSize: "10px", letterSpacing: isArabic ? "0em" : "0.15em" }}
                       >
@@ -257,7 +278,9 @@ export function ProductCardWithVariants({
                         ) : (
                           <ShoppingBag className="h-3.5 w-3.5" />
                         )}
-                        {isAdding ? t("adding") : justAdded ? t("added") : t("quickAdd")}
+                        {isSelectedSoldOut
+                          ? tStock("soldOut")
+                          : isAdding ? t("adding") : justAdded ? t("added") : t("quickAdd")}
                       </button>
 
                       <div className="border-l border-neutral-200" />
@@ -319,25 +342,32 @@ export function ProductCardWithVariants({
 
               {uniqueColors && uniqueColors.length > 0 && (
                 <div className="flex items-center gap-1.5 pt-1">
-                  {uniqueColors.map((color) => (
-                    <button
-                      key={color.id}
-                      className={`h-9 w-9 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200 hover:scale-110 ${selectedVariant?.color?.id === color.id
-                        ? "ring-2 ring-luxury-gold/40 ring-offset-2 ring-offset-white"
-                        : ""
-                        }`}
-                      onMouseEnter={() => handleColorHover(color.id)}
-                      aria-label={isArabic ? color.nameAr : color.nameEn}
-                    >
-                      <span
-                        className={`h-4 w-4 rounded-full border transition-all ${selectedVariant?.color?.id === color.id
-                          ? "border-luxury-gold"
-                          : "border-neutral-300/80"
+                  {uniqueColors.map((color) => {
+                    const soldOut = isColorSoldOut(product.variants, color.id);
+                    const colorName = isArabic ? color.nameAr : color.nameEn;
+                    return (
+                      <button
+                        key={color.id}
+                        className={`h-9 w-9 flex items-center justify-center rounded-full cursor-pointer transition-all duration-200 hover:scale-110 ${selectedVariant?.color?.id === color.id
+                          ? "ring-2 ring-luxury-gold/40 ring-offset-2 ring-offset-white"
+                          : ""
                           }`}
-                        style={{ backgroundColor: color.hex }}
-                      />
-                    </button>
-                  ))}
+                        onMouseEnter={() => handleColorHover(color.id)}
+                        aria-label={soldOut ? `${colorName} - ${tStock("soldOut")}` : colorName}
+                        title={soldOut ? `${colorName} - ${tStock("soldOut")}` : colorName}
+                      >
+                        <span
+                          className={`relative h-4 w-4 rounded-full border transition-all ${selectedVariant?.color?.id === color.id
+                            ? "border-luxury-gold"
+                            : "border-neutral-300/80"
+                            } ${soldOut ? "opacity-50" : ""}`}
+                          style={{ backgroundColor: color.hex }}
+                        >
+                          {soldOut && <SoldOutSlash />}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>

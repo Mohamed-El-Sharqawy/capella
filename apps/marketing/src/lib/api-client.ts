@@ -9,6 +9,18 @@ const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001
 
 const API_URL = PUBLIC_API_URL;
 
+/** Error thrown for non-2xx responses; keeps the status and parsed body. */
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly data: any,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
@@ -85,7 +97,11 @@ export async function apiClient<T = unknown>(
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: "Request failed" }));
-      throw new Error(error.error || error.message || `HTTP ${response.status}`);
+      throw new ApiError(
+        error.error || error.message || `HTTP ${response.status}`,
+        response.status,
+        error,
+      );
     }
 
     return response.json();

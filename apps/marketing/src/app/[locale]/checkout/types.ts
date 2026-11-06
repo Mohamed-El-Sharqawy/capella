@@ -31,6 +31,8 @@ export interface BuyNowItem {
   colorNameAr?: string;
   sizeNameEn?: string;
   sizeNameAr?: string;
+  /** Live purchasable quantity when the page loaded (0 = sold out). */
+  stock: number;
 }
 
 export interface CheckoutFormState {
@@ -60,4 +62,6 @@ export interface CheckoutItem {
   colorNameAr?: string;
   sizeNameEn?: string;
   sizeNameAr?: string;
+  /** Last known purchasable quantity (see CartItem.stock). */
+  stock?: number;
 }

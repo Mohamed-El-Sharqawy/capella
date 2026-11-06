@@ -6,6 +6,7 @@ import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCart } from "@/contexts/cart-context";
 import { createCartItemFromVariant } from "@/lib/cart";
+import { isVariantInStock } from "@/lib/stock";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 
 interface FrequentlyBoughtTogetherProps {
@@ -17,10 +18,17 @@ interface FrequentlyBoughtTogetherProps {
 
 export function FrequentlyBoughtTogether({
   currentProduct,
-  relatedProducts,
+  relatedProducts: allRelatedProducts,
   locale,
   selectedVariant,
 }: FrequentlyBoughtTogetherProps) {
+  // Only suggest products that can actually be bought.
+  const relatedProducts = allRelatedProducts.filter((p) => p.variants?.some(isVariantInStock));
+  /** Variant used for a bundle entry: the selected one, else the first in stock. */
+  const pickVariant = (p: Product) =>
+    p.id === currentProduct.id
+      ? selectedVariant
+      : p.variants?.find(isVariantInStock) ?? p.variants?.[0];
   const t = useTranslations("product");
   const { addItem } = useCart();
   const isArabic = locale === "ar";
@@ -48,10 +56,8 @@ export function FrequentlyBoughtTogether({
   const totalPrice = allProducts
     .filter((p) => selectedProducts.has(p.id))
     .reduce((sum, p) => {
-      if (p.id === currentProduct.id && selectedVariant) {
-        return sum + (selectedVariant.price || 0);
-      }
-      const variant = p.variants?.[0];
+      const variant = pickVariant(p);
+      if (!isVariantInStock(variant)) return sum;
       return sum + (variant?.price || 0);
     }, 0);
 
@@ -61,8 +67,8 @@ export function FrequentlyBoughtTogether({
     allProducts.forEach((p) => {
       if (!selectedProducts.has(p.id)) return;
 
-      const variant = p.id === currentProduct.id ? selectedVariant : p.variants?.[0];
-      if (!variant) return;
+      const variant = pickVariant(p);
+      if (!variant || !isVariantInStock(variant)) return;
 
       const cartItem = createCartItemFromVariant(
         variant,
@@ -86,11 +92,7 @@ export function FrequentlyBoughtTogether({
   };
 
   const getProductPrice = (p: Product) => {
-    if (p.id === currentProduct.id && selectedVariant) {
-      return selectedVariant.price || 0;
-    }
-    const variant = p.variants?.[0];
-    return variant?.price || 0;
+    return pickVariant(p)?.price || 0;
   };
 
   if (relatedProducts.length < 2) return null;

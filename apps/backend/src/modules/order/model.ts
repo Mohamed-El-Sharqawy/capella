@@ -5,8 +5,9 @@ export const OrderModel = {
     items: t.Array(
       t.Object({
         variantId: t.String(),
-        quantity: t.Number({ minimum: 1 }),
-      })
+        quantity: t.Integer({ minimum: 1 }),
+      }),
+      { minItems: 1 }
     ),
     shippingFirstName: t.String({ minLength: 1 }),
     shippingLastName: t.String({ minLength: 1 }),

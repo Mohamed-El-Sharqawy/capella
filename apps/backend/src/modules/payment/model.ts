@@ -6,8 +6,9 @@ export const PaymentModel = {
     items: t.Array(
       t.Object({
         variantId: t.String(),
-        quantity: t.Number({ minimum: 1 }),
-      })
+        quantity: t.Integer({ minimum: 1 }),
+      }),
+      { minItems: 1 }
     ),
     customerEmail: t.Optional(t.String({ format: "email" })),
     successUrl: t.Optional(t.String()),
@@ -33,6 +34,9 @@ export const PaymentModel = {
   }),
   webhookHeaders: t.Object({
     "x-hmac-signature": t.String(),
+  }),
+  releaseBody: t.Object({
+    orderId: t.String({ minLength: 1, maxLength: 64 }),
   }),
   tabbyEligibilityBody: t.Object({
     amount: t.Number({ minimum: 0 }),

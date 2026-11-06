@@ -41,12 +41,15 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
     uniqueColors,
     uniqueSizes,
     getSizeAvailability,
+    isColorSoldOut,
     handleColorSelect,
     handleSizeSelect,
   } = useProductVariant(product);
 
   const {
     quantity,
+    availableStock,
+    maxQuantity,
     incrementQuantity,
     decrementQuantity,
     handleAddToCart,
@@ -57,7 +60,7 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
     toggleWishlist,
     getCartItem,
     updateCartQuantity,
-  } = useProductActions(product, locale);
+  } = useProductActions(product, locale, selectedVariant);
 
   const { reviews, isLoading: isLoadingReviews, averageRating, reviewCount, invalidateReviews } = useProductReviews(product.id);
 
@@ -122,11 +125,14 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
             uniqueSizes={uniqueSizes}
             selectedVariant={selectedVariant}
             onColorSelect={handleColorSelect}
+            isColorSoldOut={isColorSoldOut}
             onSizeSelect={handleSizeSelect}
             getSizeAvailability={getSizeAvailability}
             hasSizeGuide={!!product.sizeGuideUrl}
             onOpenSizeGuide={() => setIsSizeGuideOpen(true)}
             quantity={quantity}
+            availableStock={availableStock}
+            maxQuantity={maxQuantity}
             onIncrement={incrementQuantity}
             onDecrement={decrementQuantity}
             onAddToCart={() => handleAddToCart(selectedVariant)}
@@ -165,6 +171,8 @@ function ProductPageContent({ product, relatedProducts, locale }: ProductPageCli
         imageUrl={images[0]?.url}
         selectedVariant={selectedVariant}
         quantity={quantity}
+        availableStock={availableStock}
+        maxQuantity={maxQuantity}
         onIncrement={incrementQuantity}
         onDecrement={decrementQuantity}
         onAddToCart={() => handleAddToCart(selectedVariant)}

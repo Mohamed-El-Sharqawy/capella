@@ -10,6 +10,10 @@ import { Accordion, AccordionItem, Checkbox, SocialShare, RichTextContent, BnplP
 import type { UniqueColor, UniqueSize, SizeAvailability } from "../types";
 import { useState } from "react";
 import Link from "next/link";
+import { SoldOutSlash } from "@/components/ui/sold-out-slash";
+
+/** Show an "Only N left" hint at or below this many units. */
+const LOW_STOCK_THRESHOLD = 3;
 
 interface CartItemInfo {
   variantId: string;
@@ -29,12 +33,17 @@ interface ProductInfoProps {
   uniqueSizes: UniqueSize[];
   selectedVariant: ProductVariant | null;
   onColorSelect: (colorId: string) => void;
+  /** True when every variant of this colour is sold out. */
+  isColorSoldOut: (colorId: string) => boolean;
   onSizeSelect: (sizeId: string) => void;
   getSizeAvailability: (sizeId: string) => SizeAvailability;
   hasSizeGuide: boolean;
   onOpenSizeGuide: () => void;
   // Quantity
   quantity: number;
+  /** Units that can be bought right now (0 = sold out). */
+  availableStock: number;
+  maxQuantity: number;
   onIncrement: () => void;
   onDecrement: () => void;
   // Actions
@@ -57,12 +66,16 @@ export function ProductInfo({
   uniqueColors,
   selectedVariant,
   onColorSelect,
+  isColorSoldOut,
+  availableStock,
   onAddToCart,
   isInWishlist,
   onToggleWishlist,
 }: ProductInfoProps) {
   const t = useTranslations("product");
+  const tStock = useTranslations("stock");
   const isArabic = locale === "ar";
+  const isSoldOut = !selectedVariant || availableStock <= 0;
   const [addGiftMessage, setAddGiftMessage] = useState(false);
 
   const composition = [
@@ -107,13 +120,20 @@ export function ProductInfo({
       <div className="space-y-4 mb-0">
         <button
           onClick={onAddToCart}
+          disabled={isSoldOut}
+          aria-disabled={isSoldOut}
           style={{
             letterSpacing: isArabic ? "0em" : "0.2em",
           }}
-          className="w-full bg-black text-white py-4 text-sm font-medium uppercase hover:bg-neutral-800 transition-colors shadow-sm"
+          className="w-full bg-black text-white py-4 text-sm font-medium uppercase hover:bg-neutral-800 transition-colors shadow-sm disabled:bg-neutral-300 disabled:text-neutral-600 disabled:cursor-not-allowed disabled:hover:bg-neutral-300"
         >
-          {t("addToBag")}
+          {isSoldOut ? tStock("soldOut") : t("addToBag")}
         </button>
+        {!isSoldOut && availableStock <= LOW_STOCK_THRESHOLD && (
+          <p className="text-xs text-red-600 text-center" role="status">
+            {tStock("onlyLeft", { count: availableStock })}
+          </p>
+        )}
 
         {/* Benefits List */}
         <div className="space-y-3 pt-6 border-t border-gray-100">
@@ -132,24 +152,32 @@ export function ProductInfo({
           <div>
             <p className="text-xs md:text-sm font-medium uppercase mb-3" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}>{t("color")}</p>
             <div className="flex gap-2">
-              {uniqueColors.map((color) => (
-                <button
-                  key={color.id}
-                  onClick={() => onColorSelect(color.id)}
-                  className={`w-11 h-11 flex items-center justify-center rounded-full cursor-pointer transition-all ${selectedVariant?.color?.id === color.id
-                    ? "ring-2 ring-offset-2 ring-black"
-                    : ""
-                    }`}
-                >
-                  <span
-                    className={`w-6 h-6 rounded-full border-2 transition-all ${selectedVariant?.color?.id === color.id
-                      ? "border-black"
-                      : "border-gray-200"
+              {uniqueColors.map((color) => {
+                const soldOut = isColorSoldOut(color.id);
+                const colorName = isArabic ? color.nameAr : color.nameEn;
+                return (
+                  <button
+                    key={color.id}
+                    onClick={() => onColorSelect(color.id)}
+                    aria-label={soldOut ? `${colorName} - ${tStock("soldOut")}` : colorName}
+                    title={soldOut ? `${colorName} - ${tStock("soldOut")}` : colorName}
+                    className={`w-11 h-11 flex items-center justify-center rounded-full cursor-pointer transition-all ${selectedVariant?.color?.id === color.id
+                      ? "ring-2 ring-offset-2 ring-black"
+                      : ""
                       }`}
-                    style={{ backgroundColor: color.hex }}
-                  />
-                </button>
-              ))}
+                  >
+                    <span
+                      className={`relative w-6 h-6 rounded-full border-2 transition-all ${selectedVariant?.color?.id === color.id
+                        ? "border-black"
+                        : "border-gray-200"
+                        } ${soldOut ? "opacity-50" : ""}`}
+                      style={{ backgroundColor: color.hex }}
+                    >
+                      {soldOut && <SoldOutSlash />}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

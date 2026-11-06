@@ -1,9 +1,11 @@
 import { prisma } from "../../lib/prisma";
+import type { Prisma } from "../../../generated/prisma/client";
 import { PAGINATION_DEFAULTS, getShippingCost, CURRENCY } from "@ecommerce/shared-utils";
 import { EmailService } from "../email/service";
 import { sendMetaEvent, buildCapiItems } from "../../lib/meta-capi";
 import type { CapiContext } from "../../lib/meta-capi";
 import type { OrderModel } from "./model";
+import { assertInStock, decrementStock, releaseOrderStock } from "../../lib/stock";
 
 const ORDER_INCLUDE = {
   items: true,
@@ -15,6 +17,22 @@ const ORDER_INCLUDE = {
     select: { id: true, code: true, discountType: true, discountValue: true },
   },
 } as const;
+
+/**
+ * Deleting an order that still holds stock and hasn't shipped (e.g. an
+ * abandoned or test order) returns its units. Shipped/delivered units have
+ * physically left, so they are not restocked.
+ */
+async function releaseUnshippedStock(tx: Prisma.TransactionClient, ids: string[]) {
+  const held = await tx.order.findMany({
+    where: { id: { in: ids }, stockReserved: true, status: { in: ["PENDING", "CONFIRMED", "PROCESSING"] } },
+    select: { id: true },
+  });
+  for (const { id } of held) await releaseOrderStock(id, {}, tx);
+}
+
+/** Statuses in which an order no longer holds its items' stock. */
+const STOCK_RELEASED_STATUSES = new Set<string>(["CANCELLED", "REFUNDED"]);
 
 export abstract class OrderService {
   static async list(
@@ -104,6 +122,10 @@ export abstract class OrderService {
       },
     });
 
+    // Reject missing / inactive / out-of-stock variants up front (fast path;
+    // the atomic decrement below is what actually guarantees no overselling).
+    assertInStock(body.items, variants);
+
     const variantMap = new Map(variants.map((v) => [v.id, v]));
 
     let total = 0;
@@ -165,63 +187,79 @@ export abstract class OrderService {
     // If guest order, create or find guest user
     let finalUserId = userId;
     if (!userId && body.guestEmail) {
-      // Check if guest user already exists
-      let guestUser = await prisma.user.findUnique({
-        where: { email: body.guestEmail },
-      });
+      // Find or create the guest user. If two orders from a new email arrive
+      // together, one create loses on the unique email (P2002): re-read it.
+      const guestEmail = body.guestEmail;
+      const findGuest = () => prisma.user.findUnique({ where: { email: guestEmail } });
+      let guestUser = await findGuest();
 
       if (!guestUser) {
-        // Create new guest user
-        guestUser = await prisma.user.create({
-          data: {
-            email: body.guestEmail,
-            firstName: body.guestFirstName || body.shippingFirstName,
-            lastName: body.guestLastName || body.shippingLastName,
-            phone: body.guestPhone || body.shippingPhone,
-            role: "GUEST" as any,
-          } as any,
-        });
+        try {
+          guestUser = await prisma.user.create({
+            data: {
+              email: guestEmail,
+              firstName: body.guestFirstName || body.shippingFirstName,
+              lastName: body.guestLastName || body.shippingLastName,
+              phone: body.guestPhone || body.shippingPhone,
+              role: "GUEST" as any,
+            } as any,
+          });
+        } catch (err) {
+          if ((err as { code?: string }).code !== "P2002") throw err;
+          guestUser = await findGuest();
+          if (!guestUser) throw err;
+        }
       }
       finalUserId = guestUser.id;
     }
 
-    // Increment coupon usage count for COD orders (online payments do this
-    // in markOrderPaid once payment is confirmed). couponId was resolved above
-    // while computing the discount.
-    if (couponId) {
-      await prisma.coupon.update({
-        where: { id: couponId },
-        data: { usageCount: { increment: 1 } },
-      });
-    }
+    // COD orders are committed at placement, so stock is reserved now: the
+    // order, the stock decrement and the coupon usage are written in one
+    // transaction. If another customer took the last units in the meantime,
+    // decrementStock throws OutOfStockError and nothing is persisted.
+    // (Online payments decrement in PaymentService.markOrderPaid instead.)
+    const order = await prisma.$transaction(async (tx) => {
+      await decrementStock(tx, body.items);
 
-    const order = await prisma.order.create({
-      data: {
-        userId: finalUserId ?? undefined,
-        total: grandTotal,
-        shippingAmount: shippingCost,
-        discountAmount: discountAmount > 0 ? discountAmount : undefined,
-        couponId: couponId,
-        paymentMethod: "COD",
-        guestEmail: body.guestEmail,
-        guestFirstName: body.guestFirstName,
-        guestLastName: body.guestLastName,
-        guestPhone: body.guestPhone,
-        addressId: body.addressId,
-        shippingFirstName: body.shippingFirstName,
-        shippingLastName: body.shippingLastName,
-        shippingStreet: body.shippingStreet,
-        shippingCity: body.shippingCity,
-        shippingState: body.shippingState,
-        shippingZipCode: body.shippingZipCode,
-        shippingCountry: body.shippingCountry,
-        shippingPhone: body.shippingPhone,
-        note: body.note,
-        fbp: body.fbp || null,
-        fbc: body.fbc || null,
-        items: { create: orderItems },
-      },
-      include: ORDER_INCLUDE,
+      // Increment coupon usage count for COD orders (online payments do this
+      // in markOrderPaid once payment is confirmed). couponId was resolved above
+      // while computing the discount.
+      if (couponId) {
+        await tx.coupon.update({
+          where: { id: couponId },
+          data: { usageCount: { increment: 1 } },
+        });
+      }
+
+      return tx.order.create({
+        data: {
+          userId: finalUserId ?? undefined,
+          total: grandTotal,
+          shippingAmount: shippingCost,
+          discountAmount: discountAmount > 0 ? discountAmount : undefined,
+          couponId: couponId,
+          paymentMethod: "COD",
+          stockReserved: true,
+          guestEmail: body.guestEmail,
+          guestFirstName: body.guestFirstName,
+          guestLastName: body.guestLastName,
+          guestPhone: body.guestPhone,
+          addressId: body.addressId,
+          shippingFirstName: body.shippingFirstName,
+          shippingLastName: body.shippingLastName,
+          shippingStreet: body.shippingStreet,
+          shippingCity: body.shippingCity,
+          shippingState: body.shippingState,
+          shippingZipCode: body.shippingZipCode,
+          shippingCountry: body.shippingCountry,
+          shippingPhone: body.shippingPhone,
+          note: body.note,
+          fbp: body.fbp || null,
+          fbc: body.fbc || null,
+          items: { create: orderItems },
+        },
+        include: ORDER_INCLUDE,
+      });
     });
 
     const customerEmail = order.user?.email || order.guestEmail || "";
@@ -316,10 +354,27 @@ export abstract class OrderService {
     });
     if (!existing) return null;
 
-    const updated = await prisma.order.update({
-      where: { id },
-      data: { status: statusValue as never },
-      include: ORDER_INCLUDE,
+    // `stockReserved` says whether this order's units are currently deducted.
+    // Cancelling/refunding returns them (once); reopening a cancelled order
+    // takes them again, failing with OutOfStockError if they've been sold.
+    // Legacy orders placed before holds existed (stockReserved=false while
+    // active) are left alone, as before.
+    const wasReleased = STOCK_RELEASED_STATUSES.has(existing.status);
+    const willRelease = STOCK_RELEASED_STATUSES.has(statusValue);
+    const lines = existing.items.map((i) => ({ variantId: i.variantId, quantity: i.quantity }));
+
+    const updated = await prisma.$transaction(async (tx) => {
+      if (willRelease) {
+        await releaseOrderStock(id, {}, tx);
+      } else if (wasReleased && !existing.stockReserved) {
+        await decrementStock(tx, lines, { requireActive: false });
+        await tx.order.update({ where: { id }, data: { stockReserved: true } });
+      }
+      return tx.order.update({
+        where: { id },
+        data: { status: statusValue as never },
+        include: ORDER_INCLUDE,
+      });
     });
 
     if (existing.status !== statusValue) {
@@ -345,15 +400,21 @@ export abstract class OrderService {
     const existing = await prisma.order.findUnique({ where: { id } });
     if (!existing) return null;
 
-    await prisma.order.delete({ where: { id } });
+    await prisma.$transaction(async (tx) => {
+      await releaseUnshippedStock(tx, [id]);
+      await tx.order.delete({ where: { id } });
+    });
     return true;
   }
 
   static async bulkDelete(ids: string[]) {
-    const result = await prisma.order.deleteMany({
-      where: { id: { in: ids } },
+    return prisma.$transaction(async (tx) => {
+      await releaseUnshippedStock(tx, ids);
+      const result = await tx.order.deleteMany({
+        where: { id: { in: ids } },
+      });
+      return result.count;
     });
-    return result.count;
   }
 
   static async updatePaymentStatus(id: string, paid: boolean) {

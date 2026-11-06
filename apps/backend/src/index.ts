@@ -156,6 +156,16 @@ const app = new Elysia()
 PaymentService.registerWebhook();
 PaymentService.registerTabbyWebhook();
 
+// Return stock held by online checkouts that were never paid (tab closed on
+// the payment page, so no provider webhook arrives). Safe with multiple
+// instances: each release is an atomic conditional update.
+const releaseExpired = () =>
+  PaymentService.releaseExpiredReservations().catch((err) =>
+    console.error("Failed to release expired stock reservations:", err),
+  );
+releaseExpired();
+setInterval(releaseExpired, 5 * 60_000);
+
 if (process.env.NODE_ENV === "production" && process.env.META_TEST_EVENT_CODE) {
   console.warn(
     "[CAPI] META_TEST_EVENT_CODE is set in production — sendMetaEvent will ignore it, " +

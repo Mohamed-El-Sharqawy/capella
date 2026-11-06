@@ -1,4 +1,5 @@
 import type { ProductVariant } from "@ecommerce/shared-types";
+import { getAvailableStock } from "./stock";
 
 export interface CartItem {
   variantId: string;
@@ -21,6 +22,22 @@ export interface CartItem {
   sizeNameAr?: string;
   collectionId?: string;
   collectionSlug?: string;
+  /**
+   * Last known purchasable quantity for this variant (0 = sold out).
+   * Set when added and refreshed from the backend (see refreshStock in
+   * cart-context). Undefined for items saved before stock tracking existed.
+   */
+  stock?: number;
+}
+
+/** An item that can't be checked out as-is (sold out / fewer left than requested). */
+export function isCartItemUnavailable(item: CartItem): boolean {
+  return item.stock !== undefined && item.quantity > item.stock;
+}
+
+/** How many more units of this item could still be added. */
+export function remainingStock(item: Pick<CartItem, "stock" | "quantity"> | null | undefined, stock: number): number {
+  return Math.max(0, stock - (item?.quantity ?? 0));
 }
 
 const CART_STORAGE_KEY = "guest_cart";
@@ -44,18 +61,28 @@ export function saveGuestCart(items: CartItem[]): void {
   }
 }
 
-export function addToGuestCart(item: CartItem): CartItem[] {
+/**
+ * Add an item, never exceeding its known stock. Returns the updated cart and
+ * how many units were actually added (0 when sold out / already at the limit).
+ */
+export function addToGuestCart(item: CartItem): { cart: CartItem[]; added: number } {
   const cart = getGuestCart();
   const existingIndex = cart.findIndex((i) => i.variantId === item.variantId);
+  const existing = existingIndex >= 0 ? cart[existingIndex] : null;
+  const current = existing?.quantity ?? 0;
+  const limit = item.stock ?? Infinity;
+  const nextQuantity = Math.min(current + item.quantity, limit);
+  const added = Math.max(0, nextQuantity - current);
 
-  if (existingIndex >= 0) {
-    cart[existingIndex].quantity += item.quantity;
-  } else {
-    cart.push(item);
+  if (existing) {
+    existing.quantity = Math.max(current, nextQuantity);
+    if (item.stock !== undefined) existing.stock = item.stock;
+  } else if (added > 0) {
+    cart.push({ ...item, quantity: added });
   }
 
   saveGuestCart(cart);
-  return cart;
+  return { cart, added };
 }
 
 export function updateGuestCartQuantity(
@@ -66,10 +93,14 @@ export function updateGuestCartQuantity(
   const index = cart.findIndex((i) => i.variantId === variantId);
 
   if (index >= 0) {
+    const item = cart[index];
     if (quantity <= 0) {
       cart.splice(index, 1);
+    } else if (item.stock !== undefined && quantity > item.quantity && quantity > item.stock) {
+      // Increasing beyond available stock is not allowed; leave as is.
+      return cart;
     } else {
-      cart[index].quantity = quantity;
+      item.quantity = quantity;
     }
   }
 
@@ -86,6 +117,33 @@ export function removeFromGuestCart(variantId: string): CartItem[] {
 export function clearGuestCart(): void {
   if (typeof window === "undefined") return;
   localStorage.removeItem(CART_STORAGE_KEY);
+}
+
+/**
+ * Apply live availability to the cart: store each item's current stock and
+ * lower quantities that exceed what's left. Sold-out items (stock 0) are kept
+ * but flagged, so the customer sees what happened and removes them.
+ */
+export function applyAvailability(
+  cart: CartItem[],
+  availability: Map<string, number>,
+): { cart: CartItem[]; reduced: CartItem[]; soldOut: CartItem[] } {
+  const reduced: CartItem[] = [];
+  const soldOut: CartItem[] = [];
+  const next = cart.map((item) => {
+    const stock = availability.get(item.variantId) ?? 0;
+    if (stock <= 0) {
+      soldOut.push(item);
+      return { ...item, stock: 0 };
+    }
+    if (item.quantity > stock) {
+      const updated = { ...item, quantity: stock, stock };
+      reduced.push(updated);
+      return updated;
+    }
+    return { ...item, stock };
+  });
+  return { cart: next, reduced, soldOut };
 }
 
 export function getCartItemCount(cart: CartItem[]): number {
@@ -122,5 +180,6 @@ export function createCartItemFromVariant(
     sizeNameAr: variant.size?.nameAr,
     collectionId: primaryCollection?.id,
     collectionSlug: primaryCollection?.slug,
+    stock: getAvailableStock(variant),
   };
 }

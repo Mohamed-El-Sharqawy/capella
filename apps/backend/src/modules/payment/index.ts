@@ -3,6 +3,7 @@ import { authPlugin } from "../../plugins/auth";
 import { PaymentService } from "./service";
 import { PaymentModel } from "./model";
 import { extractCapiContext } from "../../lib/meta-capi";
+import { OutOfStockError, outOfStockBody } from "../../lib/stock";
 
 export const payment = new Elysia({ prefix: "/payments" })
   .use(authPlugin)
@@ -50,6 +51,14 @@ export const payment = new Elysia({ prefix: "/payments" })
     const orderStatus = await PaymentService.getOrderStatus(orderId);
     return { success: true as const, data: { orderStatus } };
   })
+  // Public: the customer returned from the payment page without paying.
+  // Releases the stock held for that unpaid order. Order IDs are unguessable
+  // cuids and only unpaid online PENDING orders are affected; a payment that
+  // still completes later is re-reserved or refunded by the webhook.
+  .post("/release", async ({ body }) => {
+    const released = await PaymentService.releaseAbandonedCheckout(body.orderId);
+    return { success: true as const, data: { released } };
+  }, { body: PaymentModel.releaseBody })
   .post("/checkout", async ({ body, user, headers, request }) => {
     try {
       const result = await PaymentService.createCheckoutSession(
@@ -60,6 +69,9 @@ export const payment = new Elysia({ prefix: "/payments" })
       );
       return { success: true as const, data: result };
     } catch (error) {
+      if (error instanceof OutOfStockError) {
+        return status(409, outOfStockBody(error));
+      }
       const message =
         error instanceof Error ? error.message : "Checkout failed";
       return status(400, { success: false as const, error: message });

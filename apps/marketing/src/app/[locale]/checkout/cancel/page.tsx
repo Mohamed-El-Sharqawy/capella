@@ -17,11 +17,17 @@ export default async function CheckoutCancelPage({ params, searchParams }: PageP
   // intact (this page never clears it) so the customer can retry or pick
   // another payment method. Approved wording from the Tabby redirect docs.
   const isRejected = reason === "rejected";
-  const title = isRejected ? t("cancel.rejectedTitle") : t("cancel.title");
-  const message = isRejected ? t("cancel.rejectedMessage") : t("cancel.message");
-  const Icon = isRejected ? AlertCircle : XCircle;
-  const iconBg = isRejected ? "bg-amber-100" : "bg-red-100";
-  const iconColor = isRejected ? "text-amber-600" : "text-red-600";
+  // Paid, but the item sold out before the payment was confirmed: refunded.
+  const isSoldOut = reason === "soldout";
+  const title = isSoldOut
+    ? t("cancel.soldOutTitle")
+    : isRejected ? t("cancel.rejectedTitle") : t("cancel.title");
+  const message = isSoldOut
+    ? t("cancel.soldOutMessage")
+    : isRejected ? t("cancel.rejectedMessage") : t("cancel.message");
+  const Icon = isRejected || isSoldOut ? AlertCircle : XCircle;
+  const iconBg = isRejected || isSoldOut ? "bg-amber-100" : "bg-red-100";
+  const iconColor = isRejected || isSoldOut ? "text-amber-600" : "text-red-600";
 
   return (
     <>

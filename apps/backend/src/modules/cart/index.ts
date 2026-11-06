@@ -2,10 +2,14 @@ import { Elysia, status } from "elysia";
 import { authPlugin } from "../../plugins/auth";
 import { CartService } from "./service";
 import { CartModel } from "./model";
+import { OutOfStockError, outOfStockBody } from "../../lib/stock";
 import { trackCartAdd, trackCartRemove, trackCartUpdate, trackCartClear } from "../analytics/service";
 
 export const cart = new Elysia({ prefix: "/cart" })
   .use(authPlugin)
+  .onError(({ error }) => {
+    if (error instanceof OutOfStockError) return status(409, outOfStockBody(error));
+  })
   .get("/", async ({ user }) => {
     const result = await CartService.getOrCreateCart(user.id);
     return { success: true as const, data: result };

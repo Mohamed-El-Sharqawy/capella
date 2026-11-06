@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/auth-context";
 import { useCart } from "@/contexts/cart-context";
 import { createCartItemFromVariant } from "@/lib/cart";
+import { isVariantInStock } from "@/lib/stock";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import { apiGet, apiPost } from "@/lib/api-client";
 
@@ -111,7 +112,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
   };
 
   const handleAddToCart = () => {
-    const variant = product.variants?.[0];
+    const variant = product.variants?.find(isVariantInStock);
     if (!variant) return;
 
     const cartItem = createCartItemFromVariant(variant, {
@@ -120,8 +121,7 @@ export function ReviewModal({ isOpen, onClose, product, locale, onReviewSubmitte
       nameEn: product.nameEn,
       nameAr: product.nameAr,
     });
-    addItem(cartItem);
-    onClose();
+    if (addItem(cartItem) > 0) onClose();
   };
 
   const handleSubmitReview = async (e: React.FormEvent) => {

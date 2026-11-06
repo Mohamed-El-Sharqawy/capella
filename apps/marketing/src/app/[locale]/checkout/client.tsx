@@ -29,20 +29,43 @@ import {
   OrderConfirmationModal,
 } from "./components";
 import { CHECKOUT_ROUTES, getShippingCost } from "./constants";
+import { releaseAbandonedCheckout } from "@/lib/stock";
 import type { CheckoutPageClientProps } from "./types";
 
 function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   const t = useTranslations("checkout");
-  const { items: cartItems, total: cartTotal, isLoading: cartLoading } = useCart();
+  const tStock = useTranslations("stock");
+  const {
+    items: cartItems,
+    total: cartTotal,
+    isLoading: cartLoading,
+    hasUnavailableItems,
+    refreshStock,
+  } = useCart();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { fetchOrders } = useOrders();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   // Buy now mode
-  const { isBuyNow, buyNowItem, isBuyNowLoading } = useBuyNow();
+  const { isBuyNow, buyNowItem, isBuyNowLoading, isBuyNowUnavailable, refetchBuyNow } = useBuyNow();
 
-  // Determine which items to use (buy-now or cart)
-  const items = isBuyNow && buyNowItem ? [buyNowItem] : cartItems;
+  // Determine which items to use (buy-now or cart). A buy-now that failed to
+  // load must never fall back to ordering the cart's contents.
+  const items = isBuyNow ? (buyNowItem ? [buyNowItem] : []) : cartItems;
+
+  // On arrival: if the customer is back from a payment page without paying,
+  // release that attempt's stock hold first, then re-check live stock (it
+  // may have changed since items were added).
+  useEffect(() => {
+    (async () => {
+      await releaseAbandonedCheckout();
+      if (isBuyNow) await refetchBuyNow();
+      else await refreshStock();
+    })();
+  }, [isBuyNow, refreshStock, refetchBuyNow]);
+
+  const isStockBlocked = isBuyNow ? isBuyNowUnavailable : hasUnavailableItems;
+  const stockBlockedMessage = isBuyNow ? tStock("buyNowUnavailable") : tStock("removeUnavailable");
   const total = isBuyNow && buyNowItem ? buyNowItem.price * buyNowItem.quantity : cartTotal;
 
   // Saved addresses
@@ -115,11 +138,18 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
     appliedCoupon,
     discountAmount,
     onOrderSuccess: fetchOrders,
+    // Server rejected the order for stock: reload live stock so the summary
+    // shows which items are sold out / reduced and submit stays blocked.
+    onOutOfStock: async () => {
+      if (isBuyNow) await refetchBuyNow();
+      else await refreshStock();
+    },
     locale,
   });
 
   const onPreSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isStockBlocked) return;
     setIsConfirmModalOpen(true);
   };
 
@@ -178,8 +208,8 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
     return <CheckoutLoading />;
   }
 
-  // Empty cart
-  if (!isBuyNow && items.length === 0) {
+  // Empty cart (or a buy-now product that could not be loaded)
+  if (items.length === 0) {
     return <CheckoutEmpty />;
   }
 
@@ -232,6 +262,8 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
               total={total}
               locale={locale}
               isSubmitting={isSubmitting}
+              isStockBlocked={isStockBlocked}
+              stockBlockedMessage={stockBlockedMessage}
               appliedCoupon={appliedCoupon}
               discountAmount={discountAmount}
               couponProps={{

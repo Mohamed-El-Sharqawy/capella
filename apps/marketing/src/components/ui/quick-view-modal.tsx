@@ -8,6 +8,8 @@ import { useTranslations } from "next-intl";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import { useCart } from "@/contexts/cart-context";
 import { createCartItemFromVariant } from "@/lib/cart";
+import { getAvailableStock, firstInStockVariant, isColorSoldOut, isVariantInStock } from "@/lib/stock";
+import { SoldOutSlash } from "./sold-out-slash";
 import { trackQuickAddToCart } from "@/lib/analytics";
 import { RichTextContent } from "@/components/ui/markdown-content";
 import { BnplPromo } from "@/components/ui/bnpl-promo";
@@ -36,9 +38,17 @@ export function QuickViewModal({
     : product.shortDescriptionEn || product.descriptionEn;
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
-    product.variants?.[0] ?? ({} as ProductVariant)
+    firstInStockVariant(product.variants) ?? ({} as ProductVariant)
   );
   const [quantity, setQuantity] = useState(1);
+  const tStock = useTranslations("stock");
+  const availableStock = getAvailableStock(selectedVariant);
+  const isSoldOut = availableStock <= 0;
+
+  // Keep the picked quantity within what's in stock when the variant changes.
+  useEffect(() => {
+    setQuantity((q) => Math.max(1, Math.min(q, availableStock)));
+  }, [availableStock]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Swipe logic (Exactly as per hero-banner.tsx)
@@ -115,7 +125,8 @@ export function QuickViewModal({
   }, [activeImages.length]);
 
   const handleColorSelect = (colorId: string) => {
-    const variant = product.variants?.find((v) => v.color?.id === colorId);
+    const ofColor = product.variants?.filter((v) => v.color?.id === colorId) ?? [];
+    const variant = ofColor.find(isVariantInStock) ?? ofColor[0];
     if (variant) {
       setSelectedVariant(variant);
       setCurrentImageIndex(0);
@@ -132,19 +143,20 @@ export function QuickViewModal({
   };
 
   const handleAddToCart = () => {
-    if (!selectedVariant) return;
+    if (!selectedVariant || isSoldOut) return;
     const cartItem = createCartItemFromVariant(
       selectedVariant,
       { id: product.id, slug: product.slug, nameEn: product.nameEn, nameAr: product.nameAr },
       quantity
     );
-    addItem(cartItem);
+    const added = addItem(cartItem);
+    if (added === 0) return;
     trackQuickAddToCart(
       product.id,
       selectedVariant.id,
       isArabic ? product.nameAr : product.nameEn,
       selectedVariant.price,
-      quantity,
+      added,
       selectedVariant.sku
     );
     onClose();
@@ -315,18 +327,25 @@ export function QuickViewModal({
                   </span>
                 </p>
                 <div className="flex gap-2">
-                  {uniqueColors.map((color) => (
-                    <button
-                      key={color.id}
-                      onClick={() => handleColorSelect(color.id)}
-                      className={`h-9 w-9 rounded-full border-2 transition-all duration-300 ${selectedVariant?.color?.id === color.id
-                        ? "border-primary ring-2 ring-primary ring-offset-2 scale-105 shadow-md"
-                        : "border-border hover:border-black/30"
-                        }`}
-                      style={{ backgroundColor: color.hex }}
-                      aria-label={isArabic ? color.nameAr : color.nameEn}
-                    />
-                  ))}
+                  {uniqueColors.map((color) => {
+                    const soldOut = isColorSoldOut(product.variants, color.id);
+                    const colorName = isArabic ? color.nameAr : color.nameEn;
+                    return (
+                      <button
+                        key={color.id}
+                        onClick={() => handleColorSelect(color.id)}
+                        className={`relative h-9 w-9 rounded-full border-2 transition-all duration-300 ${selectedVariant?.color?.id === color.id
+                          ? "border-primary ring-2 ring-primary ring-offset-2 scale-105 shadow-md"
+                          : "border-border hover:border-black/30"
+                          } ${soldOut ? "opacity-50" : ""}`}
+                        style={{ backgroundColor: color.hex }}
+                        aria-label={soldOut ? `${colorName} - ${tStock("soldOut")}` : colorName}
+                        title={soldOut ? `${colorName} - ${tStock("soldOut")}` : colorName}
+                      >
+                        {soldOut && <SoldOutSlash />}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -363,8 +382,9 @@ export function QuickViewModal({
                 </button>
                 <span className="w-12 text-center font-medium">{quantity}</span>
                 <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="p-2 border rounded-none hover:bg-muted transition-colors active:scale-95"
+                  onClick={() => setQuantity(Math.min(availableStock, quantity + 1))}
+                  disabled={quantity >= availableStock}
+                  className="p-2 border rounded-none hover:bg-muted transition-colors active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -374,9 +394,10 @@ export function QuickViewModal({
             <div className="space-y-3 pt-4">
               <button
                 onClick={handleAddToCart}
-                className="w-full py-4 bg-primary text-primary-foreground text-xs font-bold uppercase hover:bg-primary/95 transition-all shadow-sm active:scale-[0.98]" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}
+                disabled={isSoldOut}
+                className="w-full py-4 bg-primary text-primary-foreground text-xs font-bold uppercase hover:bg-primary/95 transition-all shadow-sm active:scale-[0.98] disabled:bg-neutral-300 disabled:text-neutral-600 disabled:cursor-not-allowed disabled:active:scale-100" style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}
               >
-                {tCommon("addToCart")}
+                {isSoldOut ? tStock("soldOut") : tCommon("addToCart")}
               </button>
               <Link
                 href={`/products/${product.slug}`}
