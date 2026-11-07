@@ -15,7 +15,8 @@
     "db:seed": "bun run prisma/seed.ts",
     "db:seed-admin": "bun run prisma/seed-admin.ts",
     "migrate:storage": "bun run scripts/migrate-cloudinary-to-r2.ts",
-    "migrate:shipping": "bun run scripts/fix-shipping-amount.ts"
+    "migrate:shipping": "bun run scripts/fix-shipping-amount.ts",
+    "fix:cms-text": "bun run scripts/fix-cms-seo-text.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1079.0",
