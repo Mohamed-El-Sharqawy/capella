@@ -72,9 +72,13 @@ export function organizationJsonLd(locale = "en") {
     currenciesAccepted: "AED",
     paymentAccepted: "Cash on delivery, Credit/debit card (Ziina), Tabby, Tamara",
     hasMerchantReturnPolicy: merchantReturnPolicy(),
-    // Add the brand's real profile URLs (Instagram, TikTok, ...) here: they
-    // tie the site to the brand's Knowledge Panel / AI entity.
-    sameAs: ["https://www.instagram.com/capella.uae/"],
+    // Official brand profiles: they tie the site to the brand entity for
+    // Google's Knowledge Panel and AI assistants.
+    sameAs: [
+      "https://www.instagram.com/capella.uae/",
+      "https://www.facebook.com/people/Capellauae/61589604975656/",
+      "https://www.tiktok.com/@capella.uae4",
+    ],
   };
 }
 

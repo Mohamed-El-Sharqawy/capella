@@ -6,10 +6,11 @@ export const INITIAL_FORM_DATA = {
   message: "",
 } as const;
 
-// Only real brand profiles. Add Facebook/TikTok here (and in the contact
-// card + organizationJsonLd sameAs) once those accounts exist.
+// Official brand profiles only.
 export const SOCIAL_LINKS = {
   instagram: "https://www.instagram.com/capella.uae/",
+  facebook: "https://www.facebook.com/people/Capellauae/61589604975656/",
+  tiktok: "https://www.tiktok.com/@capella.uae4",
 } as const;
 
 export const MAP_CONFIG = {
