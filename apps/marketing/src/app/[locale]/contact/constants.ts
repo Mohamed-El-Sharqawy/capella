@@ -6,15 +6,14 @@ export const INITIAL_FORM_DATA = {
   message: "",
 } as const;
 
+// Only real brand profiles. Add Facebook/TikTok here (and in the contact
+// card + organizationJsonLd sameAs) once those accounts exist.
 export const SOCIAL_LINKS = {
-  instagram: "https://instagram.com",
-  facebook: "https://facebook.com",
-  tiktok: "https://tiktok.com",
+  instagram: "https://www.instagram.com/capella.uae/",
 } as const;
 
 export const MAP_CONFIG = {
-  embedUrl:
-    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3454.0!2d31.3547!3d30.0283!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583e4e7c9a7c7d%3A0x0!2zMzDCsDAxJzQyLjAiTiAzMcKwMjEnMTcuMCJF!5e0!3m2!1sen!2seg!4v1709150000000",
-  directionsUrl: "https://maps.app.goo.gl/ZXrGAiFDy69UebdT8",
+  embedUrl: "https://www.google.com/maps?q=Dubai%2C%20United%20Arab%20Emirates&z=11&output=embed",
+  directionsUrl: "https://www.google.com/maps/search/?api=1&query=Dubai%2C%20United%20Arab%20Emirates",
   height: 250,
 } as const;

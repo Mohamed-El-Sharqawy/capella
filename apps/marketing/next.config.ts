@@ -49,6 +49,14 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  // People (and some tools) ask for llm.txt; the standard name is llms.txt.
+  async redirects() {
+    return [
+      { source: "/llm.txt", destination: "/llms.txt", permanent: true },
+      { source: "/:locale(en|ar)/llm.txt", destination: "/:locale/llms.txt", permanent: true },
+    ];
+  },
+
   // Caching headers for static assets
   async headers() {
     return [

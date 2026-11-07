@@ -1,54 +1,55 @@
 import type { MetadataRoute } from "next";
+import { SITE_CONFIG } from "@/lib/metadata";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://capellaae.com";
+/**
+ * Only private / transactional pages are blocked. Everything a shopper (or an
+ * AI assistant answering a shopper) needs stays crawlable: products,
+ * collections, policies, llms.txt and the sitemaps.
+ *
+ * Do NOT block /_next/ (Google needs JS/CSS to render pages) or *.xml (that
+ * would block our own sitemaps).
+ */
+const PRIVATE_PATHS = [
+  "/api/",
+  "/*/auth/",
+  "/*/account/",
+  "/*/cart",
+  "/*/checkout",
+];
+
+/**
+ * AI crawlers explicitly welcomed so the brand and products can appear in
+ * AI answers (ChatGPT, Claude, Perplexity, Gemini, Apple Intelligence, Copilot).
+ * Listed separately so any one can be switched to `disallow: "/"` later.
+ */
+const AI_CRAWLERS = [
+  // OpenAI: search results, user-triggered browsing, model training
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "GPTBot",
+  // Anthropic
+  "ClaudeBot",
+  "Claude-SearchBot",
+  "Claude-User",
+  // Perplexity
+  "PerplexityBot",
+  "Perplexity-User",
+  // Google Gemini / AI Overviews grounding, Apple Intelligence
+  "Google-Extended",
+  "Applebot-Extended",
+  // Others
+  "CCBot",
+  "Meta-ExternalAgent",
+  "Amazonbot",
+  "DuckAssistBot",
+];
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        disallow: [
-          // Auth pages - no need to index
-          "/*/auth/",
-          "/*/auth/*",
-
-          // User account pages - private
-          "/*/account/",
-          "/*/account/*",
-
-          // Cart & Checkout - transactional, not indexable
-          "/*/cart/",
-          "/*/cart/*",
-          "/*/checkout/",
-          "/*/checkout/*",
-
-          // API routes
-          "/api/",
-          "/api/*",
-
-          // Next.js internals
-          "/_next/",
-          "/_next/*",
-
-          // Static files that shouldn't be indexed
-          "/*.json$",
-          "/*.xml$",
-        ],
-      },
-      {
-        // Block AI crawlers that don't respect content
-        userAgent: [
-          "GPTBot",
-          "ChatGPT-User",
-          "CCBot",
-          "anthropic-ai",
-          "Claude-Web",
-        ],
-        disallow: "/",
-      },
+      { userAgent: "*", allow: "/", disallow: PRIVATE_PATHS },
+      { userAgent: AI_CRAWLERS, allow: "/", disallow: PRIVATE_PATHS },
     ],
-    sitemap: `${BASE_URL}/sitemap.xml`,
-    host: BASE_URL,
+    sitemap: `${SITE_CONFIG.url}/sitemap.xml`,
   };
 }

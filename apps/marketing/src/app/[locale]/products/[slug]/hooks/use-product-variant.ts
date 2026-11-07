@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useState, useCallback, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import type { UniqueColor, UniqueSize, SizeAvailability } from "../types";
 import { getAvailableStock, isVariantInStock, firstInStockVariant, isColorSoldOut as colorSoldOut } from "@/lib/stock";
@@ -9,10 +9,14 @@ import { getAvailableStock, isVariantInStock, firstInStockVariant, isColorSoldOu
 export function useProductVariant(product: Product) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
-  // Get initial variant from URL params or default to first
-  const getInitialVariant = useCallback((): ProductVariant | null => {
+  // Variant requested in the URL (?variant= / ?color= / ?size=). Read from
+  // window.location after mount instead of useSearchParams(): on these
+  // statically generated pages useSearchParams() makes Next skip server
+  // rendering of the whole product (crawlers would get only the skeleton).
+  const getVariantFromUrl = useCallback((): ProductVariant | null => {
+    if (typeof window === "undefined") return null;
+    const searchParams = new URLSearchParams(window.location.search);
     const colorParam = searchParams.get("color");
     const sizeParam = searchParams.get("size");
     const variantParam = searchParams.get("variant");
@@ -31,12 +35,20 @@ export function useProductVariant(product: Product) {
       if (variant) return variant;
     }
 
-    // No explicit choice in the URL: open on something that can be bought.
-    return firstInStockVariant(product.variants);
-  }, [product.variants, searchParams]);
+    return null;
+  }, [product.variants]);
 
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(getInitialVariant);
+  // Server render + first paint: something that can be bought.
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(() =>
+    firstInStockVariant(product.variants)
+  );
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Then apply an explicit variant choice from the URL, if any.
+  useEffect(() => {
+    const fromUrl = getVariantFromUrl();
+    if (fromUrl) setSelectedVariant(fromUrl);
+  }, [getVariantFromUrl]);
 
   // Update URL when variant changes
   const updateURL = useCallback(

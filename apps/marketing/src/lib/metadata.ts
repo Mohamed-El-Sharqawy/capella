@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 export const SITE_CONFIG = {
   name: "Capella",
   nameAr: "كابيلا",
-  domain: "capellaae.com",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://capellaae.com",
+  domain: "capellauae.com",
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://capellauae.com").replace(/\/$/, ""),
   defaultImage: "/og-image.webp",
   twitterHandle: "@capellaae",
   locale: {
@@ -63,6 +63,8 @@ interface GenerateMetadataOptions {
   type?: "website" | "article";
   noIndex?: boolean;
   keywords?: string[];
+  /** Use the title as-is (skip the "| Capella" template), e.g. for the home page. */
+  absoluteTitle?: boolean;
 }
 
 export function generatePageMetadata({
@@ -74,6 +76,7 @@ export function generatePageMetadata({
   type = "website",
   noIndex = false,
   keywords = [],
+  absoluteTitle = false,
 }: GenerateMetadataOptions): Metadata {
   const isArabic = locale === "ar";
   const url = `${SITE_CONFIG.url}/${locale}${path}`;
@@ -84,7 +87,7 @@ export function generatePageMetadata({
     : DEFAULT_METADATA.en.keywords;
 
   return {
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     description,
     keywords: [...defaultKeywords, ...keywords],
     authors: [{ name: SITE_CONFIG.name }],
@@ -96,6 +99,7 @@ export function generatePageMetadata({
       languages: {
         en: `${SITE_CONFIG.url}/en${path}`,
         ar: `${SITE_CONFIG.url}/ar${path}`,
+        "x-default": `${SITE_CONFIG.url}/en${path}`,
       },
     },
     openGraph: {
@@ -104,6 +108,7 @@ export function generatePageMetadata({
       url,
       siteName,
       locale: SITE_CONFIG.locale[locale as keyof typeof SITE_CONFIG.locale] || "en_US",
+      alternateLocale: isArabic ? SITE_CONFIG.locale.en : SITE_CONFIG.locale.ar,
       type,
       images: [
         {
@@ -152,6 +157,7 @@ interface ProductMetadataOptions {
     slug: string;
     price?: number;
     compareAtPrice?: number;
+    material?: { nameEn: string; nameAr: string } | null;
     variants?: Array<{
       images?: Array<{ url: string }>;
     }>;
@@ -159,19 +165,31 @@ interface ProductMetadataOptions {
   locale: string;
 }
 
+
 export function generateProductMetadata({
   product,
   locale,
 }: ProductMetadataOptions): Metadata {
   const isArabic = locale === "ar";
 
+  // Without a CMS meta title, build a descriptive one that matches how people
+  // search: "<Name> – <Material> | Capella" (the layout template appends the
+  // brand), e.g. "AMOUR Ring – Sterling Silver".
+  const material = isArabic ? product.material?.nameAr : product.material?.nameEn;
+  const baseName = (isArabic ? product.nameAr : product.nameEn).trim().replace(/\s+/g, " ");
   const title = isArabic
-    ? product.metaTitleAr || product.nameAr
-    : product.metaTitleEn || product.nameEn;
+    ? product.metaTitleAr?.trim() || (material ? `${baseName} – ${material}` : baseName)
+    : product.metaTitleEn?.trim() || (material ? `${baseName} – ${material}` : baseName);
 
-  const description = isArabic
-    ? product.metaDescriptionAr || product.shortDescriptionAr || `${product.nameAr} - تسوق الآن من كابيلا`
-    : product.metaDescriptionEn || product.shortDescriptionEn || `${product.nameEn} - Shop now at Capella`;
+  const rawDescription = isArabic
+    ? product.metaDescriptionAr || product.shortDescriptionAr
+    : product.metaDescriptionEn || product.shortDescriptionEn;
+  const plain = (rawDescription ?? "").replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+  const description = plain
+    ? plain.length > 160 ? `${plain.slice(0, 157).replace(/\s+\S*$/, "")}…` : plain
+    : isArabic
+      ? `${baseName}${material ? ` من ${material}` : ""}. تسوق الآن من كابيلا مع توصيل سريع في جميع أنحاء الإمارات.`
+      : `${baseName}${material ? ` in ${material}` : ""}. Shop now at Capella with fast delivery across the UAE.`;
 
   const image = product.variants?.[0]?.images?.[0]?.url;
   const path = `/products/${product.slug}`;
@@ -245,12 +263,12 @@ export const STATIC_PAGE_METADATA = {
     en: {
       title: "Capella - Premium Silver & Gold-Plated Jewellery Store",
       description:
-        "Discover handcrafted silver and gold-plated jewellery at Capella. Shop rings, necklaces, bracelets, and earrings with fast delivery across UAE. New arrivals weekly!",
+        "Discover handcrafted silver and gold-plated jewellery at Capella. Shop rings, necklaces, bracelets, and earrings with delivery across the UAE in 2-5 business days.",
     },
     ar: {
       title: "كابيلا - متجر مجوهرات فضة ومطلية بالذهب فاخرة",
       description:
-        "اكتشف مجوهرات الفضة والمطلية بالذهب المصنوعة يدوياً في كابيلا. تسوق الخواتم والقلائد والأساور والأقراط مع توصيل سريع في جميع أنحاء الإمارات. وصول جديد أسبوعياً!",
+        "اكتشف مجوهرات الفضة والمطلية بالذهب المصنوعة يدوياً في كابيلا. تسوق الخواتم والقلائد والأساور والأقراط مع التوصيل إلى جميع أنحاء الإمارات خلال 2-5 أيام عمل.",
     },
   },
   collections: {
@@ -269,12 +287,12 @@ export const STATIC_PAGE_METADATA = {
     en: {
       title: "Contact Us - Capella Customer Support",
       description:
-        "Get in touch with Capella. We're here to help with orders, returns, jewellery care, and more. Fast response guaranteed.",
+        "Get in touch with Capella. We're here to help with orders, returns, jewellery care, and more. Reach us by phone, WhatsApp or email.",
     },
     ar: {
       title: "تواصل معنا - دعم عملاء كابيلا",
       description:
-        "تواصل مع كابيلا. نحن هنا للمساعدة في الطلبات والإرجاع والعناية بالمجوهرات والمزيد. استجابة سريعة مضمونة.",
+        "تواصل مع كابيلا. نحن هنا للمساعدة في الطلبات والإرجاع والعناية بالمجوهرات والمزيد. تواصل معنا عبر الهاتف أو واتساب أو البريد الإلكتروني.",
     },
   },
   privacyPolicy: {

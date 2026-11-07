@@ -7,6 +7,7 @@ import { CollectionHeader, ProductGrid, LoadMore, FilterDrawer, CollectionPageSk
 import { trackCollectionView } from "@/lib/analytics";
 import type { CollectionPageClientProps, SortOption } from "./types";
 import Image from "next/image";
+import { CollectionIntro } from "./components/collection-intro";
 
 function CollectionPageContent({
   locale,
@@ -16,6 +17,7 @@ function CollectionPageContent({
   initialProducts,
   initialMeta,
   videoUrl,
+  description,
 }: CollectionPageClientProps) {
   const t = useTranslations("collection");
 
@@ -99,6 +101,8 @@ function CollectionPageContent({
         </div>
 
         <div className="max-w-7xl mx-auto px-4 pt-8">
+          <CollectionIntro title={title} description={description} locale={locale} />
+
           <CollectionHeader
             sortOption={sortOption}
             sortOptions={sortOptions}
@@ -142,9 +146,9 @@ function CollectionPageContent({
   );
 }
 
-export function CollectionPageClient(props: CollectionPageClientProps) {
+export function CollectionPageClient({ fallback, ...props }: CollectionPageClientProps) {
   return (
-    <Suspense fallback={<CollectionPageSkeleton />}>
+    <Suspense fallback={fallback ?? <CollectionPageSkeleton />}>
       <CollectionPageContent {...props} />
     </Suspense>
   );

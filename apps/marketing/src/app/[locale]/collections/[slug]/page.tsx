@@ -4,6 +4,9 @@ import { getTranslations } from "next-intl/server";
 import { CollectionPageClient } from "./client";
 import { generateCollectionMetadata, generatePageMetadata, STATIC_PAGE_METADATA } from "@/lib/metadata";
 import { apiGet } from "@/lib/api-client";
+import { SITE_CONFIG } from "@/lib/metadata";
+import { breadcrumbJsonLd, collectionJsonLd } from "@/lib/json-ld";
+import { CollectionSeoFallback } from "./components/collection-seo-fallback";
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -130,15 +133,57 @@ export default async function CollectionPage({ params }: PageProps) {
     return locale === "ar" ? collection?.nameAr : collection?.nameEn;
   };
 
+  const isArabic = locale === "ar";
+  const title =
+    getTitle() ||
+    (currentCollection ? (isArabic ? currentCollection.nameAr : currentCollection.nameEn) : null) ||
+    slug;
+  const description = slug === "all-products"
+    ? t("allProductsDesc")
+    : (isArabic ? currentCollection?.descriptionAr : currentCollection?.descriptionEn) ?? null;
+  const url = `${SITE_CONFIG.url}/${locale}/collections/${slug}`;
+
+  const structuredData = collectionJsonLd({
+    name: title,
+    description,
+    url,
+    locale,
+    products: initialData.data,
+  });
+  const breadcrumbData = breadcrumbJsonLd([
+    { name: isArabic ? "الرئيسية" : "Home", url: `${SITE_CONFIG.url}/${locale}` },
+    { name: isArabic ? "المجموعات" : "Collections", url: `${SITE_CONFIG.url}/${locale}/collections` },
+    { name: title, url },
+  ]);
+
   return (
-    <CollectionPageClient
-      locale={locale}
-      slug={slug}
-      title={getTitle() || slug}
-      collections={collections}
-      initialProducts={initialData.data}
-      initialMeta={initialData.meta}
-      videoUrl={videoUrl}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
+      />
+      <CollectionPageClient
+        locale={locale}
+        slug={slug}
+        title={title}
+        description={description}
+        collections={collections}
+        initialProducts={initialData.data}
+        initialMeta={initialData.meta}
+        videoUrl={videoUrl}
+        fallback={
+          <CollectionSeoFallback
+            title={title}
+            description={description}
+            locale={locale}
+            products={initialData.data}
+          />
+        }
+      />
+    </>
   );
 }

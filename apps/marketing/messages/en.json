@@ -86,7 +86,7 @@
     "quickAdd": "Quick Add",
     "view": "View",
     "products": "PRODUCTS",
-    "freeShipping": "Complimentary 2-5 days shipping in UAE",
+    "freeShipping": "Free UAE delivery on orders over 600 AED · 2-5 business days",
     "authenticityCard": "Jewellery authenticity card",
     "giftWrapping": "Signature Capella gift wrapping",
     "addGiftMessage": "ADD A GIFT CARD",
@@ -102,8 +102,8 @@
     "bookAppointment": "BOOK AN APPOINTMENT",
     "removeFromWishlist": "REMOVE FROM WISHLIST",
     "addToWishlist": "ADD TO WISHLIST",
-    "complimentaryShipping": "Complimentary Shipping",
-    "complimentaryShippingDesc": "Free worldwide shipping - estimated customs and duties taxes included",
+    "complimentaryShipping": "Free Shipping Over 600 AED",
+    "complimentaryShippingDesc": "Delivery across the UAE in 2-5 business days. Orders under 600 AED ship for 25 AED.",
     "hassleFreeReturns": "Hassle Free Returns",
     "hassleFreeReturnsDesc": "We are available from Monday to Friday to answer your questions",
     "securePayment": "Secure Payment",
@@ -239,7 +239,7 @@
       "emailSent": "A confirmation email has been sent to your email address.",
       "continueShopping": "Continue Shopping",
       "confirmingTitle": "Confirming your payment…",
-      "confirmingMessage": "We're confirming your payment with Tabby. This only takes a moment — please don't close this page.",
+      "confirmingMessage": "We're confirming your payment. This only takes a moment, please don't close this page.",
       "timeoutTitle": "We've received your order",
       "timeoutMessage": "We're still confirming your payment. You'll receive a confirmation email once it's complete. If you don't hear from us, please contact support."
     },
@@ -350,9 +350,9 @@
   },
   "features": {
     "flexiblePayment": "Flexible Payment",
-    "flexiblePaymentDesc": "Pay with Multiple Credit Cards",
+    "flexiblePaymentDesc": "Card, cash on delivery, Tabby or Tamara",
     "fastReturns": "Fast and Easy Returns",
-    "fastReturnsDesc": "Within 2 days for an exchange",
+    "fastReturnsDesc": "Returns within 5 days of delivery",
     "premiumSupport": "Premium Support",
     "premiumSupportDesc": "Outstanding premium support"
   },
@@ -406,15 +406,15 @@
       "title": "Frequently Asked Questions",
       "delivery": {
         "q": "What is the delivery time?",
-        "a": "Delivery within Dubai and Abu Dhabi takes 1-2 business days, other emirates take 2-3 business days."
+        "a": "We deliver to all emirates within 2-5 business days."
       },
       "returns": {
         "q": "Can I return a product?",
-        "a": "Yes, you can return the product within 14 days of receipt, provided it's in its original condition."
+        "a": "Yes. Unworn, unused items in their original Capella packaging can be returned within 5 days of delivery."
       },
       "payment": {
         "q": "What payment methods are available?",
-        "a": "We accept online payments (Ziina) and cash on delivery."
+        "a": "We accept cash on delivery, debit and credit cards (via Ziina), and paying in instalments with Tabby or Tamara."
       },
       "tracking": {
         "q": "How can I track my order?",
@@ -726,7 +726,7 @@
     "title": "About Capella",
     "story": {
       "title": "Our Story",
-      "subtitle": "Crafting Elegance Since 1990",
+      "subtitle": "Inspired by the Stars",
       "content": "Inspired by the beauty of cosmos, stars and the mysteries of outer space. We believe that just like stars, every individual shines with their own unique light. With CAPELLA explore the unknown, embrace the extraordinary and shine beyond."
     },
     "philosophy": {

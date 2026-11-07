@@ -35,52 +35,63 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: DEFAULT_METADATA.en.title,
-    template: `%s | ${SITE_CONFIG.name}`,
-  },
-  description: DEFAULT_METADATA.en.description,
-  keywords: [...DEFAULT_METADATA.en.keywords],
-  authors: [{ name: SITE_CONFIG.name }],
-  creator: SITE_CONFIG.name,
-  publisher: SITE_CONFIG.name,
-  metadataBase: new URL(SITE_CONFIG.url),
-  openGraph: {
-    type: "website",
-    siteName: SITE_CONFIG.name,
-    locale: "en_US",
-    images: [
-      {
-        url: `${SITE_CONFIG.url}/og-image.webp`,
-        width: 1200,
-        height: 720,
-        alt: SITE_CONFIG.name,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: SITE_CONFIG.twitterHandle,
-    creator: SITE_CONFIG.twitterHandle,
-    images: [`${SITE_CONFIG.url}/og-image.webp`],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const isArabic = locale === "ar";
+  const defaults = isArabic ? DEFAULT_METADATA.ar : DEFAULT_METADATA.en;
+  const siteName = isArabic ? SITE_CONFIG.nameAr : SITE_CONFIG.name;
+
+  return {
+    title: {
+      default: defaults.title,
+      template: `%s | ${siteName}`,
+    },
+    description: defaults.description,
+    keywords: [...defaults.keywords],
+    authors: [{ name: SITE_CONFIG.name }],
+    creator: SITE_CONFIG.name,
+    publisher: SITE_CONFIG.name,
+    metadataBase: new URL(SITE_CONFIG.url),
+    openGraph: {
+      type: "website",
+      siteName,
+      locale: isArabic ? SITE_CONFIG.locale.ar : SITE_CONFIG.locale.en,
+      images: [
+        {
+          url: `${SITE_CONFIG.url}/og-image.webp`,
+          width: 1200,
+          height: 720,
+          alt: siteName,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: SITE_CONFIG.twitterHandle,
+      creator: SITE_CONFIG.twitterHandle,
+      images: [`${SITE_CONFIG.url}/og-image.webp`],
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  verification: {
-    // Add your verification codes here
-    // google: "your-google-verification-code",
-  },
-};
+    // Set GOOGLE_SITE_VERIFICATION / BING_SITE_VERIFICATION to verify
+    // ownership in Search Console / Bing Webmaster Tools via meta tag.
+    verification: {
+      ...(process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : {}),
+      ...(process.env.BING_SITE_VERIFICATION
+        ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }
+        : {}),
+    },
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -108,11 +119,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(locale)) }}
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd()) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd(locale)) }}
         />
         <FacebookPixel />
         <TikTokPixel />
