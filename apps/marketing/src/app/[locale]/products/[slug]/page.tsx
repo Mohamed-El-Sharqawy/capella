@@ -127,8 +127,13 @@ export default async function ProductPage({ params }: Props) {
   const relatedProducts = await getRelatedProducts(product);
 
   const structuredData = productJsonLd({ product, locale });
+  // Mirrors the visible breadcrumb: Home > Products > [Collection] > Product.
   const breadcrumbData = breadcrumbJsonLd([
     { name: locale === "ar" ? "الرئيسية" : "Home", url: `${SITE_CONFIG.url}/${locale}` },
+    {
+      name: locale === "ar" ? "المنتجات" : "Products",
+      url: `${SITE_CONFIG.url}/${locale}/collections/all-products`,
+    },
     ...(product.collections?.length
       ? [
           {

@@ -151,7 +151,9 @@
     },
     "allProductsTitle": "All Products - Capella",
     "allProductsDesc": "Browse our collection of silver and gold-plated jewellery. Discover rings, necklaces, bracelets, and earrings at Capella.",
-    "notFound": "Collection Not Found"
+    "notFound": "Collection Not Found",
+    "breadcrumbHome": "Home",
+    "breadcrumbCollections": "Collections"
   },
   "search": {
     "trending": "Trending Now",

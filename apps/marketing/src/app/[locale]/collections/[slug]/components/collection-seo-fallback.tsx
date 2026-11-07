@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { Product } from "@ecommerce/shared-types";
 import { CollectionIntro } from "./collection-intro";
+import { CollectionBreadcrumb } from "./collection-breadcrumb";
 
 interface CollectionSeoFallbackProps {
   title: string;
@@ -21,6 +22,7 @@ export function CollectionSeoFallback({ title, description, locale, products }: 
   return (
     <div className="pb-8 pt-32 md:pt-36">
       <div className="max-w-7xl mx-auto px-4 pt-8">
+        <CollectionBreadcrumb title={title} locale={locale} />
         <CollectionIntro title={title} description={description} locale={locale} />
         <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {products.map((product) => {

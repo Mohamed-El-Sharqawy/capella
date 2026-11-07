@@ -8,6 +8,7 @@ import { trackCollectionView } from "@/lib/analytics";
 import type { CollectionPageClientProps, SortOption } from "./types";
 import Image from "next/image";
 import { CollectionIntro } from "./components/collection-intro";
+import { CollectionBreadcrumb } from "./components/collection-breadcrumb";
 
 function CollectionPageContent({
   locale,
@@ -101,6 +102,7 @@ function CollectionPageContent({
         </div>
 
         <div className="max-w-7xl mx-auto px-4 pt-8">
+          <CollectionBreadcrumb title={title} locale={locale} />
           <CollectionIntro title={title} description={description} locale={locale} />
 
           <CollectionHeader
