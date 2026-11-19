@@ -10,6 +10,7 @@ import { apiPost } from "@/lib/api-client";
 import { getFbp, getFbc } from "@/lib/meta-cookies";
 import { savePendingPurchase } from "@/lib/analytics";
 import { getOutOfStockIssues } from "@/lib/stock";
+import { getGiftCard, clearGiftCard } from "@/lib/gift-card";
 import type { CheckoutFormState, CheckoutItem } from "../types";
 import { DEFAULT_COUNTRY, DEFAULT_ZIP_CODE, getShippingCost } from "../constants";
 
@@ -89,6 +90,13 @@ export function useCheckoutSubmit({
         note: formState.notes,
         fbp: getFbp(),
         fbc: getFbc(),
+        // Gift card (order-level option, kept in the persisted gift store)
+        ...(() => {
+          const gift = getGiftCard();
+          return gift.enabled
+            ? { giftCard: true, giftMessage: gift.message.trim() }
+            : {};
+        })(),
         // Coupon data
         ...(appliedCoupon ? {
           couponCode: appliedCoupon.code,
@@ -170,6 +178,8 @@ export function useCheckoutSubmit({
       if (!isBuyNow) {
         clearCart();
       }
+      // The gift card was consumed by this order.
+      clearGiftCard();
 
       // Trigger order success callback (e.g., to refetch orders)
       if (onOrderSuccess) {

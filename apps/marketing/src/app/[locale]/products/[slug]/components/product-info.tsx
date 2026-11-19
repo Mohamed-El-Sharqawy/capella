@@ -8,9 +8,15 @@ import { useTranslations } from "next-intl";
 import type { Product, ProductVariant } from "@ecommerce/shared-types";
 import { Accordion, AccordionItem, Checkbox, SocialShare, RichTextContent, BnplPromo } from "@/components/ui";
 import type { UniqueColor, UniqueSize, SizeAvailability } from "../types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { SoldOutSlash } from "@/components/ui/sold-out-slash";
+import {
+  getGiftCard,
+  saveGiftCard,
+  GIFT_MESSAGE_MAX_LENGTH,
+  type GiftCardState,
+} from "@/lib/gift-card";
 
 /** Show an "Only N left" hint at or below this many units. */
 const LOW_STOCK_THRESHOLD = 3;
@@ -64,9 +70,14 @@ export function ProductInfo({
   price,
   locale,
   uniqueColors,
+  uniqueSizes,
   selectedVariant,
   onColorSelect,
   isColorSoldOut,
+  onSizeSelect,
+  getSizeAvailability,
+  hasSizeGuide,
+  onOpenSizeGuide,
   availableStock,
   onAddToCart,
   isInWishlist,
@@ -76,7 +87,18 @@ export function ProductInfo({
   const tStock = useTranslations("stock");
   const isArabic = locale === "ar";
   const isSoldOut = !selectedVariant || availableStock <= 0;
-  const [addGiftMessage, setAddGiftMessage] = useState(false);
+
+  // Gift card option (order-level). Read from the persisted store after mount
+  // so the choice carries to checkout (and between product pages).
+  const [giftCard, setGiftCard] = useState<GiftCardState>({ enabled: false, message: "" });
+  useEffect(() => {
+    setGiftCard(getGiftCard());
+  }, []);
+
+  const updateGiftCard = (next: GiftCardState) => {
+    setGiftCard(next);
+    saveGiftCard(next);
+  };
 
   const composition = [
     product.material?.[isArabic ? 'nameAr' : 'nameEn'],
@@ -111,13 +133,82 @@ export function ProductInfo({
         <Checkbox
           id="gift-message"
           label={t("addGiftMessage")}
-          checked={addGiftMessage}
-          onChange={setAddGiftMessage}
+          checked={giftCard.enabled}
+          onChange={(checked) => updateGiftCard({ ...giftCard, enabled: checked })}
         />
+        {giftCard.enabled && (
+          <div className="mt-3 space-y-1">
+            <textarea
+              value={giftCard.message}
+              onChange={(e) =>
+                updateGiftCard({
+                  enabled: giftCard.enabled,
+                  message: e.target.value.slice(0, GIFT_MESSAGE_MAX_LENGTH),
+                })
+              }
+              maxLength={GIFT_MESSAGE_MAX_LENGTH}
+              rows={3}
+              dir={isArabic ? "rtl" : "ltr"}
+              placeholder={t("giftMessagePlaceholder")}
+              aria-label={t("addGiftMessage")}
+              className="w-full border border-gray-200 rounded-md p-3 text-sm font-light resize-none focus:outline-none focus:ring-1 focus:ring-black focus:border-black placeholder:text-gray-400"
+            />
+            <div className="flex justify-end">
+              <span className="text-[10px] text-gray-400 tabular-nums" aria-live="polite">
+                {t("giftMessageCounter", { count: giftCard.message.length })}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main Actions */}
       <div className="space-y-4 mb-0">
+        {uniqueSizes.length > 0 && (
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <label
+                htmlFor="size-select"
+                className="text-xs md:text-sm font-medium uppercase"
+                style={{ letterSpacing: isArabic ? "0em" : "0.2em" }}
+              >
+                {t("size")}:
+              </label>
+              <select
+                id="size-select"
+                value={selectedVariant?.size?.id ?? ""}
+                onChange={(e) => e.target.value && onSizeSelect(e.target.value)}
+                aria-label={t("size")}
+                className="border border-gray-300 rounded-md py-2 px-3 text-sm bg-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-black focus:border-black"
+              >
+                {uniqueSizes.map((size) => {
+                  const availability = getSizeAvailability(size.id);
+                  const label = isArabic ? size.nameAr : size.nameEn;
+                  return (
+                    <option
+                      key={size.id}
+                      value={size.id}
+                      disabled={!availability.inStock}
+                    >
+                      {label}
+                      {!availability.inStock ? ` — ${tStock("soldOut")}` : ""}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            {hasSizeGuide && (
+              <button
+                type="button"
+                onClick={onOpenSizeGuide}
+                className="text-xs md:text-sm text-gray-500 underline underline-offset-4 hover:text-black transition-colors"
+                style={{ letterSpacing: isArabic ? "0em" : "0.05em" }}
+              >
+                {t("sizeGuide")}
+              </button>
+            )}
+          </div>
+        )}
         <button
           onClick={onAddToCart}
           disabled={isSoldOut}

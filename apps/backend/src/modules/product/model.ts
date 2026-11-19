@@ -30,6 +30,7 @@ export const ProductModel = {
           compareAtPrice: t.Optional(t.Number({ minimum: 0 })),
           stock: t.Optional(t.Number({ minimum: 0 })),
           isActive: t.Optional(t.Boolean()),
+          sizeId: t.Optional(t.Union([t.String(), t.Null()])),
         })
       )
     ),
@@ -64,6 +65,7 @@ export const ProductModel = {
     compareAtPrice: t.Optional(t.Number({ minimum: 0 })),
     stock: t.Optional(t.Number({ minimum: 0 })),
     isActive: t.Optional(t.Boolean()),
+    sizeId: t.Optional(t.Union([t.String(), t.Null()])),
     metaTitleEn: t.Optional(t.String()),
     metaTitleAr: t.Optional(t.String()),
     metaDescriptionEn: t.Optional(t.String()),
@@ -77,6 +79,7 @@ export const ProductModel = {
     compareAtPrice: t.Optional(t.Number({ minimum: 0 })),
     stock: t.Optional(t.Number({ minimum: 0 })),
     isActive: t.Optional(t.Boolean()),
+    sizeId: t.Optional(t.Union([t.String(), t.Null()])),
     metaTitleEn: t.Optional(t.String()),
     metaTitleAr: t.Optional(t.String()),
     metaDescriptionEn: t.Optional(t.String()),

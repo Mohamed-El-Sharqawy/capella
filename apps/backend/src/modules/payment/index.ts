@@ -59,7 +59,14 @@ export const payment = new Elysia({ prefix: "/payments" })
     const released = await PaymentService.releaseAbandonedCheckout(body.orderId);
     return { success: true as const, data: { released } };
   }, { body: PaymentModel.releaseBody })
-  .post("/checkout", async ({ body, user, headers, request }) => {
+  .post("/checkout", async ({ body, request, user, headers }) => {
+    if (body.giftCard && !(body.giftMessage ?? "").trim()) {
+      return status(400, {
+        success: false as const,
+        error:
+          "A gift card message is required when a gift card is selected (or untick the gift card option)",
+      });
+    }
     try {
       const result = await PaymentService.createCheckoutSession(
         body,

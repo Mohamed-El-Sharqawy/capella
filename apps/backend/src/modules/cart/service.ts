@@ -19,6 +19,7 @@ const CART_INCLUDE = {
       variant: {
         include: {
           product: true,
+          size: true,
           images: { orderBy: { position: "asc" as const }, take: 1 },
         },
       },

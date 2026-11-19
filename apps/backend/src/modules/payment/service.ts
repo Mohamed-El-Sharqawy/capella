@@ -45,6 +45,31 @@ type OrderWithRelations = Prisma.OrderGetPayload<{
   include: { items: true; user: true; address: true; coupon: true };
 }>;
 
+const ORDER_WITH_RELATIONS = {
+  items: true,
+  user: true,
+  address: true,
+  coupon: true,
+} as const;
+
+/**
+ * Order shape returned to admin clients (the PUT /orders/:id/payment
+ * response): mirrors OrderService's ORDER_INCLUDE, so no user password hash
+ * leaks through the full `user` include.
+ */
+const ORDER_RESPONSE_INCLUDE = {
+  items: true,
+  user: {
+    select: { id: true, email: true, firstName: true, lastName: true, role: true, phone: true },
+  },
+  address: true,
+  coupon: {
+    select: { id: true, code: true, discountType: true, discountValue: true },
+  },
+} as const;
+
+type OrderResponse = Prisma.OrderGetPayload<{ include: typeof ORDER_RESPONSE_INCLUDE }>;
+
 interface PreparedOrder {
   order: Awaited<ReturnType<typeof prisma.order.create>>;
   variants: VariantWithProduct[];
@@ -80,6 +105,7 @@ export abstract class PaymentService {
       where: { id: { in: variantIds } },
       include: {
         product: { select: { nameEn: true, nameAr: true, isActive: true } },
+        size: true,
         images: {
           orderBy: { position: "asc" },
           take: 1,
@@ -159,6 +185,7 @@ export abstract class PaymentService {
           shippingPhone: shippingData.shippingPhone,
           addressId: shippingData.addressId,
           note: shippingData.note,
+          giftMessage: body.giftCard ? (body.giftMessage?.trim() || null) : null,
           fbp: (shippingData as any).fbp || null,
           fbc: (shippingData as any).fbc || null,
           ...(Object.keys(capiMetadataFields(capiCtx)).length > 0
@@ -173,6 +200,8 @@ export abstract class PaymentService {
                 productNameAr: variant.product.nameAr,
                 variantNameEn: variant.nameEn,
                 variantNameAr: variant.nameAr,
+                sizeEn: variant.size?.nameEn ?? null,
+                sizeAr: variant.size?.nameAr ?? null,
                 sku: variant.sku,
                 quantity: item.quantity,
                 price: variant.price,
@@ -263,22 +292,19 @@ export abstract class PaymentService {
 
   /**
    * Finalize a paid order: idempotent guard, stock re-check (refund on
-   * shortage), stock decrement, status -> CONFIRMED, coupon increment,
-   * notification emails and Meta Purchase event.
+   * shortage for webhook callers), stock decrement, status -> CONFIRMED,
+   * coupon increment, notification emails and Meta Purchase event.
+   *
+   * Shared by webhooks (markOrderPaid) and the CMS manual mark-as-paid flow
+   * (confirmOrderManually). `source` labels the Meta event flow; a provider
+   * without `refund` (manual path) rethrows OutOfStockError instead of
+   * refunding so the caller can surface the shortfall.
    */
-  private static async markOrderPaid(
-    order: OrderWithRelations | null,
-    provider: ProviderDescriptor
+  private static async finalizePaidOrder(
+    order: OrderWithRelations,
+    provider: ProviderDescriptor,
+    opts: { source: string },
   ) {
-    if (!order) return;
-
-    // Already finalized (paid, or refunded): duplicate webhook.
-    const FINAL_STATUSES = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "REFUNDED"];
-    if (FINAL_STATUSES.includes(order.status)) {
-      console.log(`Order ${order.id} already processed (${order.status}), skipping duplicate webhook`);
-      return;
-    }
-
     // Three cases, each claimed with a conditional update so concurrent
     // webhooks can't double-process:
     //  - PENDING with a stock hold (normal): units were reserved at checkout,
@@ -313,12 +339,17 @@ export abstract class PaymentService {
       }
       if (!(err instanceof OutOfStockError)) throw err;
 
+      // Manual confirmation (no provider refund): surface the shortfall to
+      // the admin — no refund, no status change. They resolve it with the
+      // provider and retry or refund manually.
+      if (!provider.refund) throw err;
+
       console.error(
         `Insufficient stock for order ${order.id} after payment, refunding:`,
         err.items,
       );
       try {
-        if (provider.refund) await provider.refund(order.total);
+        await provider.refund(order.total);
       } catch (refundErr) {
         console.error("Refund failed:", refundErr);
       }
@@ -352,6 +383,8 @@ export abstract class PaymentService {
           productNameAr: item.productNameAr,
           variantNameEn: item.variantNameEn || undefined,
           variantNameAr: item.variantNameAr || undefined,
+          sizeEn: item.sizeEn || undefined,
+          sizeAr: item.sizeAr || undefined,
           quantity: item.quantity,
           price: item.price,
           imageUrl: item.imageUrl,
@@ -373,6 +406,7 @@ export abstract class PaymentService {
           phone: order.shippingPhone || undefined,
         },
         note: order.note || undefined,
+        giftMessage: order.giftMessage || undefined,
       };
 
       await Promise.all([
@@ -410,8 +444,9 @@ export abstract class PaymentService {
       value: order.total,
       currency: CURRENCY,
       orderId: order.id,
+      // Same id as the webhook's Purchase event so Meta dedupes them.
       eventId: `order_${order.id}`,
-      source: "webhook",
+      source: opts.source,
       userAgent: ctx.clientUserAgent,
       ip: ctx.clientIpAddress,
       fbp: ctx.fbp,
@@ -422,8 +457,78 @@ export abstract class PaymentService {
       numItems: itemsPayload.numItems,
       contentType: "product",
     });
+  }
 
+  /**
+   * Webhook entry point: finalize a paid order. Duplicate/late webhooks for
+   * an order that is already finalized are skipped.
+   */
+  private static async markOrderPaid(
+    order: OrderWithRelations | null,
+    provider: ProviderDescriptor
+  ) {
+    if (!order) return;
+
+    // Already finalized (paid, or refunded): duplicate webhook.
+    const FINAL_STATUSES = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "REFUNDED"];
+    if (FINAL_STATUSES.includes(order.status)) {
+      console.log(`Order ${order.id} already processed (${order.status}), skipping duplicate webhook`);
+      return;
+    }
+
+    await this.finalizePaidOrder(order, provider, { source: "webhook" });
     console.log(`Order ${order.id} marked as CONFIRMED (paid via ${provider.paymentMethod})`);
+  }
+
+  /**
+   * CMS "Mark as Paid" for an online (ZIINA/TABBY/TAMARA) order whose webhook
+   * failed. Runs the same confirmation flow as a webhook — status CONFIRMED +
+   * paidAt, stock re-reservation when the hold expired, coupon usage, order
+   * emails and the Meta Purchase event (same `order_${id}` eventId, so a late
+   * webhook dedupes). Idempotent: an already-confirmed order is returned as-is
+   * (only paidAt is backfilled if missing). Unlike the webhook path there is
+   * no provider refund: if stock is insufficient the OutOfStockError
+   * propagates to the caller (HTTP 409) and nothing is persisted.
+   */
+  static async confirmOrderManually(orderId: string): Promise<OrderResponse | null> {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: ORDER_WITH_RELATIONS,
+    });
+    if (!order) return null;
+
+    const FINAL_STATUSES = ["CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "REFUNDED"];
+    if (FINAL_STATUSES.includes(order.status)) {
+      console.log(`Order ${order.id} already processed (${order.status}), skipping manual confirmation`);
+      if (order.paidAt) {
+        // Re-read with the safe include for the response.
+        return prisma.order.findUnique({
+          where: { id: orderId },
+          include: ORDER_RESPONSE_INCLUDE,
+        });
+      }
+      // Finalized earlier (e.g. via the status dropdown) but paidAt was never
+      // set: record the payment without any stock/email side effects.
+      return prisma.order.update({
+        where: { id: orderId },
+        data: { paidAt: new Date() },
+        include: ORDER_RESPONSE_INCLUDE,
+      });
+    }
+
+    await this.finalizePaidOrder(
+      order,
+      { paymentMethod: (order.paymentMethod as PaymentMethodName) || "ZIINA" },
+      { source: "manual" },
+    );
+
+    console.log(`Order ${order.id} manually marked as CONFIRMED (paid via ${order.paymentMethod})`);
+
+    // Re-read so the response reflects the new status/paidAt.
+    return prisma.order.findUnique({
+      where: { id: orderId },
+      include: ORDER_RESPONSE_INCLUDE,
+    });
   }
 
   /** Move a still-PENDING order to CANCELLED (idempotent for non-pending). */

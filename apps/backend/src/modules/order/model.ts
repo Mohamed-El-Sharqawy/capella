@@ -29,6 +29,10 @@ export const OrderModel = {
     // record (see OrderService.create). Client-supplied discount amounts are
     // never trusted.
     couponCode: t.Optional(t.String()),
+    // Gift card (order-level option). When giftCard is true a non-empty
+    // giftMessage is required (validated in the route handlers).
+    giftCard: t.Optional(t.Boolean()),
+    giftMessage: t.Optional(t.String({ maxLength: 300 })),
     fbp: t.Optional(t.String()),
     fbc: t.Optional(t.String()),
   }),

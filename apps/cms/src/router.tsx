@@ -8,6 +8,7 @@ import { CollectionDetailsPage } from "./pages/collection-details";
 import { MaterialsPage } from "./pages/materials";
 import { StonesPage } from "./pages/stones";
 import { ClaritiesPage } from "./pages/clarities";
+import { SizesPage } from "./pages/sizes";
 import { OrdersPage } from "./pages/orders";
 import { DailyOrdersPage } from "./pages/daily-orders";
 import { UsersPage } from "./pages/users";
@@ -64,6 +65,10 @@ export const router = createBrowserRouter([
       {
         path: "materials",
         element: <MaterialsPage />,
+      },
+      {
+        path: "sizes",
+        element: <SizesPage />,
       },
       {
         path: "stones",

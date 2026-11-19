@@ -25,6 +25,10 @@ model Product {
   isFeatured Boolean @default(false)
   position   Int     @default(0)
 
+  // Optional size guide image (R2)
+  sizeGuideUrl      String?
+  sizeGuidePublicId String?
+
   productCollections ProductCollection[]
 
   // Jewellery attributes
@@ -79,6 +83,11 @@ model ProductVariant {
   price          Float
   compareAtPrice Float?
 
+  // Optional size (e.g. "S (15.5cm)", "52"). Each sized option is its own
+  // variant with its own stock/price/SKU.
+  size   Size? @relation(fields: [sizeId], references: [id])
+  sizeId String?
+
   stock          Int     @default(0)
   isActive       Boolean @default(true)
 
@@ -98,6 +107,7 @@ model ProductVariant {
   @@index([sku])
   @@index([slug])
   @@index([isActive])
+  @@index([sizeId])
   @@map("product_variants")
 }
 

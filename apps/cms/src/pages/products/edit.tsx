@@ -6,6 +6,7 @@ import { useAllCollections } from "@/features/collections";
 import { useMaterials } from "@/features/materials";
 import { useStones } from "@/features/stones";
 import { useClarities } from "@/features/clarities";
+import { useSizes } from "@/features/sizes";
 import {
   useProduct,
   useUpdateProduct,
@@ -19,6 +20,8 @@ import {
   useDeleteProductImage,
   useLinkImageToVariant,
   useUnlinkImageFromVariant,
+  useUploadSizeGuide,
+  useDeleteSizeGuide,
 } from "@/features/products";
 import type { UpdateProductBody, CreateVariantBody, UpdateVariantBody } from "@/features/products";
 import { Gender } from "@ecommerce/shared-types";
@@ -50,6 +53,7 @@ interface VariantForm {
   stock: string;
   isActive: boolean;
   isNew?: boolean;
+  sizeId: string;
 }
 
 export function EditProductPage() {
@@ -70,6 +74,12 @@ export function EditProductPage() {
   const deleteProductImageMutation = useDeleteProductImage();
   const linkImageMutation = useLinkImageToVariant();
   const unlinkImageMutation = useUnlinkImageFromVariant();
+  const uploadSizeGuideMutation = useUploadSizeGuide();
+  const deleteSizeGuideMutation = useDeleteSizeGuide();
+
+  // Size guide image (optional). Kept in local state so uploads/removals show
+  // immediately; saving the product never requires it.
+  const [sizeGuideUrl, setSizeGuideUrl] = useState<string | null>(null);
 
   const { data: productImages } = useProductImages(product?.id ?? "");
 
@@ -81,11 +91,13 @@ export function EditProductPage() {
   const { data: materialsRes } = useMaterials();
   const { data: stonesRes } = useStones();
   const { data: claritiesRes } = useClarities();
+  const { data: sizesRes } = useSizes();
 
   const collections = collectionsRes?.data ?? [];
   const materials = materialsRes?.data ?? [];
   const stones = stonesRes?.data ?? [];
   const clarities = claritiesRes?.data ?? [];
+  const sizes = sizesRes?.data ?? [];
 
   const [isInitialized, setIsInitialized] = useState(false);
   const [nameEn, setNameEn] = useState("");
@@ -128,6 +140,7 @@ export function EditProductPage() {
       setStoneId((product as any).stoneId ?? "");
       setClarityId((product as any).clarityId ?? "");
       setPosition(product.position ?? 0);
+      setSizeGuideUrl(product.sizeGuideUrl ?? null);
       setVariants(
         product.variants.map((v) => ({
           id: v.id,
@@ -138,6 +151,7 @@ export function EditProductPage() {
           compareAtPrice: v.compareAtPrice ? String(v.compareAtPrice) : "",
           stock: String(v.stock),
           isActive: v.isActive,
+          sizeId: v.sizeId ?? "",
         }))
       );
       setIsInitialized(true);
@@ -157,6 +171,7 @@ export function EditProductPage() {
         stock: "0",
         isActive: true,
         isNew: true,
+        sizeId: "",
       },
     ]);
   };
@@ -248,6 +263,7 @@ export function EditProductPage() {
             compareAtPrice: variant.compareAtPrice ? parseFloat(variant.compareAtPrice) : undefined,
             stock: parseInt(variant.stock) || 0,
             isActive: variant.isActive,
+            sizeId: variant.sizeId || null,
           };
           await createVariantMutation.mutateAsync({ productId: product.id, body });
         } else if (variant.id) {
@@ -259,6 +275,7 @@ export function EditProductPage() {
             compareAtPrice: variant.compareAtPrice ? parseFloat(variant.compareAtPrice) : undefined,
             stock: parseInt(variant.stock) || 0,
             isActive: variant.isActive,
+            sizeId: variant.sizeId || null,
           };
           await updateVariantMutation.mutateAsync({ variantId: variant.id, body });
         }
@@ -558,6 +575,98 @@ export function EditProductPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
+                  <span>Size Guide (optional)</span>
+                  <span className="text-sm font-normal text-muted-foreground">
+                    Shown as a "Size Guide" link on sized products
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {sizeGuideUrl ? (
+                  <div className="flex items-start gap-4">
+                    <div className="relative group">
+                      <img
+                        src={sizeGuideUrl}
+                        alt="Size guide"
+                        className="h-28 object-contain rounded-lg border cursor-pointer"
+                        onClick={() => setPreviewImageUrl(sizeGuideUrl)}
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={async () => {
+                          if (!confirm("Remove the size guide image?")) return;
+                          try {
+                            await deleteSizeGuideMutation.mutateAsync(product.id);
+                            setSizeGuideUrl(null);
+                            toast.success("Size guide removed");
+                          } catch (err) {
+                            toast.error(err instanceof Error ? err.message : "Failed to remove");
+                          }
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <label className="flex flex-col items-center justify-center h-20 w-20 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 text-xs text-muted-foreground text-center px-1">
+                      <Upload className="h-4 w-4 mb-1" />
+                      Replace
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          e.target.value = "";
+                          if (!file) return;
+                          try {
+                            const res = await uploadSizeGuideMutation.mutateAsync({
+                              productId: product.id,
+                              file,
+                            });
+                            setSizeGuideUrl(res.data?.sizeGuideUrl ?? null);
+                            toast.success("Size guide uploaded");
+                          } catch (err) {
+                            toast.error(err instanceof Error ? err.message : "Failed to upload");
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center h-28 w-40 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50">
+                    <Upload className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground mt-1">Upload Size Guide</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        e.target.value = "";
+                        if (!file) return;
+                        try {
+                          const res = await uploadSizeGuideMutation.mutateAsync({
+                            productId: product.id,
+                            file,
+                          });
+                          setSizeGuideUrl(res.data?.sizeGuideUrl ?? null);
+                          toast.success("Size guide uploaded");
+                        } catch (err) {
+                          toast.error(err instanceof Error ? err.message : "Failed to upload");
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
                   <span>Product Images</span>
                   <span className="text-sm font-normal text-muted-foreground">
                     Upload images once, link to multiple variants
@@ -769,6 +878,28 @@ export function EditProductPage() {
                         />
                         <Label>Active</Label>
                       </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Size (optional)</Label>
+                      <Select
+                        value={variant.sizeId || "none"}
+                        onValueChange={(v) => updateVariant(index, "sizeId", v === "none" ? "" : v)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="No size" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No size</SelectItem>
+                          {sizes.map((s) => (
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.nameEn}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
 
                   {variant.id && !variant.isNew && (
                     <div className="space-y-2 pt-4 border-t">

@@ -15,11 +15,12 @@ export interface OrderItem {
   productNameAr: string;
   variantNameEn: string;
   variantNameAr: string;
+  // Size snapshot taken from the variant at order time
+  sizeEn?: string | null;
+  sizeAr?: string | null;
   sku?: string | null;
   quantity: number;
   price: number;
-  size?: string | null;
-  color?: string | null;
   imageUrl?: string | null;
 }
 
@@ -63,6 +64,8 @@ export interface Order {
   shippingCountry: string;
   shippingPhone?: string | null;
   note?: string | null;
+  /** Gift card message (order-level option; null when no gift card). */
+  giftMessage?: string | null;
   items: OrderItem[];
   createdAt: Date;
   updatedAt: Date;

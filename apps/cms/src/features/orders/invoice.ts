@@ -58,11 +58,12 @@ function buildInvoiceHtml(order: Order): string {
         ? `<img class="img" src="${esc(item.imageUrl)}" alt="" />`
         : "";
       const variant = item.variantNameEn ? esc(item.variantNameEn) : "";
+      const size = item.sizeEn ? ` · Size ${esc(item.sizeEn)}` : "";
       const sku = item.sku ? ` · SKU ${esc(item.sku)}` : "";
       return `
         <tr>
           <td>${img}<span class="item-name">${esc(item.productNameEn)}</span>
-            <div class="item-sub">${variant}${sku}</div></td>
+            <div class="item-sub">${variant}${size}${sku}</div></td>
           <td class="num">${item.quantity}</td>
           <td class="num">${money(item.price)}</td>
           <td class="num">${money(item.price * item.quantity)}</td>
@@ -83,6 +84,10 @@ function buildInvoiceHtml(order: Order): string {
 
   const noteHtml = order.note
     ? `<div class="note"><b>Customer note:</b> ${esc(order.note)}</div>`
+    : "";
+
+  const giftHtml = order.giftMessage
+    ? `<div class="note"><b>Gift card message:</b> ${esc(order.giftMessage)}</div>`
     : "";
 
   return `<!DOCTYPE html>
@@ -185,6 +190,7 @@ function buildInvoiceHtml(order: Order): string {
     </div>
 
     <div class="pay"><b>Payment</b><br />${esc(paymentSummary(order))}</div>
+    ${giftHtml}
     ${noteHtml}
 
     <div class="foot">Thank you for shopping with Capella · capellauae.com</div>

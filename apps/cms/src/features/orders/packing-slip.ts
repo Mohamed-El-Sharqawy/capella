@@ -59,8 +59,32 @@ function buildPackingSlipHtml(order: Order): string {
 
   const totalPieces = (order.items || []).reduce((s, i) => s + i.quantity, 0);
 
+  const itemsHtml = (order.items || [])
+    .map((item) => {
+      const subParts = [
+        item.variantNameEn ? esc(item.variantNameEn) : "",
+        item.sizeEn ? `Size ${esc(item.sizeEn)}` : "",
+        item.sku ? `SKU ${esc(item.sku)}` : "",
+      ].filter(Boolean).join(" · ");
+      return `
+      <tr>
+        <td>
+          <span class="item-name">${esc(item.productNameEn)}</span>
+          ${subParts ? `<div class="item-sub">${subParts}</div>` : ""}
+        </td>
+        <td class="sku">${item.sku ? esc(item.sku) : ""}</td>
+        <td class="qty">${item.quantity}</td>
+        <td class="check">☐</td>
+      </tr>`;
+    })
+    .join("");
+
   const noteHtml = order.note
     ? `<div class="note"><b>Note:</b> ${esc(order.note)}</div>`
+    : "";
+
+  const giftHtml = order.giftMessage
+    ? `<div class="note"><b>Gift card message:</b> ${esc(order.giftMessage)}</div>`
     : "";
 
   return `<!DOCTYPE html>
@@ -143,8 +167,16 @@ function buildPackingSlipHtml(order: Order): string {
 
   <div class="pieces" style="margin-top: 5px;">Total pieces: <b>${totalPieces}</b></div>
 
+  <table>
+    <thead>
+      <tr><th>Item</th><th>SKU</th><th class="r">Qty</th><th class="r">Packed</th></tr>
+    </thead>
+    <tbody>${itemsHtml}</tbody>
+  </table>
+
   ${paymentBox(order)}
 
+  ${giftHtml}
   ${noteHtml}
 
   <script>

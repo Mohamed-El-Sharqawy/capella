@@ -42,6 +42,9 @@ export const ImageModel = {
     file: t.File({ type: "image", maxSize: "10m" }),
     folder: t.String(),
   }),
+  uploadSizeGuide: t.Object({
+    file: t.File({ type: "image", maxSize: "10m" }),
+  }),
 } as const;
 
 export type ImageModel = {

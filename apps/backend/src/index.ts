@@ -15,6 +15,7 @@ import { image } from "./modules/image";
 import { material } from "./modules/material";
 import { stone } from "./modules/stone";
 import { clarity } from "./modules/clarity";
+import { size } from "./modules/size";
 import { couponRoutes } from "./modules/coupon";
 import { shoppableVideoController } from "./modules/shoppable-video";
 import { instagramPostController } from "./modules/instagram-post";
@@ -139,6 +140,7 @@ const app = new Elysia()
       .use(material)
       .use(stone)
       .use(clarity)
+      .use(size)
       .use(couponRoutes)
       .use(shoppableVideoController)
       .use(instagramPostController)

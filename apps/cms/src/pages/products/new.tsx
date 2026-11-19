@@ -5,6 +5,7 @@ import { useAllCollections } from "@/features/collections";
 import { useMaterials } from "@/features/materials";
 import { useStones } from "@/features/stones";
 import { useClarities } from "@/features/clarities";
+import { useSizes } from "@/features/sizes";
 import {
   useCreateProduct,
   useUploadProductImages,
@@ -38,6 +39,7 @@ interface VariantForm {
   compareAtPrice: string;
   stock: string;
   isActive: boolean;
+  sizeId: string;
 }
 
 // Staged image with file and linked variant tempIds
@@ -57,6 +59,7 @@ const createEmptyVariant = (): VariantForm => ({
   compareAtPrice: "",
   stock: "0",
   isActive: true,
+  sizeId: "",
 });
 
 export function NewProductPage() {
@@ -69,11 +72,13 @@ export function NewProductPage() {
   const { data: materialsRes } = useMaterials();
   const { data: stonesRes } = useStones();
   const { data: claritiesRes } = useClarities();
+  const { data: sizesRes } = useSizes();
 
   const collections = collectionsRes?.data ?? [];
   const materials = materialsRes?.data ?? [];
   const stones = stonesRes?.data ?? [];
   const clarities = claritiesRes?.data ?? [];
+  const sizes = sizesRes?.data ?? [];
 
   const [nameEn, setNameEn] = useState("");
   const [nameAr, setNameAr] = useState("");
@@ -188,6 +193,7 @@ export function NewProductPage() {
       compareAtPrice: v.compareAtPrice ? parseFloat(v.compareAtPrice) : undefined,
       stock: parseInt(v.stock) || 0,
       isActive: v.isActive,
+      sizeId: v.sizeId || null,
     }));
 
     setIsSubmitting(true);
@@ -754,6 +760,25 @@ export function NewProductPage() {
                         />
                         <Label>Active</Label>
                       </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Size (optional)</Label>
+                      <Select
+                        value={variant.sizeId || "none"}
+                        onValueChange={(v) => updateVariant(index, "sizeId", v === "none" ? "" : v)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="No size" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">No size</SelectItem>
+                          {sizes.map((s) => (
+                            <SelectItem key={s.id} value={s.id}>
+                              {s.nameEn}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </CardContent>

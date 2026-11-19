@@ -5,6 +5,8 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
+    /** Raw error response body (e.g. out-of-stock items on 409). */
+    public readonly body?: unknown,
   ) {
     super(message);
     this.name = "ApiError";
@@ -37,7 +39,7 @@ async function request<T>(
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: "Request failed" }));
-    throw new ApiError(res.status, body.error || `HTTP ${res.status}`);
+    throw new ApiError(res.status, body.error || `HTTP ${res.status}`, body);
   }
 
   return res.json();

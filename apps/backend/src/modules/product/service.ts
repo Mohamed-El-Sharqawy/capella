@@ -6,6 +6,7 @@ import type { ProductModel } from "./model";
 
 const VARIANT_WITH_IMAGES = {
   include: {
+    size: true,
     images: {
       orderBy: { position: "asc" as const },
       include: { image: true },
@@ -282,6 +283,7 @@ export abstract class ProductService {
     // Collect all Cloudinary public IDs from product images
     const publicIds = [
       ...product.images.map((img) => img.publicId),
+      ...(product.sizeGuidePublicId ? [product.sizeGuidePublicId] : []),
     ];
 
     // Delete from Cloudinary
@@ -308,7 +310,7 @@ export abstract class ProductService {
         stock: body.stock ?? 0,
         productId,
       },
-      include: { images: { orderBy: { position: "asc" } } },
+      include: { size: true, images: { orderBy: { position: "asc" } } },
     });
   }
 
@@ -327,7 +329,7 @@ export abstract class ProductService {
     return prisma.productVariant.update({
       where: { id: variantId },
       data: updateData,
-      include: { images: { orderBy: { position: "asc" } } },
+      include: { size: true, images: { orderBy: { position: "asc" } } },
     });
   }
 

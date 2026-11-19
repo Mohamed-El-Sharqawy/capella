@@ -73,6 +73,8 @@ export interface OrderEmailData {
     productNameAr: string;
     variantNameEn?: string;
     variantNameAr?: string;
+    sizeEn?: string | null;
+    sizeAr?: string | null;
     quantity: number;
     price: number;
     imageUrl?: string | null;
@@ -94,6 +96,8 @@ export interface OrderEmailData {
     phone?: string;
   };
   note?: string;
+  /** Gift card message chosen at checkout (order-level option). */
+  giftMessage?: string;
 }
 
 export interface StatusUpdateEmailData {
@@ -123,7 +127,7 @@ function buildOwnerOrderHtml(data: OrderEmailData): string {
     <tr>
       <td style="padding:10px;border-bottom:1px solid #eee;">
         ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.productNameEn}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;" />` : ""}
-        <strong>${item.productNameEn}</strong>${item.variantNameEn ? ` (${item.variantNameEn})` : ""} &times; ${item.quantity}
+        <strong>${item.productNameEn}</strong>${item.variantNameEn ? ` (${item.variantNameEn})` : ""}${item.sizeEn ? ` &middot; Size: ${item.sizeEn}` : ""} &times; ${item.quantity}
       </td>
       <td style="padding:10px;border-bottom:1px solid #eee;text-align:right;">${(item.price * item.quantity).toFixed(2)} AED</td>
     </tr>`
@@ -174,6 +178,8 @@ function buildOwnerOrderHtml(data: OrderEmailData): string {
 
     ${data.note ? `<h3>Customer Note</h3><p>${data.note}</p>` : ""}
 
+    ${data.giftMessage ? `<h3>Gift Card Message</h3><p>${data.giftMessage}</p>` : ""}
+
     <p style="margin-top:20px;font-size:13px;color:#888;">Contact: capellaaae@hotmail.com &bull; +971 52 451 4147</p>
   </div>
 </body>
@@ -190,6 +196,7 @@ function buildCustomerOrderHtml(data: OrderEmailData): string {
         <div style="display:inline-block;vertical-align:middle;">
           <strong>${item.productNameEn}</strong><br/>
           ${item.variantNameEn ? `<span style="color:#888;font-size:13px;">${item.variantNameEn}</span><br/>` : ""}
+          ${item.sizeEn ? `<span style="color:#888;font-size:13px;">Size: ${item.sizeEn}</span><br/>` : ""}
           Qty: ${item.quantity}
         </div>
       </td>
@@ -240,6 +247,8 @@ function buildCustomerOrderHtml(data: OrderEmailData): string {
     ${data.shippingAddress.country}</p>
 
     ${data.note ? `<h3>Note</h3><p style="background:#fff;padding:12px;border-radius:6px;">${data.note}</p>` : ""}
+
+    ${data.giftMessage ? `<h3 style="margin-top:24px;">Gift Card Message</h3><p style="background:#fff;padding:12px;border-radius:6px;">${data.giftMessage}</p>` : ""}
   </div>
 
   <div style="text-align:center;padding:20px;font-size:13px;color:#888;">

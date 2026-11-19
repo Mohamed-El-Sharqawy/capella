@@ -15,6 +15,22 @@ async function withStockGuard<T>(fn: () => Promise<T>) {
   }
 }
 
+/**
+ * A gift card was requested but no message was written. Returns the 400 body
+ * or null when the gift card request is valid (no gift card, or a message).
+ */
+export function giftCardValidation(
+  body: OrderModel["createBody"]
+): { error: string } | null {
+  if (body.giftCard && !(body.giftMessage ?? "").trim()) {
+    return {
+      error:
+        "A gift card message is required when a gift card is selected (or untick the gift card option)",
+    };
+  }
+  return null;
+}
+
 export const order = new Elysia({ prefix: "/orders" })
   .post(
     "/guest",
@@ -22,6 +38,8 @@ export const order = new Elysia({ prefix: "/orders" })
       if (!body.guestEmail) {
         return status(400, { success: false as const, error: "Guest email is required" });
       }
+      const giftError = giftCardValidation(body);
+      if (giftError) return status(400, { success: false as const, ...giftError });
       const result = await withStockGuard(() =>
         OrderService.create(body, null, extractCapiContext(request))
       );
@@ -43,6 +61,8 @@ export const order = new Elysia({ prefix: "/orders" })
     return { success: true as const, data: result };
   }, { isSignIn: true })
   .post("/", async ({ user, body, request }) => {
+    const giftError = giftCardValidation(body);
+    if (giftError) return status(400, { success: false as const, ...giftError });
     const result = await withStockGuard(() =>
       OrderService.create(body, user.id, extractCapiContext(request))
     );
@@ -56,9 +76,12 @@ export const order = new Elysia({ prefix: "/orders" })
     return { success: true as const, data: result.value };
   }, { isAdmin: true, body: OrderModel.updateStatusBody })
   .put("/:id/payment", async ({ params, body }) => {
-    const result = await OrderService.updatePaymentStatus(params.id, body.paid);
-    if (!result) return status(404, { success: false as const, error: "Order not found" });
-    return { success: true as const, data: result };
+    const result = await withStockGuard(() =>
+      OrderService.updatePaymentStatus(params.id, body.paid)
+    );
+    if (!result.ok) return status(409, outOfStockBody(result.error));
+    if (!result.value) return status(404, { success: false as const, error: "Order not found" });
+    return { success: true as const, data: result.value };
   }, { isAdmin: true, body: OrderModel.updatePaymentBody })
   .delete("/:id", async ({ params }) => {
     const result = await OrderService.delete(params.id);

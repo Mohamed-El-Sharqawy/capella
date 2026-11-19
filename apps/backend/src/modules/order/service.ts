@@ -6,6 +6,7 @@ import { sendMetaEvent, buildCapiItems } from "../../lib/meta-capi";
 import type { CapiContext } from "../../lib/meta-capi";
 import type { OrderModel } from "./model";
 import { assertInStock, decrementStock, releaseOrderStock } from "../../lib/stock";
+import { PaymentService } from "../payment/service";
 
 const ORDER_INCLUDE = {
   items: true,
@@ -114,6 +115,7 @@ export abstract class OrderService {
       where: { id: { in: variantIds } },
       include: {
         product: true,
+        size: true,
         images: { 
           orderBy: { position: "asc" as const }, 
           take: 1,
@@ -144,6 +146,8 @@ export abstract class OrderService {
         productNameAr: variant.product.nameAr,
         variantNameEn: variant.nameEn,
         variantNameAr: variant.nameAr,
+        sizeEn: variant.size?.nameEn ?? null,
+        sizeAr: variant.size?.nameAr ?? null,
         sku: variant.sku,
         quantity: item.quantity,
         price: variant.price,
@@ -254,6 +258,7 @@ export abstract class OrderService {
           shippingCountry: body.shippingCountry,
           shippingPhone: body.shippingPhone,
           note: body.note,
+          giftMessage: body.giftCard ? (body.giftMessage?.trim() || null) : null,
           fbp: body.fbp || null,
           fbc: body.fbc || null,
           items: { create: orderItems },
@@ -279,6 +284,8 @@ export abstract class OrderService {
           productNameAr: item.productNameAr,
           variantNameEn: item.variantNameEn || undefined,
           variantNameAr: item.variantNameAr || undefined,
+          sizeEn: item.sizeEn || undefined,
+          sizeAr: item.sizeAr || undefined,
           quantity: item.quantity,
           price: item.price,
           imageUrl: item.imageUrl,
@@ -300,6 +307,7 @@ export abstract class OrderService {
           phone: body.shippingPhone || undefined,
         },
         note: body.note || undefined,
+        giftMessage: order.giftMessage || undefined,
       };
 
       await Promise.all([
@@ -417,6 +425,9 @@ export abstract class OrderService {
     });
   }
 
+  /** Payment methods that are confirmed by the provider's webhook. */
+  static ONLINE_PAYMENT_METHODS = ["ZIINA", "TABBY", "TAMARA"] as const;
+
   static async updatePaymentStatus(id: string, paid: boolean) {
     const existing = await prisma.order.findUnique({
       where: { id },
@@ -424,6 +435,21 @@ export abstract class OrderService {
     });
     if (!existing) return null;
 
+    const isOnline = (this.ONLINE_PAYMENT_METHODS as readonly string[]).includes(
+      existing.paymentMethod ?? ""
+    );
+
+    // Marking an UNPAID online order as paid runs the same confirmation flow
+    // as a webhook (status -> CONFIRMED, stock re-reservation if the hold
+    // expired, coupon usage, emails, deduped Meta Purchase event). Throws
+    // OutOfStockError when the units can no longer be taken; the manual path
+    // never refunds, the admin resolves it with the provider instead.
+    if (isOnline && paid && !existing.paidAt) {
+      return PaymentService.confirmOrderManually(id);
+    }
+
+    // COD toggle and "mark unpaid" for any order: a simple paidAt change,
+    // with no status / stock side effects.
     const updated = await prisma.order.update({
       where: { id },
       data: { paidAt: paid ? new Date() : null },

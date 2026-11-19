@@ -13,6 +13,7 @@ import {
   BarChart3,
   Gem,
   Sparkles,
+  Ruler,
   Megaphone,
   Truck,
 } from "lucide-react";
@@ -24,6 +25,7 @@ const navItems = [
   { label: "Products", href: "/products", icon: Package },
   { label: "Collections", href: "/collections", icon: FolderTree },
   { label: "Materials", href: "/materials", icon: Gem },
+  { label: "Sizes", href: "/sizes", icon: Ruler },
   { label: "Stones", href: "/stones", icon: Sparkles },
   { label: "Clarities", href: "/clarities", icon: Sparkles },
   { label: "Daily Orders", href: "/daily-orders", icon: Truck },

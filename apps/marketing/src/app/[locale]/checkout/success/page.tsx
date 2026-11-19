@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { useCart } from "@/contexts/cart-context";
 import { useAuth } from "@/contexts/auth-context";
 import { apiGet } from "@/lib/api-client";
+import { clearGiftCard } from "@/lib/gift-card";
 import {
   trackOrderComplete,
   getPendingPurchase,
@@ -58,6 +59,8 @@ export default function CheckoutSuccessPage({ params, searchParams }: PageProps)
     if (!clearedRef.current) {
       clearedRef.current = true;
       clearCart();
+      // The order went through — the gift card option was consumed with it.
+      clearGiftCard();
     }
   };
 

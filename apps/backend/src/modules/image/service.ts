@@ -347,4 +347,53 @@ export abstract class ImageService {
       publicId: upload.publicId,
     };
   }
+
+  // ==========================================
+  // Product Size Guide (single optional image)
+  // ==========================================
+
+  // Upload (replace) the product's size guide image
+  static async setSizeGuideImage(productId: string, file: File) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true, sizeGuidePublicId: true },
+    });
+    if (!product) return null;
+
+    // Replace: delete the previous file from storage, if any
+    if (product.sizeGuidePublicId) {
+      await StorageService.delete(product.sizeGuidePublicId);
+    }
+
+    const upload = await StorageService.upload(file, "size-guides");
+
+    const sizeGuide = await prisma.product.update({
+      where: { id: productId },
+      data: {
+        sizeGuideUrl: upload.url,
+        sizeGuidePublicId: upload.publicId,
+      },
+    });
+
+    return {
+      sizeGuideUrl: sizeGuide.sizeGuideUrl,
+      sizeGuidePublicId: sizeGuide.sizeGuidePublicId,
+    };
+  }
+
+  // Delete the product's size guide image (file + both fields)
+  static async deleteSizeGuideImage(productId: string) {
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true, sizeGuideUrl: true, sizeGuidePublicId: true },
+    });
+    if (!product || !product.sizeGuidePublicId) return null;
+
+    await StorageService.delete(product.sizeGuidePublicId);
+    await prisma.product.update({
+      where: { id: productId },
+      data: { sizeGuideUrl: null, sizeGuidePublicId: null },
+    });
+    return true;
+  }
 }

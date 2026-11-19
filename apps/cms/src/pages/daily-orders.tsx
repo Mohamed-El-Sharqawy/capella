@@ -1,9 +1,20 @@
 import { useState } from "react";
-import { Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, ArrowRight, Truck, Clock, ClipboardList, ClipboardCheck, Trash2 } from "lucide-react";
+import { Loader2, Eye, ChevronLeft, ChevronRight, Package, User, MapPin, Phone, Mail, Calendar, CreditCard, Banknote, Tag, ArrowRight, Truck, Clock, ClipboardList, ClipboardCheck, Trash2, Gift } from "lucide-react";
 import { useOrders, useOrder, useUpdateOrderStatus, useUpdateOrderPaymentStatus, useDeleteOrder, printPackingSlip, type OrderStatus } from "@/features/orders";
+import { ApiError } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +45,15 @@ const STATUS_COLORS: Record<string, string> = {
 
 type Tab = "new" | "processing" | "delivery";
 
+const ONLINE_PAYMENT_METHODS = ["ZIINA", "TABBY", "TAMARA"];
+
+/** Pending manual paid/unpaid confirmation for an online order. */
+interface PaymentConfirm {
+  orderId: string;
+  currentlyPaid: boolean;
+  method: string;
+}
+
 const TABS: { key: Tab; label: string; icon: any; statuses: string[] }[] = [
   { key: "new", label: "New Orders", icon: ClipboardList, statuses: ["PENDING", "CONFIRMED"] },
   { key: "processing", label: "Processing", icon: Clock, statuses: ["PROCESSING"] },
@@ -58,6 +78,7 @@ export function DailyOrdersPage() {
   const updatePaymentStatus = useUpdateOrderPaymentStatus();
   const deleteMutation = useDeleteOrder();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [paymentConfirm, setPaymentConfirm] = useState<PaymentConfirm | null>(null);
 
   const orders = data?.data?.data || [];
   const meta = data?.data?.meta || { total: 0, page: 1, limit: 50, totalPages: 0 };
@@ -92,9 +113,45 @@ export function DailyOrdersPage() {
     try {
       await updatePaymentStatus.mutateAsync({ id: orderId, paid: !currentlyPaid });
       toast.success(!currentlyPaid ? "Marked as paid" : "Marked as unpaid");
-    } catch {
-      toast.error("Failed to update payment status");
+    } catch (err) {
+      // Confirming an online order can fail when the stock held at checkout is
+      // no longer available — show the admin exactly what is short.
+      const issues =
+        err instanceof ApiError && err.status === 409
+          ? ((err.body as { items?: { variantId: string; requested: number; available: number }[] }).items ?? [])
+          : [];
+      if (issues.length > 0) {
+        toast.error(
+          `Cannot confirm — insufficient stock: ${issues
+            .map((i) => `${i.variantId.slice(0, 8)}… (need ${i.requested}, left ${i.available})`)
+            .join(", ")}. Resolve the stock or refund via the provider dashboard.`,
+          { duration: 10000 },
+        );
+      } else {
+        toast.error(err instanceof Error ? err.message : "Failed to update payment status");
+      }
     }
+  };
+
+  /**
+   * COD: toggle straight away (unchanged behaviour). Online orders are
+   * normally confirmed by webhooks, so a manual toggle asks for confirmation
+   * (verify the payment in the provider's dashboard first).
+   */
+  const requestPaymentToggle = (orderId: string, currentlyPaid: boolean, method?: string | null) => {
+    const isOnline = ONLINE_PAYMENT_METHODS.includes(method ?? "");
+    if (!isOnline) {
+      void handlePaymentToggle(orderId, currentlyPaid);
+      return;
+    }
+    setPaymentConfirm({ orderId, currentlyPaid, method: method ?? "" });
+  };
+
+  const confirmPaymentToggle = async () => {
+    if (!paymentConfirm) return;
+    const { orderId, currentlyPaid } = paymentConfirm;
+    setPaymentConfirm(null);
+    await handlePaymentToggle(orderId, currentlyPaid);
   };
 
   const formatDate = (date: string | Date) => new Date(date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
@@ -199,14 +256,17 @@ export function DailyOrdersPage() {
                     </TableCell>
                     <TableCell>
                       {(() => {
-                        const isOnline = order.paymentMethod === "ZIINA" || order.paymentMethod === "TABBY" || order.paymentMethod === "TAMARA";
+                        const isOnline = ONLINE_PAYMENT_METHODS.includes(order.paymentMethod ?? "");
                         const isRefunded = order.status === "REFUNDED";
                         if (isRefunded) return <Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge>;
-                        if (isOnline) return order.paidAt
-                          ? <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge>
-                          : <Badge className="bg-gray-100 text-gray-600 border-0">Unpaid</Badge>;
                         return (
-                          <button onClick={() => handlePaymentToggle(order.id, !!order.paidAt)} className="focus:outline-none" title={order.paidAt ? "Click to mark as unpaid" : "Click to mark as paid"}>
+                          <button
+                            onClick={() => requestPaymentToggle(order.id, !!order.paidAt, order.paymentMethod)}
+                            className="focus:outline-none"
+                            title={isOnline
+                              ? (order.paidAt ? "Click to mark as unpaid (verify first)" : "Click to mark as paid (verify payment in the provider dashboard first)")
+                              : (order.paidAt ? "Click to mark as unpaid" : "Click to mark as paid")}
+                          >
                             {order.paidAt ? (
                               <Badge className="bg-green-100 text-green-800 border-0 cursor-pointer hover:bg-green-200">Paid</Badge>
                             ) : (
@@ -269,17 +329,16 @@ export function DailyOrdersPage() {
                       <div><div className="text-xs text-muted-foreground">Payment</div>
                         <div className="flex items-center gap-2 mt-1">
                           {(() => {
-                            const isOnline = od.paymentMethod === "ZIINA" || od.paymentMethod === "TABBY" || od.paymentMethod === "TAMARA";
+                            const isOnline = ONLINE_PAYMENT_METHODS.includes(od.paymentMethod ?? "");
                             const isRefunded = od.status === "REFUNDED";
                             const pmBadge = isOnline
                               ? <Badge variant="secondary" className="bg-blue-50 text-blue-700 border-blue-200 gap-1"><CreditCard className="h-3 w-3" /> {od.paymentMethod}</Badge>
                               : <Badge variant="secondary" className="bg-amber-50 text-amber-700 border-amber-200 gap-1"><Banknote className="h-3 w-3" /> COD</Badge>;
                             if (isRefunded) return <>{pmBadge}<Badge className="bg-orange-100 text-orange-800 border-0">Refunded</Badge></>;
-                            if (isOnline) return <>{pmBadge}{od.paidAt ? <Badge className="bg-green-100 text-green-800 border-0">Paid</Badge> : <Badge className="bg-gray-100 text-gray-600 border-0">Unpaid</Badge>}</>;
                             return (
                               <>
                                 {pmBadge}
-                                <button onClick={() => handlePaymentToggle(od.id, !!od.paidAt)}>
+                                <button onClick={() => requestPaymentToggle(od.id, !!od.paidAt, od.paymentMethod)}>
                                   {od.paidAt ? (
                                     <Badge className="bg-green-100 text-green-800 border-0 cursor-pointer">Paid</Badge>
                                   ) : (
@@ -321,6 +380,30 @@ export function DailyOrdersPage() {
                         <p className="text-sm text-muted-foreground">{od.note}</p>
                       </div>
                     )}
+
+                    {od.giftMessage && (
+                      <div className="rounded-lg border p-4">
+                        <h3 className="font-semibold mb-2 flex items-center gap-2"><Gift className="h-4 w-4" /> Gift Card Message</h3>
+                        <p className="text-sm text-muted-foreground">{od.giftMessage}</p>
+                      </div>
+                    )}
+
+                    <div className="rounded-lg border p-4">
+                      <h3 className="font-semibold mb-3">Items ({od.items?.length || 0})</h3>
+                      <div className="space-y-2">
+                        {(od.items || []).map((item: any) => (
+                          <div key={item.id} className="flex items-start justify-between gap-4 text-sm border-b last:border-0 pb-2 last:pb-0">
+                            <div>
+                              <span className="font-medium">{item.productNameEn}</span>
+                              {item.variantNameEn && <span className="text-muted-foreground"> — {item.variantNameEn}</span>}
+                              {item.sizeEn && <span className="text-muted-foreground"> · Size: {item.sizeEn}</span>}
+                              <div className="text-xs text-muted-foreground font-sans">{item.sku || "—"} · × {item.quantity}</div>
+                            </div>
+                            <div className="whitespace-nowrap">{formatCurrency(item.price * item.quantity)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
                     <div className="rounded-lg border p-4 bg-muted/30">
                       <div className="space-y-2">
@@ -383,6 +466,30 @@ export function DailyOrdersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Manual Payment Confirmation (online orders) */}
+      <AlertDialog open={!!paymentConfirm} onOpenChange={(open) => !open && setPaymentConfirm(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {paymentConfirm?.currentlyPaid
+                ? "Mark this online order as unpaid?"
+                : "Mark this online order as paid?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {paymentConfirm?.currentlyPaid
+                ? "This only clears the paid timestamp — order status, stock and the payment in the provider's dashboard are not changed."
+                : `Online orders are normally confirmed automatically by ${paymentConfirm?.method} webhooks. Before continuing, verify the payment was actually received in the ${paymentConfirm?.method} dashboard. Confirming runs the same flow as a webhook: the order becomes CONFIRMED, stock is re-reserved if the hold expired, and the customer gets their confirmation email.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmPaymentToggle} disabled={updatePaymentStatus.isPending}>
+              {updatePaymentStatus.isPending ? "Updating…" : "Yes, continue"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

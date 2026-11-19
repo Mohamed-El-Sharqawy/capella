@@ -24,12 +24,20 @@ import {
   ContactInfoSection,
   ShippingAddressSection,
   GuestBenefitsPrompt,
+  GiftCardSection,
   PaymentMethodSection,
   OrderSummarySection,
   OrderConfirmationModal,
 } from "./components";
 import { CHECKOUT_ROUTES, getShippingCost } from "./constants";
 import { releaseAbandonedCheckout } from "@/lib/stock";
+import {
+  getGiftCard,
+  saveGiftCard,
+  clearGiftCard,
+  isGiftCardIncomplete,
+  type GiftCardState,
+} from "@/lib/gift-card";
 import type { CheckoutPageClientProps } from "./types";
 
 function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
@@ -45,6 +53,18 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { fetchOrders } = useOrders();
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+
+  // Gift card option (order-level), prefilled from the persisted store
+  const [giftCard, setGiftCard] = useState<GiftCardState>({ enabled: false, message: "" });
+  const [giftCardError, setGiftCardError] = useState(false);
+  useEffect(() => {
+    setGiftCard(getGiftCard());
+  }, []);
+  const updateGiftCard = (next: GiftCardState) => {
+    setGiftCard(next);
+    saveGiftCard(next);
+    if (next.message.trim()) setGiftCardError(false);
+  };
 
   // Buy now mode
   const { isBuyNow, buyNowItem, isBuyNowLoading, isBuyNowUnavailable, refetchBuyNow } = useBuyNow();
@@ -150,6 +170,12 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
   const onPreSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isStockBlocked) return;
+    // A gift card needs a message before the order can be placed (inline
+    // error on the textarea; applies to COD and all online methods).
+    if (isGiftCardIncomplete(giftCard)) {
+      setGiftCardError(true);
+      return;
+    }
     setIsConfirmModalOpen(true);
   };
 
@@ -245,6 +271,12 @@ function CheckoutPageContent({ locale }: CheckoutPageClientProps) {
 
             {/* Guest checkout benefits prompt */}
             {!isAuthenticated && <GuestBenefitsPrompt />}
+
+            <GiftCardSection
+              value={giftCard}
+              onChange={updateGiftCard}
+              error={giftCardError ? t("giftMessageRequired") : null}
+            />
 
             <PaymentMethodSection
               formState={formState}

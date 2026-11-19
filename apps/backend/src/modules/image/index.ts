@@ -127,4 +127,22 @@ export const image = new Elysia({ prefix: "/images" })
   .post("/upload", async ({ body }) => {
     const result = await ImageService.uploadGeneric(body.file as File, body.folder);
     return status(201, { success: true as const, data: result });
-  }, { isEditor: true, body: ImageModel.uploadGeneric });
+  }, { isEditor: true, body: ImageModel.uploadGeneric })
+
+  // ==========================================
+  // Product Size Guide (single optional image)
+  // ==========================================
+  .post("/size-guide/:productId", async ({ params, body }) => {
+    const result = await ImageService.setSizeGuideImage(
+      params.productId,
+      body.file as File
+    );
+    if (!result) return status(404, { success: false as const, error: "Product not found" });
+    return status(201, { success: true as const, data: result });
+  }, { isEditor: true, body: ImageModel.uploadSizeGuide })
+
+  .delete("/size-guide/:productId", async ({ params }) => {
+    const result = await ImageService.deleteSizeGuideImage(params.productId);
+    if (!result) return status(404, { success: false as const, error: "Size guide not found" });
+    return { success: true as const, message: "Size guide deleted" };
+  }, { isEditor: true });

@@ -4,6 +4,7 @@ export { CheckoutEmpty } from "./checkout-empty";
 export { ContactInfoSection } from "./contact-info-section";
 export { ShippingAddressSection } from "./shipping-address-section";
 export { GuestBenefitsPrompt } from "./guest-benefits-prompt";
+export { GiftCardSection } from "./gift-card-section";
 export { PaymentMethodSection } from "./payment-method-section";
 export { TabbyCardSnippet } from "./tabby-card-snippet";
 export { OrderSummarySection } from "./order-summary-section";

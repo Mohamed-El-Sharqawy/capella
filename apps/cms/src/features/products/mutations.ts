@@ -38,6 +38,7 @@ export interface CreateVariantBody {
   compareAtPrice?: number;
   stock?: number;
   isActive?: boolean;
+  sizeId?: string | null;
   metaTitleEn?: string;
   metaTitleAr?: string;
   metaDescriptionEn?: string;
@@ -52,6 +53,7 @@ export interface UpdateVariantBody {
   compareAtPrice?: number;
   stock?: number;
   isActive?: boolean;
+  sizeId?: string | null;
   metaTitleEn?: string;
   metaTitleAr?: string;
   metaDescriptionEn?: string;
