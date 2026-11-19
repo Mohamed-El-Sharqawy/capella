@@ -448,6 +448,9 @@ export abstract class OrderService {
       return PaymentService.confirmOrderManually(id);
     }
 
+    // Already in the requested state: keep the original paidAt timestamp.
+    if (paid === !!existing.paidAt) return existing;
+
     // COD toggle and "mark unpaid" for any order: a simple paidAt change,
     // with no status / stock side effects.
     const updated = await prisma.order.update({

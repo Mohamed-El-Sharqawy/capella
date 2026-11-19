@@ -66,8 +66,10 @@ ENV BACKEND_PUBLIC_URL=${BACKEND_PUBLIC_URL}
 EXPOSE 3001
 
 # Sync the schema on start. NEVER add --accept-data-loss here: without it,
-# `db push` refuses any change that would drop/rename a column or table (or
-# otherwise lose data) and exits non-zero, so the container fails to start
-# instead of silently deleting production data. Destructive schema changes
+# `db push` refuses any change that would destroy existing values (dropping or
+# renaming a column/table that holds data) and exits non-zero, so the
+# container fails to start instead of deleting production data.
+# Note: Prisma still drops columns that are entirely NULL and tables that are
+# empty without asking, since no values are lost. Destructive schema changes
 # must be done deliberately by hand, with a backup.
 CMD ["sh", "-c", "pnpm exec prisma db push && bun run dist/index.js"]

@@ -3,6 +3,19 @@ import { authPlugin } from "../../plugins/auth";
 import { SizeService } from "./service";
 import { SizeModel } from "./model";
 
+const DUPLICATE_SIZE = "A size with this English or Arabic name already exists";
+const DUPLICATE = Symbol("duplicate");
+
+/** Run a write; map a unique-name violation (Prisma P2002) to DUPLICATE. */
+async function unlessDuplicate<T>(fn: () => Promise<T>): Promise<T | typeof DUPLICATE> {
+  try {
+    return await fn();
+  } catch (err) {
+    if ((err as { code?: string })?.code === "P2002") return DUPLICATE;
+    throw err;
+  }
+}
+
 export const size = new Elysia({ prefix: "/sizes" })
   .get("/", async () => {
     const sizes = await SizeService.list();
@@ -10,11 +23,13 @@ export const size = new Elysia({ prefix: "/sizes" })
   })
   .use(authPlugin)
   .post("/", async ({ body }) => {
-    const size = await SizeService.create(body);
+    const size = await unlessDuplicate(() => SizeService.create(body));
+    if (size === DUPLICATE) return status(409, { success: false as const, error: DUPLICATE_SIZE });
     return status(201, { success: true as const, data: size });
   }, { isEditor: true, body: SizeModel.createBody })
   .put("/:id", async ({ params, body }) => {
-    const size = await SizeService.update(params.id, body);
+    const size = await unlessDuplicate(() => SizeService.update(params.id, body));
+    if (size === DUPLICATE) return status(409, { success: false as const, error: DUPLICATE_SIZE });
     if (!size) return status(404, { success: false as const, error: "Size not found" });
     return { success: true as const, data: size };
   }, { isEditor: true, body: SizeModel.updateBody })
